@@ -1,11 +1,11 @@
-import ServiceLocator from './ServiceLocator.js';
+import { ServiceLocator } from './ServiceLocator.js';
 
-export interface IImageLoader {
+export interface IServiceImageLoader {
     getImage(imagePath: string): HTMLImageElement;
     isGameReady(): boolean;
 }
 
-export class ImageLoader implements IImageLoader {
+class ImageLoader implements IServiceImageLoader {
     private static isGameReady = false;
     private listImages: { [key: string]: HTMLImageElement };
     private numberImagesLoaded: number = 0;
@@ -59,6 +59,7 @@ export function loadImageLoader() {
     assets.push('images/cardSpadesJ.png');
     assets.push('images/cardSpadesK.png');
     assets.push('images/cardSpadesQ.png');
+    assets.push('images/player.png');
     const imageLoader: ImageLoader = new ImageLoader(assets);
 
     ServiceLocator.addService('ImageLoader', imageLoader);

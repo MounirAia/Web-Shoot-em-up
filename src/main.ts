@@ -1,36 +1,24 @@
-import { loadImageLoader, IImageLoader } from './ImageLoader.js';
-import ServiceLocator from './ServiceLocator.js';
+import { loadImageLoader, IServiceImageLoader } from './ImageLoader.js';
+import { ServiceLocator } from './ServiceLocator.js';
+import { loadPlayer, updatePlayer, drawPlayer } from './Sprites/Player.js';
 
 const canvas = document.querySelector('#canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 function load() {
     loadImageLoader();
+    loadPlayer();
 }
-
-let rect = {
-    x: 10,
-    y: 10,
-    speed: 5 * 60,
-};
 
 function update(dt: number) {
-    if (!ServiceLocator.getService<IImageLoader>('ImageLoader').isGameReady()) return;
+    if (!ServiceLocator.getService<IServiceImageLoader>('ImageLoader').isGameReady()) return;
 
-    if (rect.x + 100 >= canvas.width || rect.x <= 0) {
-        rect.speed = -rect.speed;
-    }
-
-    rect.x = rect.x + rect.speed * dt;
+    updatePlayer(dt);
 }
-
 function draw(ctx: CanvasRenderingContext2D) {
-    if (!ServiceLocator.getService<IImageLoader>('ImageLoader').isGameReady()) return;
+    if (!ServiceLocator.getService<IServiceImageLoader>('ImageLoader').isGameReady()) return;
 
-    ctx.fillStyle = 'green';
-    ctx.fillRect(rect.x, rect.y, 100, 100);
-    ctx.fillStyle = 'black';
-    ctx.drawImage(ServiceLocator.getService<IImageLoader>('ImageLoader').getImage('images/cardBack_green4.png'), 0, 0);
+    drawPlayer(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************
@@ -55,6 +43,7 @@ function run(timestamp: number) {
 }
 
 function init() {
+    ctx.imageSmoothingEnabled = false;
     load();
     requestAnimationFrame(run);
 }

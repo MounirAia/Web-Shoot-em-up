@@ -1,4 +1,4 @@
-export default class ServiceLocator {
+export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 
     public static addService(key: string, service: unknown) {
