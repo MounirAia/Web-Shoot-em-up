@@ -1,8 +1,3 @@
-// add Option on how to play animation
-// loop ?
-// length in time of a frame , also inside the playAnimation function
-// check if possible to not use string with the service locator
-
 export abstract class Sprite {
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
@@ -13,12 +8,12 @@ export abstract class Sprite {
     protected scaleY: number;
 
     private animationList: { [key: string]: number[] } = {};
-    private currentAnimationName: string = '';
+    private currentAnimationName = '';
     private currentFrame = 0;
     private frameLengthInTime = 1;
     private currentFrameTimer = this.frameLengthInTime;
-    private doesAnimationLoop: boolean = false;
-
+    private doesAnimationLoop = false;
+    private isAnimationFinished = false;
     constructor(
         image: HTMLImageElement,
         frameWidth: number,
@@ -50,6 +45,7 @@ export abstract class Sprite {
             this.frameLengthInTime = framesLengthInTime;
             this.currentFrameTimer = this.frameLengthInTime;
             this.doesAnimationLoop = loop;
+            this.isAnimationFinished = false;
         }
     }
 
@@ -63,6 +59,7 @@ export abstract class Sprite {
                     if (!this.doesAnimationLoop) {
                         this.currentFrame--;
                         this.playAnimation('');
+                        this.isAnimationFinished = true;
                     } else {
                         this.currentFrame = 0;
                     }
@@ -95,5 +92,9 @@ export abstract class Sprite {
 
     private get numberLinesInImage(): number {
         return this.image.height / this.frameHeight;
+    }
+
+    public get IsAnimationFinished(): boolean {
+        return this.isAnimationFinished;
     }
 }
