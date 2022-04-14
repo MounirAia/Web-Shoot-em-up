@@ -2,9 +2,6 @@ import { Sprite } from './Sprite.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceImageLoader } from '../ImageLoader.js';
 
-// use isAnimation finished property to avoid looping in the update of the player
-// think on how you will call the load, update and draw
-
 export interface IServicePlayer {}
 
 export class Player extends Sprite {
@@ -18,27 +15,33 @@ export class Player extends Sprite {
         scaleY: number = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, scaleX, scaleY);
-        this.addAnimation('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+        this.AddAnimation('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8]);
     }
 
-    public update(dt: number): void {
-        super.update(dt);
-        player.playAnimation('idle', 0.1, false);
+    public Update(dt: number): void {
+        super.Update(dt);
+        this.PlayAnimation('idle', 0.1, false);
     }
 }
 
 let player: Player;
-export function loadPlayer() {
-    const imgPlayer = ServiceLocator.getService<IServiceImageLoader>('ImageLoader').getImage('images/player.png');
-    player = new Player(imgPlayer, 30, 16, 250, 250, 3, 3);
+export function LoadPlayer() {
+    const imgPlayer = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/player.png');
+    const frameWidth = 30;
+    const frameHeight = 16;
+    const x = 250;
+    const y = 250;
+    const scaleX = 3;
+    const scaleY = 3;
+    player = new Player(imgPlayer, frameWidth, frameHeight, x, y, scaleX, scaleY);
 
-    ServiceLocator.addService('Player', player);
+    ServiceLocator.AddService('Player', player);
 }
 
-export function updatePlayer(dt: number) {
-    player.update(dt);
+export function UpdatePlayer(dt: number) {
+    player.Update(dt);
 }
 
-export function drawPlayer(ctx: CanvasRenderingContext2D) {
-    player.draw(ctx);
+export function DrawPlayer(ctx: CanvasRenderingContext2D) {
+    player.Draw(ctx);
 }

@@ -1,24 +1,24 @@
-import { loadImageLoader, IServiceImageLoader } from './ImageLoader.js';
+import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { ServiceLocator } from './ServiceLocator.js';
-import { loadPlayer, updatePlayer, drawPlayer } from './Sprites/Player.js';
+import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 
 const canvas = document.querySelector('#canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 function load() {
-    loadImageLoader();
-    loadPlayer();
+    LoadImageLoader();
+    LoadPlayer();
 }
 
 function update(dt: number) {
-    if (!ServiceLocator.getService<IServiceImageLoader>('ImageLoader').isGameReady()) return;
+    if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    updatePlayer(dt);
+    UpdatePlayer(dt);
 }
 function draw(ctx: CanvasRenderingContext2D) {
-    if (!ServiceLocator.getService<IServiceImageLoader>('ImageLoader').isGameReady()) return;
+    if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    drawPlayer(ctx);
+    DrawPlayer(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************

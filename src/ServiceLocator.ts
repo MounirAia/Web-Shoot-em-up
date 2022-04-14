@@ -1,16 +1,12 @@
-interface Services {
-    ImageLoader: 'ImageLoader';
-    Player: 'Player';
-}
-
+type Services = 'ImageLoader' | 'Player';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 
-    public static addService(key: keyof Services, service: unknown) {
+    public static AddService(key: Services, service: unknown) {
         ServiceLocator.services[key] = service;
     }
 
-    public static getService<T>(key: keyof Services): T {
+    public static GetService<T>(key: Services): T {
         return ServiceLocator.services[key] as T;
     }
 }

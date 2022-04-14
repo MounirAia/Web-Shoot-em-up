@@ -1,8 +1,8 @@
 import { ServiceLocator } from './ServiceLocator.js';
 
 export interface IServiceImageLoader {
-    getImage(imagePath: string): HTMLImageElement;
-    isGameReady(): boolean;
+    GetImage(imagePath: string): HTMLImageElement;
+    IsGameReady(): boolean;
 }
 
 class ImageLoader implements IServiceImageLoader {
@@ -22,20 +22,20 @@ class ImageLoader implements IServiceImageLoader {
         }
     }
 
-    public getImage(imagePath: string): HTMLImageElement {
+    public GetImage(imagePath: string): HTMLImageElement {
         return this.listImages[imagePath];
     }
 
-    public isGameReady(): boolean {
+    public IsGameReady(): boolean {
         return ImageLoader.isGameReady;
     }
 }
 
-export function loadImageLoader() {
+export function LoadImageLoader() {
     // load images
     const assets: string[] = [];
     assets.push('images/player.png');
     const imageLoader: ImageLoader = new ImageLoader(assets);
 
-    ServiceLocator.addService('ImageLoader', imageLoader);
+    ServiceLocator.AddService('ImageLoader', imageLoader);
 }

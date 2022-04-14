@@ -1,12 +1,14 @@
 export abstract class Sprite {
+    /* Image properties */
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
     private readonly frameHeight: number;
-    protected x: number;
-    protected y: number;
-    protected scaleX: number;
-    protected scaleY: number;
+    private x: number;
+    private y: number;
+    private scaleX: number;
+    private scaleY: number;
 
+    /* Animation properties */
     private animationList: { [key: string]: number[] } = {};
     private currentAnimationName = '';
     private currentFrame = 0;
@@ -14,6 +16,7 @@ export abstract class Sprite {
     private currentFrameTimer = this.frameLengthInTime;
     private doesAnimationLoop = false;
     private isAnimationFinished = false;
+
     constructor(
         image: HTMLImageElement,
         frameWidth: number,
@@ -32,14 +35,12 @@ export abstract class Sprite {
         this.scaleY = scaleY;
     }
 
-    public addAnimation(key: string, frames: number[]) {
+    public AddAnimation(key: string, frames: number[]) {
         this.animationList[key] = frames;
     }
 
-    public playAnimation(animation: string, framesLengthInTime = 1, loop = false) {
-        if (!animation) {
-            this.currentAnimationName = animation;
-        } else if (this.currentAnimationName !== animation) {
+    public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
+        if (this.currentAnimationName !== animation) {
             this.currentAnimationName = animation;
             this.currentFrame = this.animationList[this.currentAnimationName][0];
             this.frameLengthInTime = framesLengthInTime;
@@ -49,8 +50,8 @@ export abstract class Sprite {
         }
     }
 
-    public update(dt: number) {
-        if (this.currentAnimationName) {
+    public Update(dt: number) {
+        if (this.currentAnimationName && !this.isAnimationFinished) {
             this.currentFrameTimer -= dt;
             if (this.currentFrameTimer <= 0) {
                 this.currentFrame++;
@@ -58,7 +59,6 @@ export abstract class Sprite {
                 if (this.currentFrame >= this.animationList[this.currentAnimationName].length) {
                     if (!this.doesAnimationLoop) {
                         this.currentFrame--;
-                        this.playAnimation('');
                         this.isAnimationFinished = true;
                     } else {
                         this.currentFrame = 0;
@@ -68,11 +68,11 @@ export abstract class Sprite {
         }
     }
 
-    public draw(ctx: CanvasRenderingContext2D) {
+    public Draw(ctx: CanvasRenderingContext2D) {
         const { image, currentFrame, frameWidth, frameHeight, x, y, scaleX, scaleY } = this;
 
-        const xFramePosition = frameWidth * (currentFrame % this.numberFramesPerLine);
-        const yFramePosition = frameHeight * Math.floor(currentFrame / this.numberFramesPerLine);
+        const xFramePosition = frameWidth * (currentFrame % this.NumberFramesPerLine);
+        const yFramePosition = frameHeight * Math.floor(currentFrame / this.NumberFramesPerLine);
         ctx.drawImage(
             image,
             xFramePosition,
@@ -86,15 +86,18 @@ export abstract class Sprite {
         );
     }
 
-    private get numberFramesPerLine(): number {
+    private get NumberFramesPerLine(): number {
         return this.image.width / this.frameWidth;
     }
 
-    private get numberLinesInImage(): number {
-        return this.image.height / this.frameHeight;
+    protected get IsAnimationFinished(): boolean {
+        return this.isAnimationFinished;
     }
 
-    public get IsAnimationFinished(): boolean {
-        return this.isAnimationFinished;
+    public get X(): number {
+        return this.x;
+    }
+    public get Y(): number {
+        return this.y;
     }
 }
