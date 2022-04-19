@@ -3,8 +3,8 @@ export abstract class Sprite {
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
     private readonly frameHeight: number;
-    private x: number;
-    private y: number;
+    protected x: number;
+    protected y: number;
     private scaleX: number;
     private scaleY: number;
 
@@ -92,12 +92,5 @@ export abstract class Sprite {
 
     protected get IsAnimationFinished(): boolean {
         return this.isAnimationFinished;
-    }
-
-    public get X(): number {
-        return this.x;
-    }
-    public get Y(): number {
-        return this.y;
     }
 }

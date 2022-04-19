@@ -1,4 +1,5 @@
 import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
+import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 
@@ -7,23 +8,26 @@ const ctx = canvas.getContext('2d')!;
 
 function load() {
     LoadImageLoader();
+    LoadGalaxyMap();
     LoadPlayer();
 }
 
 function update(dt: number) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
+    UpdateGalaxyMap(dt);
     UpdatePlayer(dt);
 }
 function draw(ctx: CanvasRenderingContext2D) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
-
+    DrawGalaxyMap(ctx);
     DrawPlayer(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************
 let previousTimestamp = 0;
-const deltaTime = 1000 / 60; // 60 fps game
+export const FRAME_RATE = 60;
+const deltaTime = 1000 / FRAME_RATE; // 60 fps game
 let timeToUpdate = 0;
 // game loop function
 function run(timestamp: number) {

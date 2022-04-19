@@ -2,9 +2,11 @@ import { Sprite } from './Sprite.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceImageLoader } from '../ImageLoader.js';
 
-export interface IServicePlayer {}
+export interface IServicePlayer {
+    Coordinate(): { x: number; y: number };
+}
 
-export class Player extends Sprite {
+export class Player extends Sprite implements IServicePlayer {
     constructor(
         image: HTMLImageElement,
         frameWidth: number,
@@ -21,6 +23,10 @@ export class Player extends Sprite {
     public Update(dt: number): void {
         super.Update(dt);
         this.PlayAnimation('idle', 0.1, false);
+    }
+
+    public Coordinate(): { x: number; y: number } {
+        return { x: this.x, y: this.y };
     }
 }
 
