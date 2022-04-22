@@ -2,8 +2,7 @@ import { IServiceImageLoader } from '../ImageLoader.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { Map } from './Map.js';
 
-// Continue video
-// Create scene manager
+// Create Wave class
 
 class Galaxy extends Map {
     constructor(horizontalSpeed: number, x?: number, y?: number, scaleX?: number, scaleY?: number) {
@@ -32,7 +31,12 @@ class Galaxy extends Map {
 let galaxyMap: Galaxy;
 
 export function LoadGalaxyMap() {
-    galaxyMap = new Galaxy(1, 0, 0, 4, 4);
+    const horizontalSpeed = 1;
+    const x = 0;
+    const y = 0;
+    const scaleX = 4;
+    const scaleY = 4;
+    galaxyMap = new Galaxy(horizontalSpeed, x, y, scaleX, scaleY);
 }
 
 export function UpdateGalaxyMap(dt: number) {

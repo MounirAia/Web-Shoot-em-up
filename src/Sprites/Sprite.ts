@@ -3,8 +3,8 @@ export abstract class Sprite {
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
     private readonly frameHeight: number;
-    protected x: number;
-    protected y: number;
+    protected X: number;
+    protected Y: number;
     private scaleX: number;
     private scaleY: number;
 
@@ -29,8 +29,8 @@ export abstract class Sprite {
         this.image = image;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
-        this.x = x;
-        this.y = y;
+        this.X = x;
+        this.Y = y;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
     }
@@ -69,10 +69,10 @@ export abstract class Sprite {
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        const { image, currentFrame, frameWidth, frameHeight, x, y, scaleX, scaleY } = this;
+        const { image, currentFrame, frameWidth, frameHeight, X: x, Y: y, scaleX, scaleY } = this;
 
-        const xFramePosition = frameWidth * (currentFrame % this.NumberFramesPerLine);
-        const yFramePosition = frameHeight * Math.floor(currentFrame / this.NumberFramesPerLine);
+        const xFramePosition = frameWidth * (currentFrame % this.numberFramesPerLine);
+        const yFramePosition = frameHeight * Math.floor(currentFrame / this.numberFramesPerLine);
         ctx.drawImage(
             image,
             xFramePosition,
@@ -86,11 +86,19 @@ export abstract class Sprite {
         );
     }
 
-    private get NumberFramesPerLine(): number {
+    private get numberFramesPerLine(): number {
         return this.image.width / this.frameWidth;
     }
 
     protected get IsAnimationFinished(): boolean {
         return this.isAnimationFinished;
+    }
+
+    protected get Width(): number {
+        return this.frameWidth * this.scaleX;
+    }
+
+    protected get Height(): number {
+        return this.frameHeight * this.scaleY;
     }
 }

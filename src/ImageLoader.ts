@@ -36,6 +36,7 @@ export function LoadImageLoader() {
     const assets: string[] = [];
     assets.push('images/player.png');
     assets.push('images/galaxy.png');
+    assets.push('images/enemyred.png');
     const imageLoader: ImageLoader = new ImageLoader(assets);
 
     ServiceLocator.AddService('ImageLoader', imageLoader);

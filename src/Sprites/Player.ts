@@ -26,7 +26,7 @@ export class Player extends Sprite implements IServicePlayer {
     }
 
     public Coordinate(): { x: number; y: number } {
-        return { x: this.x, y: this.y };
+        return { x: this.X, y: this.Y };
     }
 }
 
