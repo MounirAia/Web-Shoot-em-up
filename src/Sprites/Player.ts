@@ -18,6 +18,8 @@ export class Player extends Sprite implements IServicePlayer {
     ) {
         super(image, frameWidth, frameHeight, x, y, scaleX, scaleY);
         this.AddAnimation('idle', [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+
+        ServiceLocator.AddService('Player', this);
     }
 
     public Update(dt: number): void {
@@ -40,8 +42,6 @@ export function LoadPlayer() {
     const scaleX = 3;
     const scaleY = 3;
     player = new Player(imgPlayer, frameWidth, frameHeight, x, y, scaleX, scaleY);
-
-    ServiceLocator.AddService('Player', player);
 }
 
 export function UpdatePlayer(dt: number) {

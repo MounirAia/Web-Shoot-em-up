@@ -1,4 +1,4 @@
-type Services = 'ImageLoader' | 'Player' | 'WaveManager';
+type Services = 'ImageLoader' | 'SceneManager' | 'Player' | 'WaveManager';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 

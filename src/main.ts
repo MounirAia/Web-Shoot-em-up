@@ -1,5 +1,6 @@
 import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
+import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { WaveEnemies } from './WaveManager/WaveEnemies.js';
@@ -12,23 +13,35 @@ let waveManager: WaveManager;
 
 function load() {
     LoadImageLoader();
+    LoadSceneManager();
     LoadGalaxyMap();
     LoadPlayer();
     waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
+
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }
 
 function update(dt: number) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    UpdateGalaxyMap(dt);
-    UpdatePlayer(dt);
-    waveManager.Update(dt);
+    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
+
+    if (SceneManager.CurrentScene === 'Game') {
+        UpdateGalaxyMap(dt);
+        UpdatePlayer(dt);
+        waveManager.Update(dt);
+    }
 }
 function draw(ctx: CanvasRenderingContext2D) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
-    DrawGalaxyMap(ctx);
-    DrawPlayer(ctx);
-    waveManager.Draw(ctx);
+
+    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
+
+    if (SceneManager.CurrentScene === 'Game') {
+        DrawGalaxyMap(ctx);
+        DrawPlayer(ctx);
+        waveManager.Draw(ctx);
+    }
 }
 
 // ****************************************** Init Game Loop ***************************************

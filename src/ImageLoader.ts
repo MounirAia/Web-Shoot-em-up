@@ -19,6 +19,8 @@ class ImageLoader implements IServiceImageLoader {
                 this.numberImagesLoaded++;
                 if (this.numberImagesLoaded === imagesPath.length) ImageLoader.isGameReady = true;
             };
+
+            ServiceLocator.AddService('ImageLoader', this);
         }
     }
 
@@ -37,7 +39,6 @@ export function LoadImageLoader() {
     assets.push('images/player.png');
     assets.push('images/galaxy.png');
     assets.push('images/enemyred.png');
-    const imageLoader: ImageLoader = new ImageLoader(assets);
 
-    ServiceLocator.AddService('ImageLoader', imageLoader);
+    new ImageLoader(assets); // Load all the assets and add itself as a service
 }
