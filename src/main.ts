@@ -1,21 +1,20 @@
 import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { ServiceLocator } from './ServiceLocator.js';
-import { LoadTriangleEnemy, UpdateTriangleEnemy, DrawTriangleEnemy } from './Sprites/Enemies/TriangleEnemy.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { WaveEnemies } from './WaveManager/WaveEnemies.js';
+import { WaveManager } from './WaveManager/WaveManager.js';
 
 export const canvas = document.querySelector('#canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
-let wave: WaveEnemies;
+let waveManager: WaveManager;
 
 function load() {
     LoadImageLoader();
     LoadGalaxyMap();
     LoadPlayer();
-    LoadTriangleEnemy();
-    wave = new WaveEnemies(30, 14);
+    waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
 }
 
 function update(dt: number) {
@@ -23,15 +22,13 @@ function update(dt: number) {
 
     UpdateGalaxyMap(dt);
     UpdatePlayer(dt);
-    UpdateTriangleEnemy(dt);
-    wave.Update(dt);
+    waveManager.Update(dt);
 }
 function draw(ctx: CanvasRenderingContext2D) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
     DrawGalaxyMap(ctx);
     DrawPlayer(ctx);
-    DrawTriangleEnemy(ctx);
-    wave.Draw(ctx);
+    waveManager.Draw(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************

@@ -1,15 +1,8 @@
 import { canvas } from '../main.js';
-import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { TriangleEnemy } from '../Sprites/Enemies/TriangleEnemy.js';
 
-// change the number value and be more precise in the spawns (do not start at 0)
-export interface IServiceWaveEnemies {
-    AddEnemy(enemy: IEnemy): void;
-    RemoveEnemy(enemy: IEnemy): void;
-}
-
-export class WaveEnemies implements IServiceWaveEnemies {
+export class WaveEnemies {
     private listEnemies: IEnemy[];
     private readonly numberSpawns;
     constructor(numberEnemy: number, numberSpawns: number) {
@@ -31,8 +24,6 @@ export class WaveEnemies implements IServiceWaveEnemies {
             x += 60;
             y = 0;
         }
-
-        ServiceLocator.AddService('Wave', this);
     }
 
     public AddEnemy(enemy: IEnemy) {
@@ -56,5 +47,9 @@ export class WaveEnemies implements IServiceWaveEnemies {
         this.listEnemies.forEach((enemy) => {
             enemy.Draw(ctx);
         });
+    }
+
+    public get HasNoEnemyLeft(): boolean {
+        return this.listEnemies.length === 0 ? true : false;
     }
 }
