@@ -1,24 +1,24 @@
 import { ServiceLocator } from './ServiceLocator.js';
 
-type Scenes = '' | 'Game';
+type AvailableScenes = '' | 'Game';
 
 export interface IServiceSceneManager {
-    PlayScene(scene: Scenes): void;
-    CurrentScene: Scenes;
+    PlayScene(scene: AvailableScenes): void;
+    CurrentScene: AvailableScenes;
 }
 
 export class SceneManager implements IServiceSceneManager {
-    private currentScene: Scenes = '';
+    private currentScene: AvailableScenes = '';
 
     constructor() {
         ServiceLocator.AddService('SceneManager', this);
     }
 
-    public PlayScene(scene: Scenes) {
+    public PlayScene(scene: AvailableScenes) {
         this.currentScene = scene;
     }
 
-    public get CurrentScene(): Scenes {
+    public get CurrentScene(): AvailableScenes {
         return this.currentScene;
     }
 }

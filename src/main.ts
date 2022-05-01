@@ -73,3 +73,5 @@ function init() {
 }
 
 init();
+
+// Create keyboard input events

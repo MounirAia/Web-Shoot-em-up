@@ -1,12 +1,12 @@
-type Services = 'ImageLoader' | 'SceneManager' | 'Player' | 'WaveManager';
+type AvailableServices = 'ImageLoader' | 'SceneManager' | 'Player' | 'WaveManager';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 
-    public static AddService(key: Services, service: unknown) {
+    public static AddService(key: AvailableServices, service: unknown) {
         ServiceLocator.services[key] = service;
     }
 
-    public static GetService<T>(key: Services): T {
+    public static GetService<T>(key: AvailableServices): T {
         return ServiceLocator.services[key] as T;
     }
 }
