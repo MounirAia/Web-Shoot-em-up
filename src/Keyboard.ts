@@ -1,9 +1,5 @@
-// Continue to check what is the best way to implement the keyboard
-// essentially keyboard static class ?
-// with each keys that has a code a state? (A map)
-
-// understand why the 2 arrays do not have equal length
-// 113 element => should be 226 elements array
+// Clean the code
+// Continue tickets
 
 enum KeyCode {
     Backspace = 8,
@@ -122,31 +118,61 @@ enum KeyCode {
     Quote = 222,
 }
 
-interface IKey {
-    isPressed: boolean;
+class Key {
+    private isDown: boolean = false;
+    private isPressed: {
+        state: boolean;
+        wasAlreadyPressed: boolean;
+    } = { state: false, wasAlreadyPressed: false };
+
+    public get IsDown(): boolean {
+        return this.isDown;
+    }
+
+    public set IsDown(value: boolean) {
+        this.isDown = value;
+    }
+
+    public get IsPressed(): boolean {
+        if (this.isPressed.wasAlreadyPressed && this.isPressed.state) {
+            return false;
+        } else {
+            this.isPressed.wasAlreadyPressed = this.isPressed.state;
+            return this.isPressed.state;
+        }
+    }
+
+    public set IsPressed(value: boolean) {
+        this.isPressed.state = value;
+    }
 }
 
-export const Keyboard: { [key: string]: IKey } = {};
+export const Keyboard: { [key: string]: Key } = {};
 
 for (const key in KeyCode) {
     let stringKey = KeyCode[key];
     if (!Number.isInteger(stringKey)) {
         // for single letter
         stringKey = stringKey.length === 1 ? stringKey.toLowerCase() : stringKey;
-        Keyboard[stringKey] = {
-            isPressed: false,
-        };
+        Keyboard[stringKey] = new Key();
     }
 }
 
 window.addEventListener('keydown', (e) => {
     e.preventDefault();
     const { key } = e;
-    if (Keyboard[key]) Keyboard[key].isPressed = true;
+    if (Keyboard[key]) {
+        Keyboard[key].IsDown = true;
+        Keyboard[key].IsPressed = true;
+    }
 });
 
 window.addEventListener('keyup', (e) => {
     e.preventDefault();
     const { key } = e;
-    if (Keyboard[key]) Keyboard[key].isPressed = false;
+    if (Keyboard[key]) {
+        Keyboard[key].IsDown = false;
+
+        Keyboard[key].IsPressed = false;
+    }
 });

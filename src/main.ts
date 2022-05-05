@@ -1,4 +1,5 @@
 import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
+import { Keyboard } from './Keyboard.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { ServiceLocator } from './ServiceLocator.js';
@@ -30,6 +31,14 @@ function update(dt: number) {
         UpdateGalaxyMap(dt);
         UpdatePlayer(dt);
         waveManager.Update(dt);
+
+        if (Keyboard.Escape.IsPressed) {
+            SceneManager.PlayScene('InGameMenu');
+        }
+    } else if (SceneManager.CurrentScene === 'InGameMenu') {
+        if (Keyboard.Escape.IsPressed) {
+            SceneManager.PlayScene('Game');
+        }
     }
 }
 function draw(ctx: CanvasRenderingContext2D) {
@@ -38,6 +47,10 @@ function draw(ctx: CanvasRenderingContext2D) {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
 
     if (SceneManager.CurrentScene === 'Game') {
+        DrawGalaxyMap(ctx);
+        DrawPlayer(ctx);
+        waveManager.Draw(ctx);
+    } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         waveManager.Draw(ctx);
