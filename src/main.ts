@@ -1,5 +1,6 @@
-import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { Keyboard } from './Keyboard.js';
+import {} from './Mouse.js';
+import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { ServiceLocator } from './ServiceLocator.js';
@@ -86,5 +87,3 @@ function init() {
 }
 
 init();
-
-// Create keyboard input events
