@@ -1,4 +1,4 @@
-import { canvas } from './main.js';
+import { canvas } from './ScreenConstant.js';
 
 export class Mouse {
     private static x: number = 0;

@@ -1,3 +1,4 @@
+import { canvas, FRAME_RATE } from './ScreenConstant.js';
 import { Keyboard } from './Keyboard.js';
 import {} from './Mouse.js';
 import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
@@ -7,8 +8,8 @@ import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { WaveEnemies } from './WaveManager/WaveEnemies.js';
 import { WaveManager } from './WaveManager/WaveManager.js';
+import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
 
-export const canvas = document.querySelector('#canvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
 
 let waveManager: WaveManager;
@@ -18,9 +19,10 @@ function load() {
     LoadSceneManager();
     LoadGalaxyMap();
     LoadPlayer();
+    LoadMainMenu();
     waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
 
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
 function update(dt: number) {
@@ -40,6 +42,8 @@ function update(dt: number) {
         if (Keyboard.Escape.IsPressed) {
             SceneManager.PlayScene('Game');
         }
+    } else if (SceneManager.CurrentScene === 'MainMenu') {
+        UpdateMainMenu(dt);
     }
 }
 function draw(ctx: CanvasRenderingContext2D) {
@@ -55,12 +59,13 @@ function draw(ctx: CanvasRenderingContext2D) {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         waveManager.Draw(ctx);
+    } else if (SceneManager.CurrentScene === 'MainMenu') {
+        DrawMainMenu(ctx);
     }
 }
 
 // ****************************************** Init Game Loop ***************************************
 let previousTimestamp = 0;
-export const FRAME_RATE = 60;
 const deltaTime = 1000 / FRAME_RATE; // 60 fps game
 let timeToUpdate = 0;
 // game loop function

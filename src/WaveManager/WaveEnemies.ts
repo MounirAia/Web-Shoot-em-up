@@ -1,4 +1,4 @@
-import { canvas } from '../main.js';
+import { canvas } from '../ScreenConstant.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { TriangleEnemy } from '../Sprites/Enemies/TriangleEnemy.js';
 
