@@ -1,36 +1,75 @@
 import { IServiceImageLoader } from '../ImageLoader.js';
+import { IServiceSceneManager } from '../SceneManager.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
-import { Field } from '../UserInterface/Field.js';
+import { FieldWithText } from '../UserInterface/Field.js';
 
-// Put all the element of the main menu based on the figma
+// Add onclick event for play and option button
 // Refactor how we call function (if it can be better)
 // Especially the load method (problem with the canvas obj)
 
-let title: Field | undefined;
-let playButton: Field | undefined;
-let optionButton: Field | undefined;
+let title: FieldWithText;
+let playButton: undefined | FieldWithText;
+let optionButton: FieldWithText | undefined;
 let bigShipImage: HTMLImageElement | undefined;
 let manyEnemies: HTMLImageElement | undefined;
 
+/* Change it during refactor of ImageLoader to AssetManager */
+let pixelFont = new FontFace('pixel', 'url(../fonts/PressStart2P-Regular.ttf)');
+pixelFont.load().then(() => {
+    document.fonts.add(pixelFont);
+});
+
 export function LoadMainMenu() {
+    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
     const widthTitle = 136 * CANVA_SCALEX;
     const heightTitle = 9 * CANVA_SCALEY;
-    const xTitle = 92 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
-    const yTitle = 18 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
-    title = new Field(xTitle, yTitle, widthTitle, heightTitle, "WEB SHOOT'EM UP");
+    const xTitle = 92 * CANVA_SCALEX; // canvas.width / 2 - widthPlayButton / 2;
+    const yTitle = 18 * CANVA_SCALEY; // canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
+    title = new FieldWithText(
+        xTitle,
+        yTitle,
+        widthTitle,
+        heightTitle,
+        "WEB SHOOT'EM UP",
+        9 * CANVA_SCALEX,
+        pixelFont.family,
+    );
+    title.HasBorderOnAllSide = false;
+    title.HasBottomBorder = true;
 
     const widthPlayButton = 41 * CANVA_SCALEX;
     const heightPlayButton = 11 * CANVA_SCALEY;
     const xPlayButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
     const yPlayButton = 69 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
-    playButton = new Field(xPlayButton, yPlayButton, widthPlayButton, heightPlayButton, 'PLAY');
+    playButton = new FieldWithText(
+        xPlayButton,
+        yPlayButton,
+        widthPlayButton,
+        heightPlayButton,
+        'PLAY',
+        6 * CANVA_SCALEX,
+        pixelFont.family,
+        true,
+        () => {
+            SceneManager.PlayScene('Game');
+        },
+    );
 
     const widthOptionButton = 41 * CANVA_SCALEX;
     const heightOptionButton = 11 * CANVA_SCALEY;
     const xOptionButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
     const yOptionButton = 88 * CANVA_SCALEY; //canvas.height / 2 + heightPlayButton / 2;
-    optionButton = new Field(xOptionButton, yOptionButton, widthOptionButton, heightOptionButton, 'OPTION');
+    optionButton = new FieldWithText(
+        xOptionButton,
+        yOptionButton,
+        widthOptionButton,
+        heightOptionButton,
+        'OPTION',
+        6 * CANVA_SCALEX,
+        pixelFont.family,
+        true,
+    );
 
     bigShipImage = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
         'images/MenuScene/player-ship.png',
@@ -52,15 +91,15 @@ export function DrawMainMenu(ctx: CanvasRenderingContext2D) {
     title?.Draw(ctx);
     playButton?.Draw(ctx);
     optionButton?.Draw(ctx);
-    // To debug draw the center of the canva
-    ctx.beginPath();
-    ctx.moveTo(canvas.width / 2, 0);
-    ctx.lineTo(canvas.width / 2, canvas.height);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(0, canvas.height / 2);
-    ctx.lineTo(canvas.width, canvas.height / 2);
-    ctx.stroke();
+    // // To debug draw the center of the canva
+    // ctx.beginPath();
+    // ctx.moveTo(canvas.width / 2, 0);
+    // ctx.lineTo(canvas.width / 2, canvas.height);
+    // ctx.stroke();
+    // ctx.beginPath();
+    // ctx.moveTo(0, canvas.height / 2);
+    // ctx.lineTo(canvas.width, canvas.height / 2);
+    // ctx.stroke();
     // Draw image, with scaled coordinate and scaled dimension
     ctx.drawImage(
         bigShipImage!,

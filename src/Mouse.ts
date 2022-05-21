@@ -38,11 +38,9 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mouseup', (e) => {
-    Mouse.IsPressed = false;
-    console.log(Mouse.IsPressed);
+    if (e.button === 0) Mouse.IsPressed = false;
 });
 
 canvas.addEventListener('mousedown', (e) => {
-    Mouse.IsPressed = true;
-    console.log(Mouse.IsPressed);
+    if (e.button === 0) Mouse.IsPressed = true;
 });
