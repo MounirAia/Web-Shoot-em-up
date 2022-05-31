@@ -111,16 +111,3 @@ export class FieldWithText extends BlankField {
         ctx.fillText(this.text!, this.X + (this.Width - textWidth) / 2, this.Y + this.Height / 2 + textHeight / 2);
     }
 }
-
-//Field
-// border control
-// position and dimension control
-
-//FieldWithText
-// get a field
-// text control
-// fontsize and fontfamily control
-
-//FieldWithImage
-// get a field
-// image control => maybe a list of image (like layer stack)
