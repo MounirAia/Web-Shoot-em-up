@@ -1,4 +1,4 @@
-import { FRAME_RATE } from '../main.js';
+import { FRAME_RATE } from '../ScreenConstant.js';
 
 export abstract class Map {
     private horizontalSpeed: number;
