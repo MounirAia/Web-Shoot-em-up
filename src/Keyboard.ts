@@ -160,19 +160,25 @@ for (const key in KeyCode) {
 
 window.addEventListener('keydown', (e) => {
     e.preventDefault();
-    const { key } = e;
+    const { key, code } = e;
     if (Keyboard[key]) {
         Keyboard[key].IsDown = true;
         Keyboard[key].IsPressed = true;
+    } else if (Keyboard[code]) {
+        Keyboard[code].IsDown = true;
+        Keyboard[code].IsPressed = true;
     }
 });
 
 window.addEventListener('keyup', (e) => {
     e.preventDefault();
-    const { key } = e;
+    const { key, code } = e;
     if (Keyboard[key]) {
         Keyboard[key].IsDown = false;
 
         Keyboard[key].IsPressed = false;
+    } else if (Keyboard[code]) {
+        Keyboard[code].IsDown = false;
+        Keyboard[code].IsPressed = false;
     }
 });
