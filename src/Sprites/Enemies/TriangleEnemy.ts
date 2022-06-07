@@ -8,19 +8,17 @@ import { IEnemy } from './IEnemy.js';
 
 export class TriangleEnemy extends Sprite implements IEnemy {
     constructor(x: number = 0, y: number = 0) {
-        const imgTriangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
-            'images/Enemies/BigDiamond/BigDiamondAnimation.png',
-        );
-        const frameWidth = 32;
-        const frameHeight = 32;
+        const imgTriangle =
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/Player.png');
+        const frameWidth = 64;
+        const frameHeight = 64;
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
         super(imgTriangle, frameWidth, frameHeight, x, y, scaleX, scaleY);
         this.AddAnimation('idle', [0]);
-        this.AddAnimation('shooting', [1, 2, 3]);
-        this.AddAnimation('damaged', [4]);
-        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11]);
-        this.PlayAnimation('destroyed', 0.1, true);
+        this.AddAnimation('damaged', [1]);
+        this.AddAnimation('destroyed', [3, 4, 5, 6, 7, 8, 9]);
+        this.PlayAnimation('idle', 0.1, true);
     }
 
     public Update(dt: number): void {
