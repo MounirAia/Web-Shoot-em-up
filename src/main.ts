@@ -9,10 +9,13 @@ import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { WaveEnemies } from './WaveManager/WaveEnemies.js';
 import { WaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
+import { TriangleEnemy } from './Sprites/Enemies/TriangleEnemy.js';
 
 const ctx = canvas.getContext('2d')!;
 
 let waveManager: WaveManager;
+
+let testSprite: TriangleEnemy | undefined;
 
 function load() {
     LoadImageLoader();
@@ -22,46 +25,25 @@ function load() {
     LoadMainMenu();
     waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
 
+    testSprite = new TriangleEnemy(150, 150);
+
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
 function update(dt: number) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
-
-    if (SceneManager.CurrentScene === 'Game') {
-        UpdateGalaxyMap(dt);
-        UpdatePlayer(dt);
-        waveManager.Update(dt);
-
-        if (Keyboard.Escape.IsPressed) {
-            SceneManager.PlayScene('InGameMenu');
-        }
-    } else if (SceneManager.CurrentScene === 'InGameMenu') {
-        if (Keyboard.Escape.IsPressed) {
-            SceneManager.PlayScene('Game');
-        }
-    } else if (SceneManager.CurrentScene === 'MainMenu') {
-        UpdateMainMenu(dt);
-    }
+    testSprite?.Update(dt);
 }
 function draw(ctx: CanvasRenderingContext2D) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
+    ctx.save();
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
 
-    if (SceneManager.CurrentScene === 'Game') {
-        DrawGalaxyMap(ctx);
-        DrawPlayer(ctx);
-        waveManager.Draw(ctx);
-    } else if (SceneManager.CurrentScene === 'InGameMenu') {
-        DrawGalaxyMap(ctx);
-        DrawPlayer(ctx);
-        waveManager.Draw(ctx);
-    } else if (SceneManager.CurrentScene === 'MainMenu') {
-        DrawMainMenu(ctx);
-    }
+    testSprite?.Draw(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************

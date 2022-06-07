@@ -42,7 +42,7 @@ export abstract class Sprite {
     public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
         if (this.currentAnimationName !== animation) {
             this.currentAnimationName = animation;
-            this.currentFrame = this.animationList[this.currentAnimationName][0];
+            this.currentFrame = 0;
             this.frameLengthInTime = framesLengthInTime;
             this.currentFrameTimer = this.frameLengthInTime;
             this.doesAnimationLoop = loop;
