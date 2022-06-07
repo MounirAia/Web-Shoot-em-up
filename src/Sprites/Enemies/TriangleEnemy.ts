@@ -6,6 +6,13 @@ import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
 import { Sprite } from '../Sprite.js';
 import { IEnemy } from './IEnemy.js';
 
+function drawHitbox(x: number, y: number, width: number, height: number, ctx: CanvasRenderingContext2D): void {
+    ctx.save();
+    ctx.fillStyle = 'black';
+    ctx.strokeRect(x, y, width, height);
+    ctx.restore();
+}
+
 export class TriangleEnemy extends Sprite implements IEnemy {
     constructor(x: number = 0, y: number = 0) {
         const imgTriangle =
@@ -17,7 +24,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         super(imgTriangle, frameWidth, frameHeight, x, y, scaleX, scaleY);
         this.AddAnimation('idle', [0]);
         this.AddAnimation('damaged', [1]);
-        this.AddAnimation('destroyed', [3, 4, 5, 6, 7, 8, 9]);
+        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9]);
         this.PlayAnimation('idle', 0.1, true);
     }
 
@@ -38,5 +45,11 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         if (Keyboard.g.IsPressed) {
             this.PlayAnimation('idle', 0.1, false);
         }
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D) {
+        super.Draw(ctx);
+
+        drawHitbox(this.X + 18 * CANVA_SCALEX, this.Y + 25 * CANVA_SCALEY, 34 * CANVA_SCALEX, 12 * CANVA_SCALEY, ctx);
     }
 }
