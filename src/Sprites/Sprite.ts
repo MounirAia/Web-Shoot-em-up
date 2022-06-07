@@ -42,7 +42,7 @@ export abstract class Sprite {
     public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
         if (this.currentAnimationName !== animation) {
             this.currentAnimationName = animation;
-            this.currentFrame = this.animationList[this.currentAnimationName][0];
+            this.currentFrame = 0;
             this.frameLengthInTime = framesLengthInTime;
             this.currentFrameTimer = this.frameLengthInTime;
             this.doesAnimationLoop = loop;
@@ -69,10 +69,10 @@ export abstract class Sprite {
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        const { image, currentFrame, frameWidth, frameHeight, X: x, Y: y, scaleX, scaleY } = this;
+        const { image, frameWidth, frameHeight, X: x, Y: y, scaleX, scaleY } = this;
 
-        const xFramePosition = frameWidth * (currentFrame % this.numberFramesPerLine);
-        const yFramePosition = frameHeight * Math.floor(currentFrame / this.numberFramesPerLine);
+        const xFramePosition = frameWidth * (this.frameNumber % this.numberFramesPerLine);
+        const yFramePosition = frameHeight * Math.floor(this.frameNumber / this.numberFramesPerLine);
         ctx.drawImage(
             image,
             xFramePosition,
@@ -88,6 +88,11 @@ export abstract class Sprite {
 
     private get numberFramesPerLine(): number {
         return this.image.width / this.frameWidth;
+    }
+
+    private get frameNumber(): number {
+        if (this.currentAnimationName) return this.animationList[this.currentAnimationName][this.currentFrame];
+        return 0;
     }
 
     protected get IsAnimationFinished(): boolean {
