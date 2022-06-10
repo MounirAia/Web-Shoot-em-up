@@ -22,7 +22,7 @@ function load() {
     LoadMainMenu();
     waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
 
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }
 
 function update(dt: number) {
@@ -72,7 +72,9 @@ let timeToUpdate = 0;
 function run(timestamp: number) {
     // accumulated time to update between 2 frames
     timeToUpdate += timestamp - previousTimestamp;
-
+    // for 60 fps screen you have 1 update for 1 draw
+    // for 30 fps screen you have 2 updates for 1 draw
+    // for 144 fps screen you have around 3 updates for 1 draw
     while (timeToUpdate >= deltaTime) {
         update(deltaTime / 1000); // divide by 1000, because I want to work in second not millisecond
         timeToUpdate -= deltaTime;

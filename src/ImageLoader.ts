@@ -41,6 +41,7 @@ export function LoadImageLoader() {
     assets.push('images/enemyred.png');
     assets.push('images/MenuScene/player-ship.png');
     assets.push('images/MenuScene/many-enemies.png');
+    assets.push('images/Player/player.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

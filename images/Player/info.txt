@@ -1,0 +1,10 @@
+Always width*height and in px
+
+Tile Dimension: 64*64
+Hitbox: 35*12 at position on the tile (18,25)
+
+List Animations (AS: Animation Speed): 
+Idle: [0]
+Damaged: [1]
+Destroyed: [2 to 9] AS: 0.1
+	
