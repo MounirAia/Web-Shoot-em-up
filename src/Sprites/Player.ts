@@ -130,6 +130,7 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
     public get Hitboxes(): RectangleHitbox[] {
         return this.hitboxes;
     }
+
     public get BaseSpeed(): number {
         if ((Keyboard.a.IsDown || Keyboard.d.IsDown) && (Keyboard.w.IsDown || Keyboard.s.IsDown)) {
             return this.baseSpeed / Math.sqrt(2); // to avoid faster movement when player goes in diagonal
