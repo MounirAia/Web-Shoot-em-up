@@ -4,19 +4,16 @@ import { IServiceImageLoader } from '../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
 import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
 }
-interface Hitbox {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-export class Player extends Sprite implements IServicePlayer, IMovableSprite {
+
+export class Player extends Sprite implements IServicePlayer, IMovableSprite, ISpriteWithHitboxes {
     private baseSpeed: number = 5;
-    private hitbox: Hitbox;
+    private hitboxes: RectangleHitbox[];
+
     constructor(
         image: HTMLImageElement,
         frameWidth: number,
@@ -27,12 +24,56 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite {
         scaleY: number = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, scaleX, scaleY);
-        this.hitbox = {
-            x: 18 * CANVA_SCALEX,
-            y: 25 * CANVA_SCALEY,
-            width: 35 * CANVA_SCALEX,
-            height: 12 * CANVA_SCALEY,
-        };
+        this.hitboxes = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: 18 * CANVA_SCALEX,
+                offsetY: 25 * CANVA_SCALEY,
+                width: 22 * CANVA_SCALEX,
+                height: 12 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 40 * CANVA_SCALEX,
+                offsetY: 26 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 11 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 41 * CANVA_SCALEX,
+                offsetY: 27 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 10 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 42 * CANVA_SCALEX,
+                offsetY: 28 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 9 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 43 * CANVA_SCALEX,
+                offsetY: 29 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 8 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 44 * CANVA_SCALEX,
+                offsetY: 30 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 7 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 45 * CANVA_SCALEX,
+                offsetY: 31 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 6 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 46 * CANVA_SCALEX,
+                offsetY: 32 * CANVA_SCALEY,
+                width: 6 * CANVA_SCALEX,
+                height: 4 * CANVA_SCALEY,
+            },
+        ]);
         this.AddAnimation('idle', [0]);
         this.AddAnimation('damaged', [1]);
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9]);
@@ -41,38 +82,54 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite {
         ServiceLocator.AddService('Player', this);
     }
 
+    public UpdateHitboxes(dt: number): void {
+        this.Hitboxes.forEach((hitbox) => {
+            hitbox.spriteX = this.X;
+            hitbox.spriteY = this.Y;
+        });
+    }
+
     public Update(dt: number): void {
         super.Update(dt);
+        // Check if player do not go outside the viewport
+        let isOutsideLeftScreen = false;
+        let isOutsideTopScreen = false;
+        let isOutsideRightScreen = false;
+        let isOutsideBottomScreen = false;
+        for (const hitbox of this.Hitboxes) {
+            isOutsideLeftScreen =
+                isOutsideLeftScreen || hitbox.checkIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
+            isOutsideTopScreen =
+                isOutsideTopScreen || hitbox.checkIfBoxOverlap(0, -canvas.height, canvas.width, canvas.height);
+            isOutsideRightScreen =
+                isOutsideRightScreen || hitbox.checkIfBoxOverlap(canvas.width, 0, canvas.width, canvas.height);
+            isOutsideBottomScreen =
+                isOutsideBottomScreen || hitbox.checkIfBoxOverlap(0, canvas.height, canvas.width, canvas.height);
+        }
 
         if (Keyboard.a.IsDown) {
-            if (this.leftTopCorner > 0) this.X -= this.BaseSpeed;
+            if (!isOutsideLeftScreen) this.X -= this.BaseSpeed;
         }
         if (Keyboard.w.IsDown) {
-            this.Y -= this.BaseSpeed;
+            if (!isOutsideTopScreen) this.Y -= this.BaseSpeed;
         }
         if (Keyboard.d.IsDown) {
-            if (this.rightTopCorner < canvas.width) this.X += this.BaseSpeed;
+            if (!isOutsideRightScreen) this.X += this.BaseSpeed;
         }
         if (Keyboard.s.IsDown) {
-            this.Y += this.BaseSpeed;
+            if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
-    }
 
-    private get leftTopCorner(): number {
-        return this.X + this.hitbox.x;
-    }
-
-    private get leftBottomCorner(): number {
-        return this.leftTopCorner + this.hitbox.x;
-    }
-    private get rightTopCorner(): number {
-        return this.leftTopCorner + this.hitbox.width;
+        this.UpdateHitboxes(dt);
     }
 
     public Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
     }
 
+    public get Hitboxes(): RectangleHitbox[] {
+        return this.hitboxes;
+    }
     public get BaseSpeed(): number {
         if ((Keyboard.a.IsDown || Keyboard.d.IsDown) && (Keyboard.w.IsDown || Keyboard.s.IsDown)) {
             return this.baseSpeed / Math.sqrt(2); // to avoid faster movement when player goes in diagonal

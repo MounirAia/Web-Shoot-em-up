@@ -1,10 +1,29 @@
 Always width*height and in px
 
+// Player.png
+
 Tile Dimension: 64*64
-Hitbox: 35*12 at position on the tile (18,25)
+Hitboxes:
+1- 22*12 at position on the tile (18,25) 
+2- 1*11 at position on the tile (40,26) 
+3- 1*10 at position on the tile (41,27) 
+4- 1*9 at position on the tile (42,28) 
+5- 1*8 at position on the tile (43,29) 
+6- 1*7 at position on the tile (44,30) 
+7- 1*6 at position on the tile (45,31) 
+6- 6*4 at position on the tile (46,32)
 
 List Animations (AS: Animation Speed): 
 Idle: [0]
 Damaged: [1]
 Destroyed: [2 to 9] AS: 0.1
+
+// PlayerProjectile.png
+
+Tile Dimension: 8*8
+Hitbox: 2*2 at position on the tile (3,3)
+
+List Animations (AS: Animation Speed): 
+Idle: [0]
+Destroyed: [0 to 4]
 	
