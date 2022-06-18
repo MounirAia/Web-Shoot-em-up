@@ -9,6 +9,7 @@ import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { WaveEnemies } from './WaveManager/WaveEnemies.js';
 import { WaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
+import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
 
 const ctx = canvas.getContext('2d')!;
 
@@ -20,6 +21,7 @@ function load() {
     LoadGalaxyMap();
     LoadPlayer();
     LoadMainMenu();
+    LoadBulletManager();
     waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
 
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
@@ -34,6 +36,7 @@ function update(dt: number) {
         UpdateGalaxyMap(dt);
         UpdatePlayer(dt);
         waveManager.Update(dt);
+        UpdateBulletManager(dt);
 
         if (Keyboard.Escape.IsPressed) {
             SceneManager.PlayScene('InGameMenu');
@@ -55,6 +58,7 @@ function draw(ctx: CanvasRenderingContext2D) {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         waveManager.Draw(ctx);
+        DrawBulletManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);

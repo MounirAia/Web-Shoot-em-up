@@ -19,7 +19,8 @@ Idle: [0]
 Damaged: [1]
 Destroyed: [2 to 9] AS: 0.1
 
-// PlayerProjectile.png
+
+// RegularPlayerBullet.png
 
 Tile Dimension: 8*8
 Offset on player : 34 * 8

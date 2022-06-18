@@ -21,8 +21,8 @@ export class RectangleHitbox {
     }
 
     public checkIfBoxOverlap(x: number, y: number, width: number, height: number) {
-        const boxIsInWidth = this.x <= x + width && x <= this.x + this.width;
-        const boxIsInHeight = this.y <= y + height && y <= this.y + this.height;
+        const boxIsInWidth = this.x < x + width && x < this.x + this.width;
+        const boxIsInHeight = this.y < y + height && y < this.y + this.height;
         return boxIsInWidth && boxIsInHeight;
     }
 
