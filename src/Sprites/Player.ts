@@ -125,10 +125,7 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
         }
 
         if (Keyboard.Space.IsPressed) {
-            const bullet = new RegularPlayerBullet(
-                this.X + 52 * CANVA_SCALEX - 4 * CANVA_SCALEX,
-                this.Y + 33 * CANVA_SCALEY - 3 * CANVA_SCALEY,
-            );
+            const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
         }
 

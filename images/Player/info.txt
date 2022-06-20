@@ -19,12 +19,12 @@ Idle: [0]
 Damaged: [1]
 Destroyed: [2 to 9] AS: 0.1
 
-
-// RegularPlayerBullet.png
+// PlayerProjectile.png
 
 Tile Dimension: 8*8
 Offset on player : 34 * 8
-Hitbox: 2*2 at position on the tile (3,3)
+Hitboxes: 
+1- 2*2 at position on the tile (0,0)
 
 List Animations (AS: Animation Speed): 
 Idle: [0]
