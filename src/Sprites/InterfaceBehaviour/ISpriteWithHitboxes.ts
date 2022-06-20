@@ -4,16 +4,16 @@ export interface ISpriteWithHitboxes {
 }
 
 export class RectangleHitbox {
-    public spriteX: number;
-    public spriteY: number;
+    public SpriteX: number;
+    public SpriteY: number;
     private offsetX: number;
     private offsetY: number;
     private width: number;
     private height: number;
 
     constructor(spriteX: number, spriteY: number, offsetX: number, offsetY: number, width: number, height: number) {
-        this.spriteX = spriteX;
-        this.spriteY = spriteY;
+        this.SpriteX = spriteX;
+        this.SpriteY = spriteY;
         this.offsetX = offsetX;
         this.offsetY = offsetY;
         this.width = width;
@@ -34,10 +34,10 @@ export class RectangleHitbox {
     }
 
     private get x(): number {
-        return this.spriteX + this.offsetX;
+        return this.SpriteX + this.offsetX;
     }
     private get y(): number {
-        return this.spriteY + this.offsetY;
+        return this.SpriteY + this.offsetY;
     }
 }
 
