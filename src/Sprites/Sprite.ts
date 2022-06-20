@@ -5,6 +5,8 @@ export abstract class Sprite {
     private readonly frameHeight: number;
     protected X: number;
     protected Y: number;
+    private readonly spriteXOffset: number;
+    private readonly spriteYOffset: number;
     private scaleX: number;
     private scaleY: number;
 
@@ -23,6 +25,8 @@ export abstract class Sprite {
         frameHeight: number,
         x: number = 0,
         y: number = 0,
+        spriteXOffset: number = 0,
+        spriteYOffset: number = 0,
         scaleX: number = 1,
         scaleY: number = 1,
     ) {
@@ -31,6 +35,8 @@ export abstract class Sprite {
         this.frameHeight = frameHeight;
         this.X = x;
         this.Y = y;
+        this.spriteXOffset = spriteXOffset;
+        this.spriteYOffset = spriteYOffset;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
     }
@@ -69,7 +75,7 @@ export abstract class Sprite {
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        const { image, frameWidth, frameHeight, X: x, Y: y, scaleX, scaleY } = this;
+        const { image, frameWidth, frameHeight, X: x, Y: y, spriteXOffset, spriteYOffset, scaleX, scaleY } = this;
 
         const xFramePosition = frameWidth * (this.frameNumber % this.numberFramesPerLine);
         const yFramePosition = frameHeight * Math.floor(this.frameNumber / this.numberFramesPerLine);
@@ -79,8 +85,8 @@ export abstract class Sprite {
             yFramePosition,
             frameWidth,
             frameHeight,
-            x,
-            y,
+            x - spriteXOffset,
+            y - spriteYOffset,
             scaleX * frameWidth,
             scaleY * frameHeight,
         );

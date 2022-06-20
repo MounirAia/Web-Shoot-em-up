@@ -12,7 +12,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         const frameHeight = 24;
         const scaleX = 2;
         const scaleY = 2;
-        super(imgTriangle, frameWidth, frameHeight, x, y, scaleX, scaleY);
+        super(imgTriangle, frameWidth, frameHeight, x, y, 0, 0, scaleX, scaleY);
         this.AddAnimation('idle', [0, 1, 2, 3, 4, 5]);
         this.PlayAnimation('idle', 0.1, true);
     }

@@ -1,7 +1,7 @@
 import { Sprite } from './Sprite.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceImageLoader } from '../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE } from '../ScreenConstant.js';
+import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
 import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
@@ -20,56 +20,58 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
         frameHeight: number,
         x: number = 0,
         y: number = 0,
+        spriteXOffset: number = 0,
+        spriteYOffset: number = 0,
         scaleX: number = 1,
         scaleY: number = 1,
     ) {
-        super(image, frameWidth, frameHeight, x, y, scaleX, scaleY);
+        super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
-                offsetX: 18 * CANVA_SCALEX,
-                offsetY: 25 * CANVA_SCALEY,
+                offsetX: 0,
+                offsetY: 0,
                 width: 22 * CANVA_SCALEX,
                 height: 12 * CANVA_SCALEY,
             },
             {
-                offsetX: 40 * CANVA_SCALEX,
-                offsetY: 26 * CANVA_SCALEY,
+                offsetX: 22 * CANVA_SCALEX,
+                offsetY: 1 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 11 * CANVA_SCALEY,
             },
             {
-                offsetX: 41 * CANVA_SCALEX,
-                offsetY: 27 * CANVA_SCALEY,
+                offsetX: 23 * CANVA_SCALEX,
+                offsetY: 2 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 10 * CANVA_SCALEY,
             },
             {
-                offsetX: 42 * CANVA_SCALEX,
-                offsetY: 28 * CANVA_SCALEY,
+                offsetX: 24 * CANVA_SCALEX,
+                offsetY: 3 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 9 * CANVA_SCALEY,
             },
             {
-                offsetX: 43 * CANVA_SCALEX,
-                offsetY: 29 * CANVA_SCALEY,
+                offsetX: 25 * CANVA_SCALEX,
+                offsetY: 4 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 8 * CANVA_SCALEY,
             },
             {
-                offsetX: 44 * CANVA_SCALEX,
-                offsetY: 30 * CANVA_SCALEY,
+                offsetX: 26 * CANVA_SCALEX,
+                offsetY: 5 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 7 * CANVA_SCALEY,
             },
             {
-                offsetX: 45 * CANVA_SCALEX,
-                offsetY: 31 * CANVA_SCALEY,
+                offsetX: 27 * CANVA_SCALEX,
+                offsetY: 6 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 6 * CANVA_SCALEY,
             },
             {
-                offsetX: 46 * CANVA_SCALEX,
-                offsetY: 32 * CANVA_SCALEY,
+                offsetX: 28 * CANVA_SCALEX,
+                offsetY: 7 * CANVA_SCALEY,
                 width: 6 * CANVA_SCALEX,
                 height: 4 * CANVA_SCALEY,
             },
@@ -84,8 +86,8 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
 
     public UpdateHitboxes(dt: number): void {
         this.Hitboxes.forEach((hitbox) => {
-            hitbox.spriteX = this.X;
-            hitbox.spriteY = this.Y;
+            hitbox.SpriteX = this.X;
+            hitbox.SpriteY = this.Y;
         });
     }
 
@@ -153,7 +155,7 @@ export function LoadPlayer() {
     const y = 250;
     const scaleX = CANVA_SCALEX;
     const scaleY = CANVA_SCALEY;
-    player = new Player(imgPlayer, frameWidth, frameHeight, x, y, scaleX, scaleY);
+    player = new Player(imgPlayer, frameWidth, frameHeight, x, y, 18 * CANVA_SCALEX, 25 * CANVA_SCALEY, scaleX, scaleY);
 }
 
 export function UpdatePlayer(dt: number) {
