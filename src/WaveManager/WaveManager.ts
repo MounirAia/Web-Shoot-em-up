@@ -1,9 +1,14 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
+import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
+    VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
+        isColliding: boolean;
+        enemy: IEnemy | undefined;
+    };
 }
 
 export class WaveManager implements IServiceWaveManager {
@@ -38,5 +43,15 @@ export class WaveManager implements IServiceWaveManager {
 
     public RemoveEnemy(enemy: IEnemy): void {
         if (this.currentWave) this.currentWave.RemoveEnemy(enemy);
+    }
+
+    public VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
+        isColliding: boolean;
+        enemy: IEnemy | undefined;
+    } {
+        if (this.currentWave) {
+            return this.currentWave.VerifyCollisionWithEnemies(sprite);
+        }
+        return { isColliding: false, enemy: undefined };
     }
 }

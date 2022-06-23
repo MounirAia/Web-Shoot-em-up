@@ -43,6 +43,8 @@ export function LoadImageLoader() {
     assets.push('images/MenuScene/many-enemies.png');
     assets.push('images/Player/player.png');
     assets.push('images/Player/RegularPlayerBullet.png');
+    assets.push('images/Enemies/Trapeze/Trapeze.png');
+    assets.push('images/Enemies/Diamond/BigDiamond/BigDiamond.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

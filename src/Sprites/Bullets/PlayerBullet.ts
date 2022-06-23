@@ -1,6 +1,7 @@
 import { IServiceImageLoader } from '../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
+import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
 import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../Sprite.js';
 import { IServiceBulletManager } from './BulletManager.js';
@@ -55,5 +56,21 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
         if (this.X > canvas.width) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
         }
+
+        if (this.CurrentAnimationName !== 'destroyed') {
+            let { isColliding, enemy } =
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithEnemies(this);
+            if (isColliding) {
+                this.PlayAnimation('destroyed', 0.1, false);
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(enemy!);
+            }
+        } else {
+            if (this.IsAnimationFinished) {
+                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            }
+        }
     }
 }
+
+// remove bullet when destroy animation is finished
+// Document how bullet affect enemies

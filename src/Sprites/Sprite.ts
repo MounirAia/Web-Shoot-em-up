@@ -46,7 +46,7 @@ export abstract class Sprite {
     }
 
     public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
-        if (this.currentAnimationName !== animation) {
+        if (this.CurrentAnimationName !== animation) {
             this.currentAnimationName = animation;
             this.currentFrame = 0;
             this.frameLengthInTime = framesLengthInTime;
@@ -57,12 +57,12 @@ export abstract class Sprite {
     }
 
     public Update(dt: number) {
-        if (this.currentAnimationName && !this.isAnimationFinished) {
+        if (this.CurrentAnimationName && !this.isAnimationFinished) {
             this.currentFrameTimer -= dt;
             if (this.currentFrameTimer <= 0) {
                 this.currentFrame++;
                 this.currentFrameTimer = this.frameLengthInTime;
-                if (this.currentFrame >= this.animationList[this.currentAnimationName].length) {
+                if (this.currentFrame >= this.animationList[this.CurrentAnimationName].length) {
                     if (!this.doesAnimationLoop) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
@@ -97,12 +97,16 @@ export abstract class Sprite {
     }
 
     private get frameNumber(): number {
-        if (this.currentAnimationName) return this.animationList[this.currentAnimationName][this.currentFrame];
+        if (this.CurrentAnimationName) return this.animationList[this.CurrentAnimationName][this.currentFrame];
         return 0;
     }
 
     protected get IsAnimationFinished(): boolean {
         return this.isAnimationFinished;
+    }
+
+    protected get CurrentAnimationName(): string {
+        return this.currentAnimationName;
     }
 
     protected get Width(): number {
