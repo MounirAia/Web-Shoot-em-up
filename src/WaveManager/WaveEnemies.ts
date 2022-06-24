@@ -1,12 +1,13 @@
 import { canvas } from '../ScreenConstant.js';
+import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
-import { TriangleEnemy } from '../Sprites/Enemies/TriangleEnemy.js';
+import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 
 export class WaveEnemies {
-    private listEnemies: IEnemy[];
+    private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns;
     constructor(numberEnemy: number, numberSpawns: number) {
-        this.listEnemies = [];
+        this.listEnemies = new Map<IEnemy, IEnemy>();
         this.numberSpawns = numberSpawns;
         let currentNumberEnemy = 0;
         let x = canvas.width;
@@ -15,7 +16,7 @@ export class WaveEnemies {
         while (currentNumberEnemy < numberEnemy) {
             for (let index = 0; index < this.numberSpawns; index++) {
                 currentNumberEnemy++;
-                const ennemy = new TriangleEnemy(x, verticalShift + (y % 675));
+                const ennemy = new BigDiamondEnemy(x, verticalShift + (y % 675));
                 this.AddEnemy(ennemy);
                 y += 45;
 
@@ -27,14 +28,27 @@ export class WaveEnemies {
     }
 
     public AddEnemy(enemy: IEnemy) {
-        this.listEnemies.push(enemy);
+        this.listEnemies.set(enemy, enemy);
     }
 
     public RemoveEnemy(enemy: IEnemy) {
-        const index = this.listEnemies.indexOf(enemy);
-        if (index > -1) {
-            this.listEnemies.splice(index, 1);
+        this.listEnemies.delete(enemy);
+    }
+
+    public VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
+        isColliding: boolean;
+        enemy: IEnemy | undefined;
+    } {
+        let isColliding = false;
+        for (const [key, enemy] of this.listEnemies) {
+            for (const hitbox of enemy.Hitboxes) {
+                isColliding = hitbox.CheckCollision(sprite);
+
+                if (isColliding) return { isColliding, enemy };
+            }
         }
+
+        return { isColliding, enemy: undefined };
     }
 
     public Update(dt: number) {
@@ -50,6 +64,6 @@ export class WaveEnemies {
     }
 
     public get HasNoEnemyLeft(): boolean {
-        return this.listEnemies.length === 0 ? true : false;
+        return this.listEnemies.size === 0 ? true : false;
     }
 }

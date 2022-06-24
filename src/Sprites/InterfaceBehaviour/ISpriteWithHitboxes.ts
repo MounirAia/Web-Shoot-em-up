@@ -1,3 +1,4 @@
+// Check why collision are not detected
 export interface ISpriteWithHitboxes {
     readonly Hitboxes: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
@@ -21,15 +22,15 @@ export class RectangleHitbox {
     }
 
     public checkIfBoxOverlap(x: number, y: number, width: number, height: number) {
-        const boxIsInWidth = this.x <= x + width && x <= this.x + this.width;
-        const boxIsInHeight = this.y <= y + height && y <= this.y + this.height;
+        const boxIsInWidth = this.x < x + width && x < this.x + this.width;
+        const boxIsInHeight = this.y < y + height && y < this.y + this.height;
         return boxIsInWidth && boxIsInHeight;
     }
 
     public CheckCollision(spriteWithHitBox: ISpriteWithHitboxes): boolean {
-        spriteWithHitBox.Hitboxes.forEach((shape) => {
-            if (this.checkIfBoxOverlap(shape.x, shape.y, shape.width, shape.height)) return true;
-        });
+        for (const hitbox of spriteWithHitBox.Hitboxes) {
+            if (this.checkIfBoxOverlap(hitbox.x, hitbox.y, hitbox.width, hitbox.height)) return true;
+        }
         return false;
     }
 

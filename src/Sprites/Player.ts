@@ -5,6 +5,8 @@ import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
 import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { IServiceBulletManager } from './Bullets/BulletManager.js';
+import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -120,6 +122,11 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
         }
         if (Keyboard.s.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
+        }
+
+        if (Keyboard.Space.IsPressed) {
+            const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
         }
 
         this.UpdateHitboxes(dt);

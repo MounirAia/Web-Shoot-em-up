@@ -22,8 +22,10 @@ Destroyed: [2 to 9] AS: 0.1
 // PlayerProjectile.png
 
 Tile Dimension: 8*8
+Sprite Shift Position: 3*3
 Offset on player : 34 * 8
-Hitbox: 2*2 at position on the tile (3,3)
+Hitboxes: 
+- 2*2 at position on the tile (0,0)
 
 List Animations (AS: Animation Speed): 
 Idle: [0]
