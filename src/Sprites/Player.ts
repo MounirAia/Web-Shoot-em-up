@@ -7,14 +7,42 @@ import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServiceBulletManager } from './Bullets/BulletManager.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
+import {
+    ISpriteWithAttackSpeedUpgrades,
+    ISpriteWithBaseAttackSpeed,
+    ISpriteWithBaseHealth,
+    ISpriteWithDamageUpgrades,
+    ISpriteWithHealthUpgrades,
+} from './InterfaceBehaviour/ISpriteWithStats.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
+    AddDamageUpgrade(upgrade: number): void;
+    AddAttackSpeedStats(upgrade: number): void;
+    AddHealthUpgrade(upgrade: number): void;
+    DamageStats: number;
 }
 
-export class Player extends Sprite implements IServicePlayer, IMovableSprite, ISpriteWithHitboxes {
+export class Player
+    extends Sprite
+    implements
+        IServicePlayer,
+        IMovableSprite,
+        ISpriteWithHitboxes,
+        ISpriteWithDamageUpgrades,
+        ISpriteWithBaseHealth,
+        ISpriteWithHealthUpgrades,
+        ISpriteWithBaseAttackSpeed,
+        ISpriteWithAttackSpeedUpgrades
+{
     private baseSpeed: number = 5;
     private hitboxes: RectangleHitbox[];
+    DamageUpgrades: number[] = [];
+    HealthUpgrades: number[] = [];
+    BaseHealth: number = 100;
+    private currentHealth: number = this.BaseHealth;
+    AttackSpeedUpgrades: number[] = [];
+    BaseAttackSpeed: number = 1;
 
     constructor(
         image: HTMLImageElement,
@@ -132,11 +160,11 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
         this.UpdateHitboxes(dt);
     }
 
-    public Coordinate(): { x: number; y: number } {
+    Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
     }
 
-    public get Hitboxes(): RectangleHitbox[] {
+    get Hitboxes(): RectangleHitbox[] {
         return this.hitboxes;
     }
 
@@ -149,6 +177,49 @@ export class Player extends Sprite implements IServicePlayer, IMovableSprite, IS
 
     private set BaseSpeed(value: number) {
         this.baseSpeed = value;
+    }
+
+    get DamageStats(): number {
+        return this.DamageUpgrades.reduce((total, damage) => {
+            return total + damage;
+        }, 1);
+    }
+    AddDamageUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
+    }
+
+    AddHealthUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
+    }
+    private get healthStats(): number {
+        return this.HealthUpgrades.reduce((total, health) => {
+            return total + health;
+        }, 1);
+    }
+    get MaxHealth(): number {
+        return this.BaseHealth * this.healthStats;
+    }
+    get CurrentHealth(): number {
+        return this.currentHealth;
+    }
+    set CurrentHealth(value: number) {
+        if (this.currentHealth + value >= this.MaxHealth) {
+            this.currentHealth = this.MaxHealth;
+        } else {
+            this.currentHealth -= value;
+        }
+    }
+
+    get AttackSpeedStats(): number {
+        return this.AttackSpeedUpgrades.reduce((total, attackSpeed) => {
+            return total + attackSpeed;
+        }, 1);
+    }
+    get AttackSpeed(): number {
+        return this.BaseAttackSpeed * this.AttackSpeedStats;
+    }
+    AddAttackSpeedStats(upgrade: number): void {
+        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
     }
 }
 

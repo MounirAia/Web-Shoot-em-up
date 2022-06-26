@@ -1,8 +1,6 @@
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IBullet } from './IBullet.js';
 
-// Start adding bullet for the player
-
 export interface IServiceBulletManager {
     AddBullet: (bullet: IBullet) => void;
     RemoveBullet: (bullet: IBullet) => void;
@@ -35,13 +33,13 @@ class BulletManager implements IServiceBulletManager {
     }
 
     public AddBullet(bullet: IBullet): void {
-        this.bulletsList[bullet.type].push(bullet);
+        this.bulletsList[bullet.Type].push(bullet);
     }
 
     public RemoveBullet(bullet: IBullet): void {
-        const index = this.bulletsList[bullet.type].indexOf(bullet);
+        const index = this.bulletsList[bullet.Type].indexOf(bullet);
         if (index > -1) {
-            this.bulletsList[bullet.type].splice(index, 1);
+            this.bulletsList[bullet.Type].splice(index, 1);
         }
     }
 }
