@@ -8,8 +8,9 @@ import { IServiceBulletManager } from './BulletManager.js';
 import { IBullet } from './IBullet.js';
 
 export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithHitboxes {
-    type: 'player' | 'enemy' = 'player';
+    Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number = 10;
+    Damage: number = 3;
     Hitboxes: RectangleHitbox[];
     constructor(x: number, y: number) {
         super(
@@ -61,7 +62,7 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
             let { isColliding, enemy } =
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithEnemies(this);
             if (isColliding) {
-                this.PlayAnimation('destroyed', 0.1, false);
+                this.PlayAnimation('destroyed', 0.03, false);
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(enemy!);
             }
         } else {
