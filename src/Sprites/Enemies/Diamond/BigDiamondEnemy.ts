@@ -51,11 +51,11 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
             },
         ]);
 
-        this.AddAnimation('idle', [0]);
-        this.AddAnimation('damaged', [4]);
-        this.AddAnimation('shooting', [1, 2, 3]);
-        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11]);
-        this.PlayAnimation('idle', 0.1, true);
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation('damaged', [4], 1);
+        this.AddAnimation('shooting', [1, 2, 3], 0.1);
+        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.1);
+        this.PlayAnimation('idle', true);
     }
 
     UpdateHitboxes(dt: number): void {

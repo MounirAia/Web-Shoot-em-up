@@ -27,9 +27,9 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
             CANVA_SCALEY,
         );
 
-        this.AddAnimation('idle', [0]);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4]);
-        this.PlayAnimation('idle', 0.1, false);
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
+        this.PlayAnimation('idle', false);
 
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -62,7 +62,7 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
             let { isColliding, enemy } =
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithEnemies(this);
             if (isColliding) {
-                this.PlayAnimation('destroyed', 0.03, false);
+                this.PlayAnimation('destroyed', false);
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(enemy!);
             }
         } else {
