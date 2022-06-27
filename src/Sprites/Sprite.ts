@@ -103,7 +103,7 @@ export abstract class Sprite {
         return this.isAnimationFinished;
     }
 
-    protected get CurrentAnimationName(): string {
+    public get CurrentAnimationName(): string {
         return this.currentAnimationName;
     }
 

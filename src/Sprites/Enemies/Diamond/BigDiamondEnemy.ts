@@ -2,7 +2,7 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
-import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
@@ -54,7 +54,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [4], 1);
         this.AddAnimation('shooting', [1, 2, 3], 0.1);
-        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.1);
+        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05);
         this.PlayAnimation('idle', true);
     }
 
@@ -70,7 +70,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
         this.UpdateHitboxes(dt);
         this.X -= 50 * dt;
 
-        if (this.X < -this.Width) {
+        if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
         }
     }

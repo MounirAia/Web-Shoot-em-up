@@ -59,11 +59,11 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {
-            let { isColliding, enemy } =
-                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithEnemies(this);
-            if (isColliding) {
+            const waveManager = ServiceLocator.GetService<IServiceWaveManager>('WaveManager');
+            let { isColliding, enemy } = waveManager.VerifyCollisionWithEnemies(this);
+            if (isColliding && waveManager.GetEnemyAnimationName(enemy!) !== 'destroyed') {
                 this.PlayAnimation('destroyed', false);
-                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(enemy!);
+                waveManager.PlayEnemyAnimation(enemy!, 'destroyed', false);
             }
         } else {
             if (this.IsAnimationFinished) {

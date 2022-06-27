@@ -9,6 +9,8 @@ export interface IServiceWaveManager {
         isColliding: boolean;
         enemy: IEnemy | undefined;
     };
+    PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop: boolean): void;
+    GetEnemyAnimationName(enemy: IEnemy): string | undefined;
 }
 
 export class WaveManager implements IServiceWaveManager {
@@ -53,5 +55,17 @@ export class WaveManager implements IServiceWaveManager {
             return this.currentWave.VerifyCollisionWithEnemies(sprite);
         }
         return { isColliding: false, enemy: undefined };
+    }
+
+    public PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop = false): void {
+        if (this.currentWave) {
+            this.currentWave.PlayEnemyAnimation(enemy, animationName, loop);
+        }
+    }
+
+    public GetEnemyAnimationName(enemy: IEnemy) {
+        if (this.currentWave) {
+            return this.currentWave.GetEnemyAnimationName(enemy);
+        }
     }
 }
