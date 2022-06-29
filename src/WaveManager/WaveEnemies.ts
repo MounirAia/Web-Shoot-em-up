@@ -51,6 +51,14 @@ export class WaveEnemies {
         return { isColliding, enemy: undefined };
     }
 
+    public PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop = false) {
+        this.listEnemies.get(enemy)?.PlayAnimation(animationName, loop);
+    }
+
+    public GetEnemyAnimationName(enemy: IEnemy) {
+        return this.listEnemies.get(enemy)?.CurrentAnimationName;
+    }
+
     public Update(dt: number) {
         this.listEnemies.forEach((enemy) => {
             enemy.Update(dt);

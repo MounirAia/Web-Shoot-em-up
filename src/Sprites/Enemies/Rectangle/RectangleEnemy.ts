@@ -6,55 +6,37 @@ import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISprit
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
-export class BigDiamondEnemy extends Sprite implements IEnemy {
+export class RectangleEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
     constructor(x: number = 0, y: number = 0) {
-        const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
-            'images/Enemies/Diamond/BigDiamond/BigDiamond.png',
+        const imgRectangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
+            'images/Enemies/Rectangle/Rectangle.png',
         );
         const frameWidth = 32;
         const frameHeight = 32;
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
-        super(imgDiamond, frameWidth, frameHeight, x, y, 8 * CANVA_SCALEX, 9 * CANVA_SCALEY, scaleX, scaleY);
+        super(imgRectangle, frameWidth, frameHeight, x, y, 7 * CANVA_SCALEX, 11 * CANVA_SCALEY, scaleX, scaleY);
 
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
                 offsetY: 4 * CANVA_SCALEY,
-                width: 5 * CANVA_SCALEX,
-                height: 6 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 5 * CANVA_SCALEX,
-                offsetY: 2 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 10 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 6 * CANVA_SCALEX,
-                offsetY: 0,
                 width: 4 * CANVA_SCALEX,
-                height: 14 * CANVA_SCALEY,
+                height: 4 * CANVA_SCALEY,
             },
             {
-                offsetX: 10 * CANVA_SCALEX,
-                offsetY: 2 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
+                offsetX: 4 * CANVA_SCALEX,
+                offsetY: 0 * CANVA_SCALEY,
+                width: 9 * CANVA_SCALEX,
                 height: 10 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 11 * CANVA_SCALEX,
-                offsetY: 4 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 6 * CANVA_SCALEY,
             },
         ]);
 
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [4], 1);
-        this.AddAnimation('shooting', [1, 2, 3], 0.1);
-        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05);
+        this.AddAnimation('damaged', [1], 1);
+        this.AddAnimation('shooting', [2, 3, 4, 5, 6], 0.1);
+        this.AddAnimation('destroyed', [7, 8, 9, 10, 11, 12], 0.05);
         this.PlayAnimation('idle', true);
     }
 

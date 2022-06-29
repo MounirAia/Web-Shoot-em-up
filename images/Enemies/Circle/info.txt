@@ -1,0 +1,29 @@
+Always width*height and in px
+
+// Circle.png
+
+Tile Dimension: 16*16
+Sprite Shift Position: 3*3
+Hitboxes:
+1- 3*4 at position on the tile (0,3)
+2- 1*8 at position on the tile (3,1)
+3- 3*10 at position on the tile (4,0)
+4- 1*8 at position on the tile (7,1)
+5- 1*4 at position on the tile (8,3)
+
+List Animations (AS: Animation Speed): 
+Idle: [0]
+Shooting: [2 to 4] AS: depend on the attack speed of the enemy
+Damaged: [1]
+Destroyed: [5 to 10] AS: 0.1
+
+// EnemiesShooting.png
+
+Tile Dimension: 8*8
+Offset on the sprite that shoots the projectile : (-2,4)
+Sprite Shift Position: 3*3
+Hitbox: 2*2 at position on the tile (0,0)
+
+List Animations (AS: Animation Speed):
+Idle: [0]
+Destroyed: [0 to 4]

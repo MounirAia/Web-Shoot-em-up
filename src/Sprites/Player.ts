@@ -106,11 +106,11 @@ export class Player
                 height: 4 * CANVA_SCALEY,
             },
         ]);
-        this.AddAnimation('idle', [0]);
-        this.AddAnimation('damaged', [1]);
-        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9]);
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation('damaged', [1], 1);
+        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1);
 
-        this.PlayAnimation('idle', 0.1, false);
+        this.PlayAnimation('idle', false);
         ServiceLocator.AddService('Player', this);
     }
 

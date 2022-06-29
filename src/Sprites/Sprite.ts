@@ -11,11 +11,10 @@ export abstract class Sprite {
     private scaleY: number;
 
     /* Animation properties */
-    private animationList: { [key: string]: number[] } = {};
+    private animationList: { [key: string]: { frames: number[]; framesLengthInTime: number } } = {};
     private currentAnimationName = '';
     private currentFrame = 0;
-    private frameLengthInTime = 1;
-    private currentFrameTimer = this.frameLengthInTime;
+    private currentFrameTimer = 1;
     private doesAnimationLoop = false;
     private isAnimationFinished = false;
 
@@ -41,16 +40,15 @@ export abstract class Sprite {
         this.scaleY = scaleY;
     }
 
-    public AddAnimation(key: string, frames: number[]) {
-        this.animationList[key] = frames;
+    public AddAnimation(key: string, frames: number[], framesLengthInTime = 1) {
+        this.animationList[key] = { frames, framesLengthInTime };
     }
 
-    public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
+    public PlayAnimation(animation: string, loop = false) {
         if (this.CurrentAnimationName !== animation) {
             this.currentAnimationName = animation;
             this.currentFrame = 0;
-            this.frameLengthInTime = framesLengthInTime;
-            this.currentFrameTimer = this.frameLengthInTime;
+            this.currentFrameTimer = this.animationList[this.currentAnimationName].framesLengthInTime;
             this.doesAnimationLoop = loop;
             this.isAnimationFinished = false;
         }
@@ -61,8 +59,8 @@ export abstract class Sprite {
             this.currentFrameTimer -= dt;
             if (this.currentFrameTimer <= 0) {
                 this.currentFrame++;
-                this.currentFrameTimer = this.frameLengthInTime;
-                if (this.currentFrame >= this.animationList[this.CurrentAnimationName].length) {
+                this.currentFrameTimer = this.animationList[this.CurrentAnimationName].framesLengthInTime;
+                if (this.currentFrame >= this.animationList[this.CurrentAnimationName].frames.length) {
                     if (!this.doesAnimationLoop) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
@@ -97,7 +95,7 @@ export abstract class Sprite {
     }
 
     private get frameNumber(): number {
-        if (this.CurrentAnimationName) return this.animationList[this.CurrentAnimationName][this.currentFrame];
+        if (this.CurrentAnimationName) return this.animationList[this.CurrentAnimationName].frames[this.currentFrame];
         return 0;
     }
 
@@ -105,7 +103,7 @@ export abstract class Sprite {
         return this.isAnimationFinished;
     }
 
-    protected get CurrentAnimationName(): string {
+    public get CurrentAnimationName(): string {
         return this.currentAnimationName;
     }
 
