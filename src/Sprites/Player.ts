@@ -42,7 +42,10 @@ export class Player
     BaseHealth: number = 100;
     private currentHealth: number = this.BaseHealth;
     AttackSpeedUpgrades: number[] = [];
-    BaseAttackSpeed: number = 1;
+    BaseAttackSpeed: number = 10;
+
+    private baseTimeBeforeNextShoot = 30;
+    private currentTimeBeforeNextShoot = 0;
 
     constructor(
         image: HTMLImageElement,
@@ -152,9 +155,13 @@ export class Player
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
 
-        if (Keyboard.Space.IsPressed) {
+        if (Keyboard.Space.IsDown && this.playerCanShoot) {
             const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+        } else {
+            if (this.currentTimeBeforeNextShoot >= 0) {
+                this.currentTimeBeforeNextShoot -= this.AttackSpeed;
+            }
         }
 
         this.UpdateHitboxes(dt);
@@ -220,6 +227,15 @@ export class Player
     }
     AddAttackSpeedStats(upgrade: number): void {
         if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
+    }
+
+    private get playerCanShoot(): boolean {
+        if (this.currentTimeBeforeNextShoot <= 0) {
+            this.currentTimeBeforeNextShoot = this.baseTimeBeforeNextShoot;
+            return true;
+        }
+
+        return false;
     }
 }
 
