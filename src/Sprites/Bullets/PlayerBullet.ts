@@ -72,6 +72,3 @@ export class RegularPlayerBullet extends Sprite implements IBullet, ISpriteWithH
         }
     }
 }
-
-// Add the rest of the enemies sprite
-// Document how bullet affect enemies
