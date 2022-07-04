@@ -42,7 +42,7 @@ export class Player
     BaseHealth: number = 100;
     private currentHealth: number = this.BaseHealth;
     AttackSpeedUpgrades: number[] = [];
-    BaseAttackSpeed: number = 10;
+    BaseAttackSpeed: number = 3;
 
     private baseTimeBeforeNextShoot = 30;
     private currentTimeBeforeNextShoot = 0;

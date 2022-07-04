@@ -22,7 +22,7 @@ function load() {
     LoadPlayer();
     LoadMainMenu();
     LoadBulletManager();
-    waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
+    waveManager = new WaveManager();
 
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }

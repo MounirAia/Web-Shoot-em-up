@@ -1,18 +1,28 @@
-import { canvas } from '../ScreenConstant.js';
+import { canvas, CANVA_SCALEX } from '../ScreenConstant.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 
+const horizontalEnnemyShootingPositionShift = 125 * CANVA_SCALEX;
+const enemiesShootingPosition: number[] = [
+    canvas.width - horizontalEnnemyShootingPositionShift,
+    canvas.width - horizontalEnnemyShootingPositionShift + 20 * CANVA_SCALEX,
+    canvas.width - horizontalEnnemyShootingPositionShift + 40 * CANVA_SCALEX,
+    canvas.width - horizontalEnnemyShootingPositionShift + 60 * CANVA_SCALEX,
+];
+
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns;
+
     constructor(numberEnemy: number, numberSpawns: number) {
         this.listEnemies = new Map<IEnemy, IEnemy>();
         this.numberSpawns = numberSpawns;
         let currentNumberEnemy = 0;
         let x = canvas.width;
-        const verticalShift = canvas.height / this.numberSpawns; // each column is separated by this height
+        const verticalShift = canvas.height / this.numberSpawns; // vertical padding in columns
         let y = 0;
+        let spawnWhenToStop = enemiesShootingPosition[0];
         while (currentNumberEnemy < numberEnemy) {
             for (let index = 0; index < this.numberSpawns; index++) {
                 currentNumberEnemy++;
@@ -75,3 +85,20 @@ export class WaveEnemies {
         return this.listEnemies.size === 0 ? true : false;
     }
 }
+
+// Have to set a max number of enemies in a wave
+// A wave should only be equal to 1 column
+// Each column should be locked at a certain point and enemies should start shooting
+
+// Essentially an enemy waves will have preset spawns, where the enemies will stop moving when
+// they hit this spawn (probably store this inside the enemy object)
+
+// I also need to regulate the number of enemies that can spawn and how they will
+// be separated (also must be displayed well)
+
+// The wave manager will be running infinitely and will not need constructor parameters
+
+// first create the round chart
+// then display infinitely wave of enemies
+// then change the settings for an enemy wave
+// then stop the enemy spawns

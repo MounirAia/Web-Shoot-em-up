@@ -16,9 +16,9 @@ export interface IServiceWaveManager {
 export class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
-
-    constructor(listWaves: WaveEnemies[]) {
-        this.listWaves = listWaves;
+    private round: number = 1;
+    constructor() {
+        this.listWaves = this.createWaves();
 
         this.currentWave = this.listWaves.shift();
 
@@ -26,12 +26,18 @@ export class WaveManager implements IServiceWaveManager {
     }
 
     public Update(dt: number) {
-        const { currentWave } = this;
-        if (currentWave === undefined) return;
+        if (this.currentWave === undefined) {
+            this.Round += 1;
+            this.listWaves = this.createWaves();
 
-        currentWave.Update(dt);
+            this.currentWave = this.listWaves.shift();
 
-        if (currentWave.HasNoEnemyLeft) {
+            return;
+        }
+
+        this.currentWave.Update(dt);
+
+        if (this.currentWave.HasNoEnemyLeft) {
             this.currentWave = this.listWaves.shift();
         }
     }
@@ -67,5 +73,65 @@ export class WaveManager implements IServiceWaveManager {
         if (this.currentWave) {
             return this.currentWave.GetEnemyAnimationName(enemy);
         }
+    }
+
+    public get Round(): number {
+        return this.round;
+    }
+
+    private set Round(value: number) {
+        this.round = value;
+    }
+
+    private createWaves(): WaveEnemies[] {
+        const roundsChart: { minNumberWaves: number; maxNumberWaves: number }[] = [
+            {
+                minNumberWaves: 1,
+                maxNumberWaves: 3,
+            },
+            {
+                minNumberWaves: 3,
+                maxNumberWaves: 6,
+            },
+            {
+                minNumberWaves: 5,
+                maxNumberWaves: 8,
+            },
+            {
+                minNumberWaves: 6,
+                maxNumberWaves: 7,
+            },
+            {
+                minNumberWaves: 7,
+                maxNumberWaves: 8,
+            },
+            {
+                minNumberWaves: 9,
+                maxNumberWaves: 10,
+            },
+        ];
+
+        const checkInNumberIsInRange = (num: number, min: number, max: number): boolean => {
+            if (num >= min && num < max) return true;
+
+            return false;
+        };
+
+        let numberWaves = 0;
+        let roundTiers = 10; // corsspond on whne to change the number of waves to spawn (each x rounds)
+        let index = Math.floor(this.round / roundTiers);
+        if (index > roundsChart.length - 1) {
+            index = roundsChart.length - 1;
+        }
+        numberWaves = Math.floor(Math.random() * roundsChart[index].maxNumberWaves) + 1;
+        if (numberWaves < roundsChart[index].minNumberWaves) numberWaves = roundsChart[index].minNumberWaves;
+
+        let waves: WaveEnemies[] = [];
+
+        for (let i = 0; i < numberWaves; i++) {
+            waves.push(new WaveEnemies(30, 14));
+        }
+
+        return waves;
     }
 }
