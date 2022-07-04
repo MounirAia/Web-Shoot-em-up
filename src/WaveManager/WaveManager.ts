@@ -111,14 +111,8 @@ export class WaveManager implements IServiceWaveManager {
             },
         ];
 
-        const checkInNumberIsInRange = (num: number, min: number, max: number): boolean => {
-            if (num >= min && num < max) return true;
-
-            return false;
-        };
-
         let numberWaves = 0;
-        let roundTiers = 10; // corsspond on whne to change the number of waves to spawn (each x rounds)
+        let roundTiers = 10; // corsspond on when to change the number of waves to spawn (each x rounds)
         let index = Math.floor(this.round / roundTiers);
         if (index > roundsChart.length - 1) {
             index = roundsChart.length - 1;
