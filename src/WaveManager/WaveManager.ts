@@ -84,46 +84,65 @@ export class WaveManager implements IServiceWaveManager {
     }
 
     private createWaves(): WaveEnemies[] {
-        const roundsChart: { minNumberWaves: number; maxNumberWaves: number }[] = [
+        const roundsChart: {
+            minNumberWaves: number;
+            maxNumberWaves: number;
+            minNumberEnemies: number;
+            maxNumberEnemies: number;
+        }[] = [
             {
                 minNumberWaves: 1,
                 maxNumberWaves: 3,
+                minNumberEnemies: 12,
+                maxNumberEnemies: 20,
             },
             {
                 minNumberWaves: 3,
                 maxNumberWaves: 6,
+                minNumberEnemies: 15,
+                maxNumberEnemies: 25,
             },
             {
                 minNumberWaves: 5,
                 maxNumberWaves: 8,
+                minNumberEnemies: 20,
+                maxNumberEnemies: 28,
             },
             {
                 minNumberWaves: 6,
                 maxNumberWaves: 7,
+                minNumberEnemies: 25,
+                maxNumberEnemies: 32,
             },
             {
                 minNumberWaves: 7,
                 maxNumberWaves: 8,
+                minNumberEnemies: 31,
+                maxNumberEnemies: 35,
             },
             {
                 minNumberWaves: 9,
                 maxNumberWaves: 10,
+                minNumberEnemies: 40,
+                maxNumberEnemies: 40,
             },
         ];
 
         let numberWaves = 0;
-        let roundTiers = 10; // corsspond on when to change the number of waves to spawn (each x rounds)
+        let roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
         let index = Math.floor(this.round / roundTiers);
         if (index > roundsChart.length - 1) {
             index = roundsChart.length - 1;
         }
-        numberWaves = Math.floor(Math.random() * roundsChart[index].maxNumberWaves) + 1;
-        if (numberWaves < roundsChart[index].minNumberWaves) numberWaves = roundsChart[index].minNumberWaves;
-
+        const { minNumberWaves, maxNumberWaves } = roundsChart[index];
+        numberWaves = Math.round(Math.random() * (maxNumberWaves - minNumberWaves)) + minNumberWaves;
         let waves: WaveEnemies[] = [];
 
         for (let i = 0; i < numberWaves; i++) {
-            waves.push(new WaveEnemies(30, 14));
+            const { minNumberEnemies, maxNumberEnemies } = roundsChart[index];
+            const numberEnemiesToSpawn =
+                Math.round((maxNumberEnemies - minNumberEnemies) * Math.random()) + minNumberEnemies;
+            waves.push(new WaveEnemies(numberEnemiesToSpawn));
         }
 
         return waves;

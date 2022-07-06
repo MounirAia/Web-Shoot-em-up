@@ -3,36 +3,46 @@ import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 
-const horizontalEnnemyShootingPositionShift = 125 * CANVA_SCALEX;
-const enemiesShootingPosition: number[] = [
-    canvas.width - horizontalEnnemyShootingPositionShift,
-    canvas.width - horizontalEnnemyShootingPositionShift + 20 * CANVA_SCALEX,
-    canvas.width - horizontalEnnemyShootingPositionShift + 40 * CANVA_SCALEX,
-    canvas.width - horizontalEnnemyShootingPositionShift + 60 * CANVA_SCALEX,
-];
+// have to test this new setting with all the enemies
+// have to add randomness in the type of enemies generated (bag method)
 
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns;
+    private readonly maxNumberEnemies = 40;
+    constructor(numberEnemies: number) {
+        if (numberEnemies > this.maxNumberEnemies) numberEnemies = this.maxNumberEnemies;
 
-    constructor(numberEnemy: number, numberSpawns: number) {
         this.listEnemies = new Map<IEnemy, IEnemy>();
-        this.numberSpawns = numberSpawns;
+        this.numberSpawns = 8;
+        const verticalGapBetweenMonsters = 60;
+        const verticalShift = (canvas.height - this.numberSpawns * verticalGapBetweenMonsters) / 2; // vertical padding in columns
         let currentNumberEnemy = 0;
         let x = canvas.width;
-        const verticalShift = canvas.height / this.numberSpawns; // vertical padding in columns
         let y = 0;
-        let spawnWhenToStop = enemiesShootingPosition[0];
-        while (currentNumberEnemy < numberEnemy) {
+
+        const monsterScreenWidthProportion = canvas.width * (30 / 100); // how much screen the monsters shooting position take
+        const maxNumberShootingSpawn = 5;
+        const horizontalGapBetweenMonsters = Math.floor(monsterScreenWidthProportion / maxNumberShootingSpawn);
+        let monsterShootingPosition = canvas.width - monsterScreenWidthProportion; // where the monsters will be
+
+        while (currentNumberEnemy < numberEnemies) {
             for (let index = 0; index < this.numberSpawns; index++) {
                 currentNumberEnemy++;
-                const ennemy = new BigDiamondEnemy(x, verticalShift + (y % 675));
+                const ennemy = new BigDiamondEnemy(
+                    x,
+                    verticalShift + (y % (this.numberSpawns * verticalGapBetweenMonsters)),
+                    monsterShootingPosition,
+                );
                 this.AddEnemy(ennemy);
-                y += 45;
+                y += verticalGapBetweenMonsters;
 
-                if (currentNumberEnemy >= numberEnemy) break;
+                if (currentNumberEnemy >= numberEnemies) {
+                    break;
+                }
             }
-            x += 60;
+            monsterShootingPosition += horizontalGapBetweenMonsters;
+            x += horizontalGapBetweenMonsters;
             y = 0;
         }
     }
@@ -98,7 +108,5 @@ export class WaveEnemies {
 
 // The wave manager will be running infinitely and will not need constructor parameters
 
-// first create the round chart
-// then display infinitely wave of enemies
-// then change the settings for an enemy wave
+// Change setting for an enemy waves to stop in predefined spawns, how many enemies that will be generated and so on
 // then stop the enemy spawns

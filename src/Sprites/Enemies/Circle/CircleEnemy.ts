@@ -8,7 +8,8 @@ import { IEnemy } from '../IEnemy.js';
 
 export class CircleEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
-    constructor(x: number = 0, y: number = 0) {
+    readonly HorizontalShootingPosition: number;
+    constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
         const imgRectangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Circle/Circle.png',
         );
@@ -17,7 +18,7 @@ export class CircleEnemy extends Sprite implements IEnemy {
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
         super(imgRectangle, frameWidth, frameHeight, x, y, 3 * CANVA_SCALEX, 3 * CANVA_SCALEY, scaleX, scaleY);
-
+        this.HorizontalShootingPosition = horizontalShootingPosition;
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
