@@ -9,6 +9,7 @@ import { IEnemy } from '../IEnemy.js';
 export class TriangleEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
     readonly HorizontalShootingPosition: number;
+    BaseSpeed: number;
     constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
         const imgTriangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Triangle/Triangle.png',
@@ -18,7 +19,10 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
         super(imgTriangle, frameWidth, frameHeight, x, y, 2 * CANVA_SCALEX, 3 * CANVA_SCALEY, scaleX, scaleY);
+
         this.HorizontalShootingPosition = horizontalShootingPosition;
+        this.BaseSpeed = 350;
+
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -56,7 +60,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
     public Update(dt: number): void {
         super.Update(dt);
         this.UpdateHitboxes(dt);
-        this.X -= 50 * dt;
+        if (this.X >= this.HorizontalShootingPosition) this.X -= this.BaseSpeed * dt;
 
         if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);

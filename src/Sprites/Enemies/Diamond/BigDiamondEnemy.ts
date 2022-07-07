@@ -9,6 +9,7 @@ import { IEnemy } from '../IEnemy.js';
 export class BigDiamondEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
     readonly HorizontalShootingPosition: number;
+    BaseSpeed: number;
     constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/BigDiamond/BigDiamond.png',
@@ -20,6 +21,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
         super(imgDiamond, frameWidth, frameHeight, x, y, 8 * CANVA_SCALEX, 9 * CANVA_SCALEY, scaleX, scaleY);
 
         this.HorizontalShootingPosition = horizontalShootingPosition;
+        this.BaseSpeed = 350;
 
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -72,7 +74,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
         super.Update(dt);
         this.UpdateHitboxes(dt);
         if (this.X >= this.HorizontalShootingPosition) {
-            this.X -= 350 * dt;
+            this.X -= this.BaseSpeed * dt;
         }
 
         if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
