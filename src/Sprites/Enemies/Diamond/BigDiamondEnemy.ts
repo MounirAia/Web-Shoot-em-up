@@ -2,14 +2,24 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
+import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
+import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithBaseAttackSpeed } from '../../InterfaceBehaviour/ISpriteWithStats.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
-export class BigDiamondEnemy extends Sprite implements IEnemy {
+// Play the shooting animation when enemy is shooting
+
+export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithBaseAttackSpeed {
     Hitboxes: RectangleHitbox[];
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
+    BaseAttackSpeed: number;
+    // Manage shooting rate of the enemy
+    private baseTimeBeforeNextShoot: number;
+    private currentTimeBeforeNextShoot: number;
+
     constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/BigDiamond/BigDiamond.png',
@@ -22,6 +32,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
 
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
+        this.BaseAttackSpeed = 0.2;
+        this.baseTimeBeforeNextShoot = 30;
+        this.currentTimeBeforeNextShoot = 30;
 
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -58,7 +71,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
 
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [4], 1);
-        this.AddAnimation('shooting', [1, 2, 3], 0.1);
+        this.AddAnimation('shooting', [1, 2, 3], 2.51 / 2);
         this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05);
         this.PlayAnimation('idle', true);
     }
@@ -73,12 +86,41 @@ export class BigDiamondEnemy extends Sprite implements IEnemy {
     public Update(dt: number): void {
         super.Update(dt);
         this.UpdateHitboxes(dt);
+
         if (this.X >= this.HorizontalShootingPosition) {
             this.X -= this.BaseSpeed * dt;
+            return;
         }
 
         if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
+            return;
         }
+
+        // Shooting flow of the enemy
+        if (this.CurrentAnimationName !== 'destroyed') {
+            this.PlayAnimation('shooting', true);
+            if (this.CanShoot) {
+                const bullet = new EnemyBullet(this.X - 2 * CANVA_SCALEX, this.Y + 6 * CANVA_SCALEY);
+                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+                this.currentTimeBeforeNextShoot = this.baseTimeBeforeNextShoot;
+            } else {
+                if (this.currentTimeBeforeNextShoot >= 0) {
+                    this.currentTimeBeforeNextShoot -= this.AttackSpeed;
+                }
+            }
+        }
+    }
+
+    get AttackSpeed(): number {
+        return this.BaseAttackSpeed;
+    }
+
+    get CanShoot(): boolean {
+        if (this.currentTimeBeforeNextShoot <= 0) {
+            return true;
+        }
+
+        return false;
     }
 }

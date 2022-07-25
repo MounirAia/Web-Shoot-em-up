@@ -21,7 +21,7 @@ export class RectangleHitbox {
         this.height = height;
     }
 
-    public checkIfBoxOverlap(x: number, y: number, width: number, height: number) {
+    public CheckIfBoxOverlap(x: number, y: number, width: number, height: number) {
         const boxIsInWidth = this.x < x + width && x < this.x + this.width;
         const boxIsInHeight = this.y < y + height && y < this.y + this.height;
         return boxIsInWidth && boxIsInHeight;
@@ -29,7 +29,7 @@ export class RectangleHitbox {
 
     public CheckCollision(spriteWithHitBox: ISpriteWithHitboxes): boolean {
         for (const hitbox of spriteWithHitBox.Hitboxes) {
-            if (this.checkIfBoxOverlap(hitbox.x, hitbox.y, hitbox.width, hitbox.height)) return true;
+            if (this.CheckIfBoxOverlap(hitbox.x, hitbox.y, hitbox.width, hitbox.height)) return true;
         }
         return false;
     }

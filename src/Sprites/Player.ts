@@ -21,6 +21,7 @@ export interface IServicePlayer {
     AddAttackSpeedStats(upgrade: number): void;
     AddHealthUpgrade(upgrade: number): void;
     DamageStats: number;
+    Hitboxes: RectangleHitbox[];
 }
 
 export class Player
@@ -44,6 +45,7 @@ export class Player
     AttackSpeedUpgrades: number[] = [];
     BaseAttackSpeed: number = 3;
 
+    // Manage shooting rate of the player
     private baseTimeBeforeNextShoot = 30;
     private currentTimeBeforeNextShoot = 0;
 
@@ -133,13 +135,13 @@ export class Player
         let isOutsideBottomScreen = false;
         for (const hitbox of this.Hitboxes) {
             isOutsideLeftScreen =
-                isOutsideLeftScreen || hitbox.checkIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
+                isOutsideLeftScreen || hitbox.CheckIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
             isOutsideTopScreen =
-                isOutsideTopScreen || hitbox.checkIfBoxOverlap(0, -canvas.height, canvas.width, canvas.height);
+                isOutsideTopScreen || hitbox.CheckIfBoxOverlap(0, -canvas.height, canvas.width, canvas.height);
             isOutsideRightScreen =
-                isOutsideRightScreen || hitbox.checkIfBoxOverlap(canvas.width, 0, canvas.width, canvas.height);
+                isOutsideRightScreen || hitbox.CheckIfBoxOverlap(canvas.width, 0, canvas.width, canvas.height);
             isOutsideBottomScreen =
-                isOutsideBottomScreen || hitbox.checkIfBoxOverlap(0, canvas.height, canvas.width, canvas.height);
+                isOutsideBottomScreen || hitbox.CheckIfBoxOverlap(0, canvas.height, canvas.width, canvas.height);
         }
 
         if (Keyboard.a.IsDown) {
@@ -155,7 +157,7 @@ export class Player
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
 
-        if (Keyboard.Space.IsDown && this.playerCanShoot) {
+        if (Keyboard.Space.IsDown && this.CanShoot) {
             const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
         } else {
@@ -229,7 +231,7 @@ export class Player
         if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
     }
 
-    private get playerCanShoot(): boolean {
+    public get CanShoot(): boolean {
         if (this.currentTimeBeforeNextShoot <= 0) {
             this.currentTimeBeforeNextShoot = this.baseTimeBeforeNextShoot;
             return true;
