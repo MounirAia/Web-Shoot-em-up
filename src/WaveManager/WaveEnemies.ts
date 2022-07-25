@@ -7,8 +7,6 @@ import { TrapezeEnemy } from '../Sprites/Enemies/Trapeze/TrapezeEnemy.js';
 import { TriangleEnemy } from '../Sprites/Enemies/Triangle/TriangleEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 
-// have to add randomness in the type of enemies generated (bag method)
-
 function generateRandomNumberArray(max: number): number[] {
     const indicesMonster: number[] = [];
     // fill the array
@@ -80,22 +78,24 @@ export class WaveEnemies {
     }
 
     private generateEnemy(index: number, x: number, y: number, monsterShootingPosition: number): IEnemy {
-        switch (index) {
-            case 0:
-                return new CircleEnemy(x, y, monsterShootingPosition);
-            case 1:
-                return new BigDiamondEnemy(x, y, monsterShootingPosition);
-            case 2:
-                return new RectangleEnemy(x, y, monsterShootingPosition);
-            case 3:
-                return new TrapezeEnemy(x, y, monsterShootingPosition);
-            case 4:
-                return new TriangleEnemy(x, y, monsterShootingPosition);
-            default:
-                break;
-        }
+        // I will only work with big diamond triangle for now
 
-        return new BigDiamondEnemy(1, 1, 1);
+        // switch (index) {
+        //     case 0:
+        //         return new CircleEnemy(x, y, monsterShootingPosition);
+        //     case 1:
+        //         return new BigDiamondEnemy(x, y, monsterShootingPosition);
+        //     case 2:
+        //         return new RectangleEnemy(x, y, monsterShootingPosition);
+        //     case 3:
+        //         return new TrapezeEnemy(x, y, monsterShootingPosition);
+        //     case 4:
+        //         return new TriangleEnemy(x, y, monsterShootingPosition);
+        //     default:
+        //         break;
+        // }
+
+        return new BigDiamondEnemy(x, y, monsterShootingPosition);
     }
 
     public AddEnemy(enemy: IEnemy) {

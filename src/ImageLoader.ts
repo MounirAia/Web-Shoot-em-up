@@ -48,6 +48,7 @@ export function LoadImageLoader() {
     assets.push('images/Enemies/Circle/Circle.png');
     assets.push('images/Enemies/Rectangle/Rectangle.png');
     assets.push('images/Enemies/Triangle/Triangle.png');
+    assets.push('images/Enemies/EnemiesBullet.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

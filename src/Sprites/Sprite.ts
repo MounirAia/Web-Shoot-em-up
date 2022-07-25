@@ -56,16 +56,17 @@ export abstract class Sprite {
 
     public Update(dt: number) {
         if (this.CurrentAnimationName && !this.isAnimationFinished) {
-            this.currentFrameTimer -= dt;
-            if (this.currentFrameTimer <= 0) {
-                this.currentFrame++;
-                this.currentFrameTimer = this.animationList[this.CurrentAnimationName].framesLengthInTime;
-                if (this.currentFrame >= this.animationList[this.CurrentAnimationName].frames.length) {
-                    if (!this.doesAnimationLoop) {
+            const animationLength = this.animationList[this.CurrentAnimationName].frames.length - 1;
+            if (this.doesAnimationLoop && this.currentFrame === animationLength) {
+                this.currentFrame = 0;
+            } else {
+                this.currentFrameTimer -= dt;
+                if (this.currentFrameTimer <= 0) {
+                    this.currentFrame++;
+                    this.currentFrameTimer = this.animationList[this.CurrentAnimationName].framesLengthInTime;
+                    if (this.currentFrame >= animationLength + 1) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
-                    } else {
-                        this.currentFrame = 0;
                     }
                 }
             }

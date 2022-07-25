@@ -4,20 +4,23 @@ import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
 import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
 import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
 import { IServiceBulletManager } from './BulletManager.js';
-import { IBullet } from './IBullet.js';
+import { IBullet, ITargetableBullet } from './IBullet.js';
 
-export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes {
-    Type: 'player' | 'enemy' = 'player';
-    BaseSpeed: number = 10;
-    Damage: number = 3;
+export class EnemyBullet extends Sprite implements IBullet, ITargetableBullet, IMovableSprite, ISpriteWithHitboxes {
+    Type: 'player' | 'enemy' = 'enemy';
+    BaseSpeed: number;
+    Damage: number;
     Hitboxes: RectangleHitbox[];
+
+    XSpeed: number;
+    YSpeed: number;
+
     constructor(x: number, y: number) {
         super(
-            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
-                'images/Player/RegularPlayerBullet.png',
-            ),
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Enemies/EnemiesBullet.png'),
             8,
             8,
             x,
@@ -31,6 +34,12 @@ export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSpri
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
         this.PlayAnimation('idle', false);
+
+        this.BaseSpeed = 3;
+        this.Damage = 3;
+
+        this.XSpeed = Math.cos(this.BulletAngle) * this.BaseSpeed;
+        this.YSpeed = Math.sin(this.BulletAngle) * this.BaseSpeed;
 
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -53,23 +62,31 @@ export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSpri
         super.Update(dt);
         this.UpdateHitboxes(dt);
 
-        this.X += this.BaseSpeed;
+        this.X -= this.XSpeed;
+        this.Y -= this.YSpeed;
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {
-            const waveManager = ServiceLocator.GetService<IServiceWaveManager>('WaveManager');
-            let { isColliding, enemy } = waveManager.VerifyCollisionWithEnemies(this);
-            if (isColliding && waveManager.GetEnemyAnimationName(enemy!) !== 'destroyed') {
+            const isColliding =
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithPlayer(this);
+
+            if (isColliding) {
                 this.PlayAnimation('destroyed', false);
-                waveManager.PlayEnemyAnimation(enemy!, 'destroyed', false);
             }
         } else {
             if (this.IsAnimationFinished) {
                 ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
             }
         }
+    }
+
+    get BulletAngle(): number {
+        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        const distX = this.X - playerX;
+        const distY = this.Y - playerY;
+        return Math.atan2(distY, distX);
     }
 }
