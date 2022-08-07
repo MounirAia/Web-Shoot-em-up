@@ -2,6 +2,7 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
+import { CollideScenario } from '../../CollideManager.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
@@ -10,6 +11,9 @@ export class TriangleEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
+
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
     constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
         const imgTriangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Triangle/Triangle.png',
@@ -43,7 +47,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
                 height: 8 * CANVA_SCALEY,
             },
         ]);
-
+        this.Collide = new Map();
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [1], 1);
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6], 0.05);

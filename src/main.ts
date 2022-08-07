@@ -10,6 +10,7 @@ import { WaveEnemies } from './WaveManager/WaveEnemies.js';
 import { WaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
 import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
+import { LoadCollideManager } from './Sprites/CollideManager.js';
 
 const ctx = canvas.getContext('2d')!;
 
@@ -22,6 +23,7 @@ function load() {
     LoadPlayer();
     LoadMainMenu();
     LoadBulletManager();
+    LoadCollideManager();
     waveManager = new WaveManager();
 
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');

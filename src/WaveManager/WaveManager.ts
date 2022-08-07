@@ -1,8 +1,10 @@
 import { ServiceLocator } from '../ServiceLocator.js';
+import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from '../Sprites/Player.js';
 import { WaveEnemies } from './WaveEnemies.js';
+
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
     VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
@@ -12,6 +14,7 @@ export interface IServiceWaveManager {
     VerifyCollisionWithPlayer(sprite: ISpriteWithHitboxes): boolean;
     PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop: boolean): void;
     GetEnemyAnimationName(enemy: IEnemy): string | undefined;
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
 }
 
 export class WaveManager implements IServiceWaveManager {
@@ -155,5 +158,13 @@ export class WaveManager implements IServiceWaveManager {
         }
 
         return waves;
+    }
+
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
+        if (this.currentWave) {
+            return this.currentWave.ListEnemies;
+        }
+
+        return new Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>();
     }
 }

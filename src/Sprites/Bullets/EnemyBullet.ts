@@ -2,6 +2,7 @@ import { IServiceImageLoader } from '../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
+import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
 import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
 import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from '../Player.js';
@@ -9,11 +10,15 @@ import { Sprite } from '../Sprite.js';
 import { IServiceBulletManager } from './BulletManager.js';
 import { IBullet, ITargetableBullet } from './IBullet.js';
 
-export class EnemyBullet extends Sprite implements IBullet, ITargetableBullet, IMovableSprite, ISpriteWithHitboxes {
+export class EnemyBullet
+    extends Sprite
+    implements IBullet, ITargetableBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+{
     Type: 'player' | 'enemy' = 'enemy';
     BaseSpeed: number;
     Damage: number;
     Hitboxes: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
 
     XSpeed: number;
     YSpeed: number;
@@ -49,6 +54,11 @@ export class EnemyBullet extends Sprite implements IBullet, ITargetableBullet, I
                 height: 2 * CANVA_SCALEY,
             },
         ]);
+
+        this.Collide = new Map();
+        this.Collide.set('WithPlayer', () => {
+            this.PlayAnimation('destroyed');
+        });
     }
 
     UpdateHitboxes(dt: number) {
@@ -70,12 +80,7 @@ export class EnemyBullet extends Sprite implements IBullet, ITargetableBullet, I
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {
-            const isColliding =
-                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').VerifyCollisionWithPlayer(this);
-
-            if (isColliding) {
-                this.PlayAnimation('destroyed', false);
-            }
+            ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenBulletCollideWithPlayer(this);
         } else {
             if (this.IsAnimationFinished) {
                 ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);

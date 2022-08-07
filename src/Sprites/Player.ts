@@ -14,12 +14,14 @@ import {
     ISpriteWithDamageUpgrades,
     ISpriteWithHealthUpgrades,
 } from './InterfaceBehaviour/ISpriteWithStats.js';
+import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
     AddAttackSpeedStats(upgrade: number): void;
     AddHealthUpgrade(upgrade: number): void;
+    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void;
     DamageStats: number;
     Hitboxes: RectangleHitbox[];
 }
@@ -30,6 +32,7 @@ export class Player
         IServicePlayer,
         IMovableSprite,
         ISpriteWithHitboxes,
+        ICollidableSprite,
         ISpriteWithDamageUpgrades,
         ISpriteWithBaseHealth,
         ISpriteWithHealthUpgrades,
@@ -38,6 +41,7 @@ export class Player
 {
     private baseSpeed: number = 5;
     private hitboxes: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
     DamageUpgrades: number[] = [];
     HealthUpgrades: number[] = [];
     BaseHealth: number = 100;
@@ -117,6 +121,10 @@ export class Player
 
         this.PlayAnimation('idle', false);
         ServiceLocator.AddService('Player', this);
+
+        this.Collide = new Map();
+
+        this.Collide.set('WithBullet', (bullet: unknown) => {});
     }
 
     public UpdateHitboxes(dt: number): void {
@@ -238,6 +246,13 @@ export class Player
         }
 
         return false;
+    }
+
+    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
+        const collideMethod = this.Collide.get(collideScenario);
+        if (collideMethod) {
+            collideMethod(param);
+        }
     }
 }
 

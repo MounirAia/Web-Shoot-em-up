@@ -4,15 +4,17 @@ import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
 import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
+import { IBullet } from '../../Bullets/IBullet.js';
+import { CollideScenario } from '../../CollideManager.js';
+import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { ISpriteWithBaseAttackSpeed } from '../../InterfaceBehaviour/ISpriteWithStats.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
-// Play the shooting animation when enemy is shooting
-
-export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithBaseAttackSpeed {
+export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, ISpriteWithBaseAttackSpeed {
     Hitboxes: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
     BaseAttackSpeed: number;
@@ -74,6 +76,14 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithBaseAt
         this.AddAnimation('shooting', [1, 2, 3], 2.51 / 2);
         this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05);
         this.PlayAnimation('idle', true);
+
+        this.Collide = new Map();
+        this.Collide.set('WithBullet', (bullet: unknown) => {
+            bullet = bullet as IBullet;
+
+            this.PlayAnimation('destroyed');
+            this.removeEnemyFromGameFlow();
+        });
     }
 
     UpdateHitboxes(dt: number): void {
@@ -122,5 +132,10 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithBaseAt
         }
 
         return false;
+    }
+
+    private removeEnemyFromGameFlow(): void {
+        // make the enemy uncollidable
+        this.Hitboxes = [];
     }
 }
