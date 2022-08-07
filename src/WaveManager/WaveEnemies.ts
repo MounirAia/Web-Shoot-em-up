@@ -1,4 +1,5 @@
 import { canvas, CANVA_SCALEX } from '../ScreenConstant.js';
+import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { CircleEnemy } from '../Sprites/Enemies/Circle/CircleEnemy.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
@@ -78,23 +79,6 @@ export class WaveEnemies {
     }
 
     private generateEnemy(index: number, x: number, y: number, monsterShootingPosition: number): IEnemy {
-        // I will only work with big diamond triangle for now
-
-        // switch (index) {
-        //     case 0:
-        //         return new CircleEnemy(x, y, monsterShootingPosition);
-        //     case 1:
-        //         return new BigDiamondEnemy(x, y, monsterShootingPosition);
-        //     case 2:
-        //         return new RectangleEnemy(x, y, monsterShootingPosition);
-        //     case 3:
-        //         return new TrapezeEnemy(x, y, monsterShootingPosition);
-        //     case 4:
-        //         return new TriangleEnemy(x, y, monsterShootingPosition);
-        //     default:
-        //         break;
-        // }
-
         return new BigDiamondEnemy(x, y, monsterShootingPosition);
     }
 
@@ -144,6 +128,10 @@ export class WaveEnemies {
 
     public get HasNoEnemyLeft(): boolean {
         return this.listEnemies.size === 0 ? true : false;
+    }
+
+    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
+        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
     }
 }
 

@@ -2,12 +2,15 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
+import { CollideScenario } from '../../CollideManager.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
 export class RectangleEnemy extends Sprite implements IEnemy {
     Hitboxes: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
 
@@ -38,6 +41,8 @@ export class RectangleEnemy extends Sprite implements IEnemy {
                 height: 10 * CANVA_SCALEY,
             },
         ]);
+
+        this.Collide = new Map();
 
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [1], 1);

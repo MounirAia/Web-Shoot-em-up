@@ -1,18 +1,23 @@
 import { IServiceImageLoader } from '../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
-import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
+import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
 import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
 import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../Sprite.js';
 import { IServiceBulletManager } from './BulletManager.js';
 import { IBullet } from './IBullet.js';
 
-export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes {
+export class RegularPlayerBullet
+    extends Sprite
+    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+{
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number = 10;
     Damage: number = 3;
     Hitboxes: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
     constructor(x: number, y: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -28,10 +33,6 @@ export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSpri
             CANVA_SCALEY,
         );
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
-        this.PlayAnimation('idle', false);
-
         this.Hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -40,6 +41,15 @@ export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSpri
                 height: 2 * CANVA_SCALEY,
             },
         ]);
+
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
+        this.PlayAnimation('idle', false);
+
+        this.Collide = new Map();
+        this.Collide.set('WithEnemy', () => {
+            this.PlayAnimation('destroyed');
+        });
     }
 
     UpdateHitboxes(dt: number) {
@@ -60,12 +70,8 @@ export class RegularPlayerBullet extends Sprite implements IBullet, IMovableSpri
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {
-            const waveManager = ServiceLocator.GetService<IServiceWaveManager>('WaveManager');
-            let { isColliding, enemy } = waveManager.VerifyCollisionWithEnemies(this);
-            if (isColliding && waveManager.GetEnemyAnimationName(enemy!) !== 'destroyed') {
-                this.PlayAnimation('destroyed', false);
-                waveManager.PlayEnemyAnimation(enemy!, 'destroyed', false);
-            }
+            const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+            collideManager.HandleWhenBulletCollideWithEnemies(this);
         } else {
             if (this.IsAnimationFinished) {
                 ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);

@@ -1,4 +1,3 @@
-// Check why collision are not detected
 export interface ISpriteWithHitboxes {
     readonly Hitboxes: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
