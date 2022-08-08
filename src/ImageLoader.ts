@@ -43,10 +43,7 @@ export function LoadImageLoader() {
     assets.push('images/MenuScene/many-enemies.png');
     assets.push('images/Player/player.png');
     assets.push('images/Player/RegularPlayerBullet.png');
-    assets.push('images/Enemies/Trapeze/Trapeze.png');
     assets.push('images/Enemies/Diamond/BigDiamond/BigDiamond.png');
-    assets.push('images/Enemies/Circle/Circle.png');
-    assets.push('images/Enemies/Rectangle/Rectangle.png');
     assets.push('images/Enemies/Triangle/Triangle.png');
     assets.push('images/Enemies/EnemiesBullet.png');
 
