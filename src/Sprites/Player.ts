@@ -15,6 +15,7 @@ import {
     ISpriteWithHealthUpgrades,
 } from './InterfaceBehaviour/ISpriteWithStats.js';
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
+import { IBullet } from './Bullets/IBullet.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -116,7 +117,7 @@ export class Player
             },
         ]);
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [1], 1);
+        this.AddAnimation('damaged', [1], 0.1);
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1);
 
         this.PlayAnimation('idle', false);
@@ -124,7 +125,12 @@ export class Player
 
         this.Collide = new Map();
 
-        this.Collide.set('WithBullet', (bullet: unknown) => {});
+        this.Collide.set('WithBullet', (bullet: unknown) => {
+            const myBullet = bullet as IBullet;
+
+            this.currentHealth -= myBullet.Damage;
+            this.PlayAnimation('damaged', false);
+        });
     }
 
     public UpdateHitboxes(dt: number): void {
@@ -172,6 +178,10 @@ export class Player
             if (this.currentTimeBeforeNextShoot >= 0) {
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;
             }
+        }
+
+        if (this.CurrentAnimationName === 'damaged' && this.IsAnimationFinished) {
+            this.PlayAnimation('idle');
         }
 
         this.UpdateHitboxes(dt);
@@ -223,7 +233,7 @@ export class Player
         if (this.currentHealth + value >= this.MaxHealth) {
             this.currentHealth = this.MaxHealth;
         } else {
-            this.currentHealth -= value;
+            this.currentHealth += value;
         }
     }
 
