@@ -23,6 +23,7 @@ export interface IServicePlayer {
     AddAttackSpeedStats(upgrade: number): void;
     AddHealthUpgrade(upgrade: number): void;
     PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void;
+    MakeTransactionOnWallet(value: number): void;
     DamageStats: number;
     Hitboxes: RectangleHitbox[];
 }
@@ -49,6 +50,7 @@ export class Player
     private currentHealth: number = this.BaseHealth;
     AttackSpeedUpgrades: number[] = [];
     BaseAttackSpeed: number = 3;
+    private moneyInWallet: number;
 
     // Manage shooting rate of the player
     private baseTimeBeforeNextShoot = 30;
@@ -131,6 +133,8 @@ export class Player
             this.currentHealth -= myBullet.Damage;
             this.PlayAnimation('damaged', false);
         });
+
+        this.moneyInWallet = 0;
     }
 
     public UpdateHitboxes(dt: number): void {
@@ -262,6 +266,14 @@ export class Player
         const collideMethod = this.Collide.get(collideScenario);
         if (collideMethod) {
             collideMethod(param);
+        }
+    }
+
+    MakeTransactionOnWallet(value: number): void {
+        this.moneyInWallet += value;
+
+        if (this.moneyInWallet < 0) {
+            this.moneyInWallet = 0;
         }
     }
 }

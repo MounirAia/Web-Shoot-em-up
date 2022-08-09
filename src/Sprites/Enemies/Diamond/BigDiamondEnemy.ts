@@ -9,6 +9,7 @@ import { CollideScenario } from '../../CollideManager.js';
 import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { ISpriteWithBaseAttackSpeed } from '../../InterfaceBehaviour/ISpriteWithStats.js';
+import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
@@ -83,6 +84,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
 
             this.PlayAnimation('destroyed');
             this.removeEnemyFromGameFlow();
+
+            ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
     }
 
@@ -137,5 +140,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
     private removeEnemyFromGameFlow(): void {
         // make the enemy uncollidable
         this.Hitboxes = [];
+    }
+
+    get MoneyValue(): number {
+        return 5;
     }
 }
