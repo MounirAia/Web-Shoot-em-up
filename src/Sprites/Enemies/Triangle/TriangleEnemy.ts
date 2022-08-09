@@ -70,4 +70,8 @@ export class TriangleEnemy extends Sprite implements IEnemy {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
         }
     }
+
+    get MoneyValue(): number {
+        return 1;
+    }
 }

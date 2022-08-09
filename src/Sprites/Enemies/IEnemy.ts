@@ -4,4 +4,5 @@ import { Sprite } from '../Sprite.js';
 
 export interface IEnemy extends Sprite, ISpriteWithHitboxes, ICollidableSprite {
     readonly HorizontalShootingPosition: number;
+    MoneyValue: number;
 }
