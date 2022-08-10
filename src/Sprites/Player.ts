@@ -134,6 +134,11 @@ export class Player
             this.PlayAnimation('damaged', false);
         });
 
+        this.Collide.set('WithEnemy', (enemy: unknown) => {
+            this.currentHealth -= this.MaxHealth * 0.5;
+            this.PlayAnimation('damaged', false);
+        });
+
         this.moneyInWallet = 0;
     }
 

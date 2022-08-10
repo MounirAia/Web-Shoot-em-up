@@ -14,6 +14,7 @@ export interface ICollidableSprite {
 export interface IServiceCollideManager {
     HandleWhenBulletCollideWithEnemies: (bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite) => void;
     HandleWhenBulletCollideWithPlayer(bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite): void;
+    HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes & ICollidableSprite): void;
 }
 
 export class CollideManager implements IServiceCollideManager {
@@ -47,6 +48,17 @@ export class CollideManager implements IServiceCollideManager {
                 if (bulletCollisionMethod) bulletCollisionMethod();
 
                 ServiceLocator.GetService<IServicePlayer>('Player').PlayCollideMethod('WithBullet', bullet);
+            }
+        }
+    }
+
+    HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes & ICollidableSprite): void {
+        for (const hitbox of ServiceLocator.GetService<IServicePlayer>('Player').Hitboxes) {
+            if (hitbox.CheckCollision(enemy)) {
+                const enemyCollisionMethod = enemy.Collide.get('WithPlayer');
+                if (enemyCollisionMethod) enemyCollisionMethod();
+
+                ServiceLocator.GetService<IServicePlayer>('Player').PlayCollideMethod('WithEnemy', enemy);
             }
         }
     }
