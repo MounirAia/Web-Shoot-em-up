@@ -14,6 +14,7 @@ export interface ICollidableSprite {
 export interface IServiceCollideManager {
     HandleWhenBulletCollideWithEnemies: (bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite) => void;
     HandleWhenBulletCollideWithPlayer(bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite): void;
+    HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes & ICollidableSprite): void;
 }
 
 export class CollideManager implements IServiceCollideManager {
@@ -41,12 +42,31 @@ export class CollideManager implements IServiceCollideManager {
     }
 
     HandleWhenBulletCollideWithPlayer(bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite): void {
-        for (const hitbox of ServiceLocator.GetService<IServicePlayer>('Player').Hitboxes) {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        if (player.IsInvulnerable()) return;
+
+        for (const hitbox of player.Hitboxes) {
             if (hitbox.CheckCollision(bullet)) {
                 const bulletCollisionMethod = bullet.Collide.get('WithPlayer');
                 if (bulletCollisionMethod) bulletCollisionMethod();
 
-                ServiceLocator.GetService<IServicePlayer>('Player').PlayCollideMethod('WithBullet', bullet);
+                player.PlayCollideMethod('WithBullet', bullet);
+            }
+        }
+    }
+
+    HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes & ICollidableSprite): void {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        if (player.IsInvulnerable()) return;
+
+        for (const hitbox of player.Hitboxes) {
+            if (hitbox.CheckCollision(enemy)) {
+                const enemyCollisionMethod = enemy.Collide.get('WithPlayer');
+                if (enemyCollisionMethod) enemyCollisionMethod();
+
+                player.PlayCollideMethod('WithEnemy', enemy);
             }
         }
     }

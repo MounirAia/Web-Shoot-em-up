@@ -24,6 +24,7 @@ export interface IServicePlayer {
     AddHealthUpgrade(upgrade: number): void;
     PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void;
     MakeTransactionOnWallet(value: number): void;
+    IsInvulnerable(): boolean;
     DamageStats: number;
     Hitboxes: RectangleHitbox[];
 }
@@ -51,6 +52,9 @@ export class Player
     AttackSpeedUpgrades: number[] = [];
     BaseAttackSpeed: number = 3;
     private moneyInWallet: number;
+
+    // makes player invulnerable, ex:when collide with enemies
+    private readonly invulnerabilityTimePeriod: number;
 
     // Manage shooting rate of the player
     private baseTimeBeforeNextShoot = 30;
@@ -118,8 +122,12 @@ export class Player
                 height: 4 * CANVA_SCALEY,
             },
         ]);
+
+        this.invulnerabilityTimePeriod = 1;
+
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [1], 0.1);
+        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5);
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1);
 
         this.PlayAnimation('idle', false);
@@ -132,6 +140,11 @@ export class Player
 
             this.currentHealth -= myBullet.Damage;
             this.PlayAnimation('damaged', false);
+        });
+
+        this.Collide.set('WithEnemy', (enemy: unknown) => {
+            this.currentHealth -= this.MaxHealth * 0.5;
+            this.PlayAnimation('invulnerable', false);
         });
 
         this.moneyInWallet = 0;
@@ -184,7 +197,10 @@ export class Player
             }
         }
 
-        if (this.CurrentAnimationName === 'damaged' && this.IsAnimationFinished) {
+        if (
+            (this.CurrentAnimationName === 'damaged' || this.CurrentAnimationName === 'invulnerable') &&
+            this.IsAnimationFinished
+        ) {
             this.PlayAnimation('idle');
         }
 
@@ -275,6 +291,10 @@ export class Player
         if (this.moneyInWallet < 0) {
             this.moneyInWallet = 0;
         }
+    }
+
+    IsInvulnerable(): boolean {
+        return this.CurrentAnimationName === 'invulnerable';
     }
 }
 

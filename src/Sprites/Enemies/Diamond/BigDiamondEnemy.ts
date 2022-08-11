@@ -5,7 +5,7 @@ import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
 import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
 import { IBullet } from '../../Bullets/IBullet.js';
-import { CollideScenario } from '../../CollideManager.js';
+import { CollideScenario, IServiceCollideManager } from '../../CollideManager.js';
 import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { ISpriteWithBaseAttackSpeed } from '../../InterfaceBehaviour/ISpriteWithStats.js';
@@ -87,6 +87,13 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
 
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
+
+        this.Collide.set('WithPlayer', () => {
+            this.PlayAnimation('destroyed');
+            this.removeEnemyFromGameFlow();
+
+            ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
+        });
     }
 
     UpdateHitboxes(dt: number): void {
@@ -122,6 +129,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
                     this.currentTimeBeforeNextShoot -= this.AttackSpeed;
                 }
             }
+
+            ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenEnemyCollideWithPlayer(this);
         }
     }
 
