@@ -42,23 +42,31 @@ export class CollideManager implements IServiceCollideManager {
     }
 
     HandleWhenBulletCollideWithPlayer(bullet: IBullet & ISpriteWithHitboxes & ICollidableSprite): void {
-        for (const hitbox of ServiceLocator.GetService<IServicePlayer>('Player').Hitboxes) {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        if (player.IsInvulnerable()) return;
+
+        for (const hitbox of player.Hitboxes) {
             if (hitbox.CheckCollision(bullet)) {
                 const bulletCollisionMethod = bullet.Collide.get('WithPlayer');
                 if (bulletCollisionMethod) bulletCollisionMethod();
 
-                ServiceLocator.GetService<IServicePlayer>('Player').PlayCollideMethod('WithBullet', bullet);
+                player.PlayCollideMethod('WithBullet', bullet);
             }
         }
     }
 
     HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes & ICollidableSprite): void {
-        for (const hitbox of ServiceLocator.GetService<IServicePlayer>('Player').Hitboxes) {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        if (player.IsInvulnerable()) return;
+
+        for (const hitbox of player.Hitboxes) {
             if (hitbox.CheckCollision(enemy)) {
                 const enemyCollisionMethod = enemy.Collide.get('WithPlayer');
                 if (enemyCollisionMethod) enemyCollisionMethod();
 
-                ServiceLocator.GetService<IServicePlayer>('Player').PlayCollideMethod('WithEnemy', enemy);
+                player.PlayCollideMethod('WithEnemy', enemy);
             }
         }
     }
