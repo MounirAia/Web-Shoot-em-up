@@ -37,7 +37,9 @@ export class EnemyBullet
         );
 
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
+        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+        });
         this.PlayAnimation('idle', false);
 
         this.BaseSpeed = 3;
@@ -81,10 +83,6 @@ export class EnemyBullet
 
         if (this.CurrentAnimationName !== 'destroyed') {
             ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenBulletCollideWithPlayer(this);
-        } else {
-            if (this.IsAnimationFinished) {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
-            }
         }
     }
 

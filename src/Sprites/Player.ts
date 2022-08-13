@@ -126,8 +126,12 @@ export class Player
         this.invulnerabilityTimePeriod = 1;
 
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [1], 0.1);
-        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5);
+        this.AddAnimation('damaged', [1], 0.1, undefined, () => {
+            this.PlayAnimation('idle');
+        });
+        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5, undefined, () => {
+            this.PlayAnimation('idle');
+        });
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1);
 
         this.PlayAnimation('idle', false);
@@ -195,13 +199,6 @@ export class Player
             if (this.currentTimeBeforeNextShoot >= 0) {
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;
             }
-        }
-
-        if (
-            (this.CurrentAnimationName === 'damaged' || this.CurrentAnimationName === 'invulnerable') &&
-            this.IsAnimationFinished
-        ) {
-            this.PlayAnimation('idle');
         }
 
         this.UpdateHitboxes(dt);
