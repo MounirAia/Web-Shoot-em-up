@@ -16,6 +16,7 @@ import {
 } from './InterfaceBehaviour/ISpriteWithStats.js';
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
+import { IServiceSceneManager } from '../SceneManager.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -132,7 +133,9 @@ export class Player
         this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5, undefined, () => {
             this.PlayAnimation('idle');
         });
-        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1);
+        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
+            this.removePlayerFromGameFlow();
+        });
 
         this.PlayAnimation('idle', false);
         ServiceLocator.AddService('Player', this);
@@ -140,15 +143,16 @@ export class Player
         this.Collide = new Map();
 
         this.Collide.set('WithBullet', (bullet: unknown) => {
-            const myBullet = bullet as IBullet;
-
-            this.currentHealth -= myBullet.Damage;
             this.PlayAnimation('damaged', false);
+
+            const myBullet = bullet as IBullet;
+            this.CurrentHealth -= myBullet.Damage;
         });
 
         this.Collide.set('WithEnemy', (enemy: unknown) => {
-            this.currentHealth -= this.MaxHealth * 0.5;
             this.PlayAnimation('invulnerable', false);
+
+            this.CurrentHealth -= this.MaxHealth * 0.5;
         });
 
         this.moneyInWallet = 0;
@@ -247,10 +251,16 @@ export class Player
         return this.currentHealth;
     }
     set CurrentHealth(value: number) {
-        if (this.currentHealth + value >= this.MaxHealth) {
+        if (value >= this.MaxHealth) {
             this.currentHealth = this.MaxHealth;
         } else {
-            this.currentHealth += value;
+            this.currentHealth = value;
+        }
+
+        if (this.currentHealth <= 0) {
+            this.currentHealth = 0;
+            this.PlayAnimation('destroyed');
+            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('GameOver');
         }
     }
 
@@ -292,6 +302,10 @@ export class Player
 
     IsInvulnerable(): boolean {
         return this.CurrentAnimationName === 'invulnerable';
+    }
+
+    private removePlayerFromGameFlow() {
+        this.hitboxes = [];
     }
 }
 

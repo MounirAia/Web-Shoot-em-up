@@ -1,5 +1,5 @@
 export interface ISpriteWithHitboxes {
-    readonly Hitboxes: RectangleHitbox[];
+    Hitboxes: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
 }
 
