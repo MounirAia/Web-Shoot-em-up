@@ -11,7 +11,14 @@ export abstract class Sprite {
     private scaleY: number;
 
     /* Animation properties */
-    private animationList: { [key: string]: { frames: number[]; framesLengthInTime: number } } = {};
+    private animationList: {
+        [key: string]: {
+            frames: number[];
+            framesLengthInTime: number;
+            beforePlayingAnimation?: () => void;
+            afterPlayingAnimation?: () => void;
+        };
+    } = {};
     private currentAnimationName = '';
     private currentFrame = 0;
     private currentFrameTimer = 1;
@@ -40,33 +47,48 @@ export abstract class Sprite {
         this.scaleY = scaleY;
     }
 
-    public AddAnimation(key: string, frames: number[], framesLengthInTime = 1) {
-        this.animationList[key] = { frames, framesLengthInTime };
+    public AddAnimation(
+        key: string,
+        frames: number[],
+        framesLengthInTime = 1,
+        beforePlayingAnimation?: () => void,
+        afterPlayingAnimation?: () => void,
+    ) {
+        this.animationList[key] = { frames, framesLengthInTime, beforePlayingAnimation, afterPlayingAnimation };
     }
 
     public PlayAnimation(animation: string, loop = false) {
-        if (this.CurrentAnimationName !== animation) {
-            this.currentAnimationName = animation;
-            this.currentFrame = 0;
-            this.currentFrameTimer = this.animationList[this.currentAnimationName].framesLengthInTime;
-            this.doesAnimationLoop = loop;
-            this.isAnimationFinished = false;
+        const animationObject = this.animationList[animation];
+        if (animationObject) {
+            if (this.CurrentAnimationName !== animation) {
+                if (animationObject.beforePlayingAnimation) animationObject.beforePlayingAnimation();
+
+                this.currentAnimationName = animation;
+                this.currentFrame = 0;
+                this.currentFrameTimer = animationObject.framesLengthInTime;
+                this.doesAnimationLoop = loop;
+                this.isAnimationFinished = false;
+            }
         }
     }
 
     public Update(dt: number) {
         if (this.CurrentAnimationName && !this.isAnimationFinished) {
-            const animationLength = this.animationList[this.CurrentAnimationName].frames.length - 1;
+            const animationObject = this.animationList[this.CurrentAnimationName];
+            const animationLength = animationObject.frames.length - 1;
             if (this.doesAnimationLoop && this.currentFrame === animationLength) {
                 this.currentFrame = 0;
+                if (animationObject.afterPlayingAnimation) animationObject.afterPlayingAnimation();
             } else {
                 this.currentFrameTimer -= dt;
                 if (this.currentFrameTimer <= 0) {
                     this.currentFrame++;
-                    this.currentFrameTimer = this.animationList[this.CurrentAnimationName].framesLengthInTime;
+                    this.currentFrameTimer = animationObject.framesLengthInTime;
                     if (this.currentFrame >= animationLength + 1) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
+
+                        if (animationObject.afterPlayingAnimation) animationObject.afterPlayingAnimation();
                     }
                 }
             }

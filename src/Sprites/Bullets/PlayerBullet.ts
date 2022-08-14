@@ -43,7 +43,9 @@ export class RegularPlayerBullet
         ]);
 
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03);
+        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+        });
         this.PlayAnimation('idle', false);
 
         this.Collide = new Map();
@@ -72,10 +74,6 @@ export class RegularPlayerBullet
         if (this.CurrentAnimationName !== 'destroyed') {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenBulletCollideWithEnemies(this);
-        } else {
-            if (this.IsAnimationFinished) {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
-            }
         }
     }
 }
