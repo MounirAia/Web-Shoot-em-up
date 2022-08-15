@@ -9,7 +9,7 @@ export interface IServiceWaveManager {
     GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
 }
 
-export class WaveManager implements IServiceWaveManager {
+class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
     private round: number = 1;
@@ -129,4 +129,17 @@ export class WaveManager implements IServiceWaveManager {
 
         return new Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>();
     }
+}
+
+let waveManager: WaveManager;
+export function LoadWaveManager(): void {
+    waveManager = new WaveManager();
+}
+
+export function UpdateWaveManager(dt: number) {
+    waveManager.Update(dt);
+}
+
+export function DrawWaveManager(ctx: CanvasRenderingContext2D) {
+    waveManager.Draw(ctx);
 }

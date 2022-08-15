@@ -30,7 +30,7 @@ export interface IServicePlayer {
     Hitboxes: RectangleHitbox[];
 }
 
-export class Player
+class Player
     extends Sprite
     implements
         IServicePlayer,

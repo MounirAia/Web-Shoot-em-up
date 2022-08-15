@@ -6,15 +6,12 @@ import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
-import { WaveEnemies } from './WaveManager/WaveEnemies.js';
-import { WaveManager } from './WaveManager/WaveManager.js';
+import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
 import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
 
 const ctx = canvas.getContext('2d')!;
-
-let waveManager: WaveManager;
 
 function load() {
     LoadImageLoader();
@@ -24,8 +21,7 @@ function load() {
     LoadMainMenu();
     LoadBulletManager();
     LoadCollideManager();
-    waveManager = new WaveManager();
-
+    LoadWaveManager();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }
 
@@ -37,7 +33,7 @@ function update(dt: number) {
     if (SceneManager.CurrentScene === 'Game') {
         UpdateGalaxyMap(dt);
         UpdatePlayer(dt);
-        waveManager.Update(dt);
+        UpdateWaveManager(dt);
         UpdateBulletManager(dt);
 
         if (Keyboard.Escape.IsPressed) {
@@ -59,12 +55,12 @@ function draw(ctx: CanvasRenderingContext2D) {
     if (SceneManager.CurrentScene === 'Game') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
-        waveManager.Draw(ctx);
+        DrawWaveManager(ctx);
         DrawBulletManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
-        waveManager.Draw(ctx);
+        DrawWaveManager(ctx);
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         DrawMainMenu(ctx);
     }
