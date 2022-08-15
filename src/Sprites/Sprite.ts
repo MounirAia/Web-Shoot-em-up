@@ -18,12 +18,12 @@ export abstract class Sprite {
             beforePlayingAnimation?: () => void;
             afterPlayingAnimation?: () => void;
         };
-    } = {};
-    private currentAnimationName = '';
-    private currentFrame = 0;
-    private currentFrameTimer = 1;
-    private doesAnimationLoop = false;
-    private isAnimationFinished = false;
+    };
+    private currentAnimationName;
+    private currentFrame;
+    private currentFrameTimer;
+    private doesAnimationLoop;
+    private isAnimationFinished;
 
     constructor(
         image: HTMLImageElement,
@@ -45,6 +45,13 @@ export abstract class Sprite {
         this.spriteYOffset = spriteYOffset;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+
+        this.animationList = {};
+        this.currentAnimationName = '';
+        this.currentFrame = 0;
+        this.currentFrameTimer = 1;
+        this.doesAnimationLoop = false;
+        this.isAnimationFinished = false;
     }
 
     public AddAnimation(

@@ -76,7 +76,6 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
         this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05, () => {
             this.removeEnemyFromGameFlow();
         });
-        this.PlayAnimation('idle', true);
 
         this.Collide = new Map();
         this.Collide.set('WithBullet', (bullet: unknown) => {
@@ -92,6 +91,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
 
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
+
+        this.PlayAnimation('idle', true);
     }
 
     UpdateHitboxes(dt: number): void {
