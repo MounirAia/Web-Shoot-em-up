@@ -24,6 +24,7 @@ export class WaveEnemies {
         const maxNumberShootingSpawn = 5;
         const horizontalGapBetweenMonsters = Math.floor(monsterScreenWidthProportion / maxNumberShootingSpawn);
         let monsterShootingPosition = canvas.width - monsterScreenWidthProportion;
+
         while (currentNumberEnemy < numberEnemies) {
             for (let index = 0; index < this.numberSpawns; index++) {
                 currentNumberEnemy++;
@@ -57,30 +58,6 @@ export class WaveEnemies {
 
     public RemoveEnemy(enemy: IEnemy) {
         this.listEnemies.delete(enemy);
-    }
-
-    public VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
-        isColliding: boolean;
-        enemy: IEnemy | undefined;
-    } {
-        let isColliding = false;
-        for (const [key, enemy] of this.listEnemies) {
-            for (const hitbox of enemy.Hitboxes) {
-                isColliding = hitbox.CheckCollision(sprite);
-
-                if (isColliding) return { isColliding, enemy };
-            }
-        }
-
-        return { isColliding, enemy: undefined };
-    }
-
-    public PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop = false) {
-        this.listEnemies.get(enemy)?.PlayAnimation(animationName, loop);
-    }
-
-    public GetEnemyAnimationName(enemy: IEnemy) {
-        return this.listEnemies.get(enemy)?.CurrentAnimationName;
     }
 
     public Update(dt: number) {

@@ -1,3 +1,5 @@
+type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
+
 export abstract class Sprite {
     /* Image properties */
     private readonly image: HTMLImageElement;
@@ -19,7 +21,7 @@ export abstract class Sprite {
             afterPlayingAnimation?: () => void;
         };
     };
-    private currentAnimationName;
+    private currentAnimationName: AvailableAnimation;
     private currentFrame;
     private currentFrameTimer;
     private doesAnimationLoop;
@@ -55,7 +57,7 @@ export abstract class Sprite {
     }
 
     public AddAnimation(
-        key: string,
+        key: AvailableAnimation,
         frames: number[],
         framesLengthInTime = 1,
         beforePlayingAnimation?: () => void,
@@ -64,7 +66,7 @@ export abstract class Sprite {
         this.animationList[key] = { frames, framesLengthInTime, beforePlayingAnimation, afterPlayingAnimation };
     }
 
-    public PlayAnimation(animation: string, loop = false) {
+    public PlayAnimation(animation: AvailableAnimation, loop = false) {
         const animationObject = this.animationList[animation];
         if (animationObject) {
             if (this.CurrentAnimationName !== animation) {
@@ -133,7 +135,7 @@ export abstract class Sprite {
         return this.isAnimationFinished;
     }
 
-    public get CurrentAnimationName(): string {
+    public get CurrentAnimationName(): AvailableAnimation {
         return this.currentAnimationName;
     }
 

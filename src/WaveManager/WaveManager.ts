@@ -2,18 +2,10 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { IServicePlayer } from '../Sprites/Player.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
-    VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
-        isColliding: boolean;
-        enemy: IEnemy | undefined;
-    };
-    VerifyCollisionWithPlayer(sprite: ISpriteWithHitboxes): boolean;
-    PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop: boolean): void;
-    GetEnemyAnimationName(enemy: IEnemy): string | undefined;
     GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
 }
 
@@ -55,36 +47,6 @@ export class WaveManager implements IServiceWaveManager {
 
     public RemoveEnemy(enemy: IEnemy): void {
         if (this.currentWave) this.currentWave.RemoveEnemy(enemy);
-    }
-
-    public VerifyCollisionWithEnemies(sprite: ISpriteWithHitboxes): {
-        isColliding: boolean;
-        enemy: IEnemy | undefined;
-    } {
-        if (this.currentWave) {
-            return this.currentWave.VerifyCollisionWithEnemies(sprite);
-        }
-        return { isColliding: false, enemy: undefined };
-    }
-
-    public VerifyCollisionWithPlayer(sprite: ISpriteWithHitboxes): boolean {
-        for (const hitbox of ServiceLocator.GetService<IServicePlayer>('Player').Hitboxes) {
-            if (hitbox.CheckCollision(sprite)) return true;
-        }
-
-        return false;
-    }
-
-    public PlayEnemyAnimation(enemy: IEnemy, animationName: string, loop = false): void {
-        if (this.currentWave) {
-            this.currentWave.PlayEnemyAnimation(enemy, animationName, loop);
-        }
-    }
-
-    public GetEnemyAnimationName(enemy: IEnemy) {
-        if (this.currentWave) {
-            return this.currentWave.GetEnemyAnimationName(enemy);
-        }
     }
 
     public get Round(): number {
