@@ -43,23 +43,23 @@ export class Player
         ISpriteWithBaseAttackSpeed,
         ISpriteWithAttackSpeedUpgrades
 {
-    private baseSpeed: number = 5;
+    private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
-    DamageUpgrades: number[] = [];
-    HealthUpgrades: number[] = [];
-    BaseHealth: number = 100;
-    private currentHealth: number = this.BaseHealth;
-    AttackSpeedUpgrades: number[] = [];
-    BaseAttackSpeed: number = 3;
+    DamageUpgrades: number[];
+    HealthUpgrades: number[];
+    BaseHealth: number;
+    private currentHealth: number;
+    AttackSpeedUpgrades: number[];
+    BaseAttackSpeed: number;
     private moneyInWallet: number;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
 
     // Manage shooting rate of the player
-    private baseTimeBeforeNextShoot = 30;
-    private currentTimeBeforeNextShoot = 0;
+    private baseTimeBeforeNextShoot: number;
+    private currentTimeBeforeNextShoot: number;
 
     constructor(
         image: HTMLImageElement,
@@ -73,6 +73,21 @@ export class Player
         scaleY: number = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
+
+        ServiceLocator.AddService('Player', this);
+
+        this.baseSpeed = 5;
+        this.DamageUpgrades = [];
+        this.HealthUpgrades = [];
+        this.BaseHealth = 100;
+        this.currentHealth = this.BaseHealth;
+        this.AttackSpeedUpgrades = [];
+        this.BaseAttackSpeed = 3;
+        this.moneyInWallet = 0;
+        this.invulnerabilityTimePeriod = 1;
+        this.baseTimeBeforeNextShoot = 30;
+        this.currentTimeBeforeNextShoot = 0;
+
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -124,8 +139,6 @@ export class Player
             },
         ]);
 
-        this.invulnerabilityTimePeriod = 1;
-
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('damaged', [1], 0.1, undefined, () => {
             this.PlayAnimation('idle');
@@ -136,9 +149,6 @@ export class Player
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
             this.removePlayerFromGameFlow();
         });
-
-        this.PlayAnimation('idle', false);
-        ServiceLocator.AddService('Player', this);
 
         this.Collide = new Map();
 
@@ -155,7 +165,7 @@ export class Player
             this.CurrentHealth -= this.MaxHealth * 0.5;
         });
 
-        this.moneyInWallet = 0;
+        this.PlayAnimation('idle', false);
     }
 
     public UpdateHitboxes(dt: number): void {
