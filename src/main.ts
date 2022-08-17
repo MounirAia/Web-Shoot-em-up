@@ -61,6 +61,7 @@ function draw(ctx: CanvasRenderingContext2D) {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
+        DrawBulletManager(ctx);
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         DrawMainMenu(ctx);
     }
