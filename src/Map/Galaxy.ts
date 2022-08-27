@@ -1,4 +1,5 @@
 import { IServiceImageLoader } from '../ImageLoader.js';
+import { canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { Map } from './Map.js';
 
@@ -44,5 +45,8 @@ export function UpdateGalaxyMap(dt: number) {
 }
 
 export function DrawGalaxyMap(ctx: CanvasRenderingContext2D) {
-    galaxyMap.Draw(ctx);
+    ctx.save();
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
 }

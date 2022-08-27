@@ -1,3 +1,5 @@
+type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
+
 export abstract class Sprite {
     /* Image properties */
     private readonly image: HTMLImageElement;
@@ -5,17 +7,25 @@ export abstract class Sprite {
     private readonly frameHeight: number;
     protected X: number;
     protected Y: number;
+    private readonly spriteXOffset: number;
+    private readonly spriteYOffset: number;
     private scaleX: number;
     private scaleY: number;
 
     /* Animation properties */
-    private animationList: { [key: string]: number[] } = {};
-    private currentAnimationName = '';
-    private currentFrame = 0;
-    private frameLengthInTime = 1;
-    private currentFrameTimer = this.frameLengthInTime;
-    private doesAnimationLoop = false;
-    private isAnimationFinished = false;
+    private animationList: {
+        [key: string]: {
+            frames: number[];
+            framesLengthInTime: number;
+            beforePlayingAnimation?: () => void;
+            afterPlayingAnimation?: () => void;
+        };
+    };
+    private currentAnimationName: AvailableAnimation;
+    private currentFrame;
+    private currentFrameTimer;
+    private doesAnimationLoop;
+    private isAnimationFinished;
 
     constructor(
         image: HTMLImageElement,
@@ -23,6 +33,8 @@ export abstract class Sprite {
         frameHeight: number,
         x: number = 0,
         y: number = 0,
+        spriteXOffset: number = 0,
+        spriteYOffset: number = 0,
         scaleX: number = 1,
         scaleY: number = 1,
     ) {
@@ -31,37 +43,61 @@ export abstract class Sprite {
         this.frameHeight = frameHeight;
         this.X = x;
         this.Y = y;
+        this.spriteXOffset = spriteXOffset;
+        this.spriteYOffset = spriteYOffset;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+
+        this.animationList = {};
+        this.currentAnimationName = '';
+        this.currentFrame = 0;
+        this.currentFrameTimer = 1;
+        this.doesAnimationLoop = false;
+        this.isAnimationFinished = false;
     }
 
-    public AddAnimation(key: string, frames: number[]) {
-        this.animationList[key] = frames;
+    public AddAnimation(
+        key: AvailableAnimation,
+        frames: number[],
+        framesLengthInTime = 1,
+        beforePlayingAnimation?: () => void,
+        afterPlayingAnimation?: () => void,
+    ) {
+        this.animationList[key] = { frames, framesLengthInTime, beforePlayingAnimation, afterPlayingAnimation };
     }
 
-    public PlayAnimation(animation: string, framesLengthInTime = 1, loop = false) {
-        if (this.currentAnimationName !== animation) {
-            this.currentAnimationName = animation;
-            this.currentFrame = 0;
-            this.frameLengthInTime = framesLengthInTime;
-            this.currentFrameTimer = this.frameLengthInTime;
-            this.doesAnimationLoop = loop;
-            this.isAnimationFinished = false;
+    public PlayAnimation(animation: AvailableAnimation, loop = false) {
+        const animationObject = this.animationList[animation];
+        if (animationObject) {
+            if (this.CurrentAnimationName !== animation) {
+                if (animationObject.beforePlayingAnimation) animationObject.beforePlayingAnimation();
+
+                this.currentAnimationName = animation;
+                this.currentFrame = 0;
+                this.currentFrameTimer = animationObject.framesLengthInTime;
+                this.doesAnimationLoop = loop;
+                this.isAnimationFinished = false;
+            }
         }
     }
 
     public Update(dt: number) {
-        if (this.currentAnimationName && !this.isAnimationFinished) {
-            this.currentFrameTimer -= dt;
-            if (this.currentFrameTimer <= 0) {
-                this.currentFrame++;
-                this.currentFrameTimer = this.frameLengthInTime;
-                if (this.currentFrame >= this.animationList[this.currentAnimationName].length) {
-                    if (!this.doesAnimationLoop) {
+        if (this.CurrentAnimationName && !this.isAnimationFinished) {
+            const animationObject = this.animationList[this.CurrentAnimationName];
+            const animationLength = animationObject.frames.length - 1;
+            if (this.doesAnimationLoop && this.currentFrame === animationLength) {
+                this.currentFrame = 0;
+                if (animationObject.afterPlayingAnimation) animationObject.afterPlayingAnimation();
+            } else {
+                this.currentFrameTimer -= dt;
+                if (this.currentFrameTimer <= 0) {
+                    this.currentFrame++;
+                    this.currentFrameTimer = animationObject.framesLengthInTime;
+                    if (this.currentFrame >= animationLength + 1) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
-                    } else {
-                        this.currentFrame = 0;
+
+                        if (animationObject.afterPlayingAnimation) animationObject.afterPlayingAnimation();
                     }
                 }
             }
@@ -69,7 +105,7 @@ export abstract class Sprite {
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        const { image, frameWidth, frameHeight, X: x, Y: y, scaleX, scaleY } = this;
+        const { image, frameWidth, frameHeight, X: x, Y: y, spriteXOffset, spriteYOffset, scaleX, scaleY } = this;
 
         const xFramePosition = frameWidth * (this.frameNumber % this.numberFramesPerLine);
         const yFramePosition = frameHeight * Math.floor(this.frameNumber / this.numberFramesPerLine);
@@ -79,8 +115,8 @@ export abstract class Sprite {
             yFramePosition,
             frameWidth,
             frameHeight,
-            x,
-            y,
+            x - spriteXOffset,
+            y - spriteYOffset,
             scaleX * frameWidth,
             scaleY * frameHeight,
         );
@@ -91,12 +127,16 @@ export abstract class Sprite {
     }
 
     private get frameNumber(): number {
-        if (this.currentAnimationName) return this.animationList[this.currentAnimationName][this.currentFrame];
+        if (this.CurrentAnimationName) return this.animationList[this.CurrentAnimationName].frames[this.currentFrame];
         return 0;
     }
 
     protected get IsAnimationFinished(): boolean {
         return this.isAnimationFinished;
+    }
+
+    public get CurrentAnimationName(): AvailableAnimation {
+        return this.currentAnimationName;
     }
 
     protected get Width(): number {

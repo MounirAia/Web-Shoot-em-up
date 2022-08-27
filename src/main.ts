@@ -6,13 +6,12 @@ import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
-import { WaveEnemies } from './WaveManager/WaveEnemies.js';
-import { WaveManager } from './WaveManager/WaveManager.js';
+import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
+import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
+import { LoadCollideManager } from './Sprites/CollideManager.js';
 
 const ctx = canvas.getContext('2d')!;
-
-let waveManager: WaveManager;
 
 function load() {
     LoadImageLoader();
@@ -20,9 +19,10 @@ function load() {
     LoadGalaxyMap();
     LoadPlayer();
     LoadMainMenu();
-    waveManager = new WaveManager([new WaveEnemies(30, 14), new WaveEnemies(22, 14), new WaveEnemies(14, 14)]);
-
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
+    LoadBulletManager();
+    LoadCollideManager();
+    LoadWaveManager();
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }
 
 function update(dt: number) {
@@ -33,7 +33,8 @@ function update(dt: number) {
     if (SceneManager.CurrentScene === 'Game') {
         UpdateGalaxyMap(dt);
         UpdatePlayer(dt);
-        waveManager.Update(dt);
+        UpdateWaveManager(dt);
+        UpdateBulletManager(dt);
 
         if (Keyboard.Escape.IsPressed) {
             SceneManager.PlayScene('InGameMenu');
@@ -54,11 +55,13 @@ function draw(ctx: CanvasRenderingContext2D) {
     if (SceneManager.CurrentScene === 'Game') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
-        waveManager.Draw(ctx);
+        DrawWaveManager(ctx);
+        DrawBulletManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
-        waveManager.Draw(ctx);
+        DrawWaveManager(ctx);
+        DrawBulletManager(ctx);
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         DrawMainMenu(ctx);
     }
@@ -72,7 +75,9 @@ let timeToUpdate = 0;
 function run(timestamp: number) {
     // accumulated time to update between 2 frames
     timeToUpdate += timestamp - previousTimestamp;
-
+    // for 60 fps screen you have 1 update for 1 draw
+    // for 30 fps screen you have 2 updates for 1 draw
+    // for 144 fps screen you have around 3 updates for 1 draw
     while (timeToUpdate >= deltaTime) {
         update(deltaTime / 1000); // divide by 1000, because I want to work in second not millisecond
         timeToUpdate -= deltaTime;
