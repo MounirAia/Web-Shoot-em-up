@@ -1,6 +1,7 @@
 export interface ISpriteWithHitboxes {
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
+    HitboxesByFrame?: HitboxesByFrame;
 }
 
 export class RectangleHitbox {
@@ -27,7 +28,7 @@ export class RectangleHitbox {
     }
 
     public CheckCollision(spriteWithHitBox: ISpriteWithHitboxes): boolean {
-        for (const hitbox of spriteWithHitBox.Hitboxes) {
+        for (const hitbox of spriteWithHitBox.CurrentHitbox) {
             if (this.CheckIfBoxOverlap(hitbox.x, hitbox.y, hitbox.width, hitbox.height)) return true;
         }
         return false;
@@ -38,6 +39,35 @@ export class RectangleHitbox {
     }
     private get y(): number {
         return this.SpriteY + this.offsetY;
+    }
+
+    // Only there to test hitbox visually
+    public TestHitboxDrawing(ctx: CanvasRenderingContext2D) {
+        ctx.strokeStyle = 'purple';
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+type keyForHitboxesByFrame = number | 'noHitbox' | 'default';
+export class HitboxesByFrame {
+    private hitboxesMap: Map<keyForHitboxesByFrame, RectangleHitbox[]>;
+
+    constructor() {
+        this.hitboxesMap = new Map();
+        this.hitboxesMap.set('noHitbox', []); // useful to remove a sprite from the flow of the game
+    }
+
+    public SetHitboxes(frame: keyForHitboxesByFrame, hitboxes: RectangleHitbox[]) {
+        this.hitboxesMap.set(frame, hitboxes);
+    }
+
+    public GetHitboxes(frame: keyForHitboxesByFrame): RectangleHitbox[] {
+        const hitbox = this.hitboxesMap.get(frame);
+        if (hitbox) {
+            return hitbox;
+        }
+
+        return this.hitboxesMap.get('noHitbox')!;
     }
 }
 

@@ -8,7 +8,7 @@ import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
 export class TriangleEnemy extends Sprite implements IEnemy {
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
 
@@ -27,7 +27,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
 
-        this.Hitboxes = CreateHitboxes(this.X, this.Y, [
+        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
                 offsetY: 1 * CANVA_SCALEY,
@@ -55,7 +55,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
     }
 
     UpdateHitboxes(dt: number): void {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });

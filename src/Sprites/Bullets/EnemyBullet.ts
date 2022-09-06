@@ -17,7 +17,7 @@ export class EnemyBullet
     Type: 'player' | 'enemy' = 'enemy';
     BaseSpeed: number;
     Damage: number;
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
     XSpeed: number;
@@ -48,7 +48,7 @@ export class EnemyBullet
         this.XSpeed = Math.cos(this.BulletAngle) * this.BaseSpeed;
         this.YSpeed = Math.sin(this.BulletAngle) * this.BaseSpeed;
 
-        this.Hitboxes = CreateHitboxes(this.X, this.Y, [
+        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
                 offsetY: 0,
@@ -64,7 +64,7 @@ export class EnemyBullet
     }
 
     UpdateHitboxes(dt: number) {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });
