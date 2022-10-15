@@ -1,6 +1,6 @@
 
 # Web-Shoot-em-up
-This project is coded using Typescript in combination with the Canvas interface of HTML and a personal framework. Here is a short description of the game and how it will be constructed!
+This project is not finished (no playable version yet). It is coded using Typescript in combination with the Canvas interface of HTML and a personal framework. Here is a short description of the game and how it will be constructed!
 ## Summary
 The player will be controlling a modular ship with unique abilities and will have only one mission: to survive against hordes of enemies. The player would have to upgrade his ship with the money gained from the enemies to make this mission possible.
 
