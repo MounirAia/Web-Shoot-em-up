@@ -1,6 +1,9 @@
 
 # Web-Shoot-em-up
 This project is not finished (no playable version yet). It is coded using Typescript in combination with the Canvas interface of HTML and a personal framework. Here is a short description of the game and how it will be constructed!
+
+For the full documentation go to: https://web-shoot-em-up.atlassian.net/wiki/spaces/WEBSHOOTEM/pages/327681/Web+Shoot-em-up
+
 ## Summary
 The player will be controlling a modular ship with unique abilities and will have only one mission: to survive against hordes of enemies. The player would have to upgrade his ship with the money gained from the enemies to make this mission possible.
 
