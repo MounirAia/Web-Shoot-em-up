@@ -17,6 +17,7 @@ import {
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
+import { RocketSkill } from './PlayerSkills/RocketSkill.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -27,8 +28,10 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     DamageStats: number;
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
 }
+
+type PlayerSkill = 'effect' | 'special' | 'support';
 
 class Player
     extends Sprite
@@ -46,12 +49,14 @@ class Player
     private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
+
     DamageUpgrades: number[];
     HealthUpgrades: number[];
     BaseHealth: number;
     private currentHealth: number;
     AttackSpeedUpgrades: number[];
     BaseAttackSpeed: number;
+
     private moneyInWallet: number;
 
     // makes player invulnerable, ex:when collide with enemies
@@ -60,6 +65,8 @@ class Player
     // Manage shooting rate of the player
     private baseTimeBeforeNextShoot: number;
     private currentTimeBeforeNextShoot: number;
+
+    private currentSkill: Map<PlayerSkill, RocketSkill>;
 
     constructor(
         image: HTMLImageElement,
@@ -87,6 +94,10 @@ class Player
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
+
+        // Skill setup
+        this.currentSkill = new Map();
+        this.currentSkill.set('special', new RocketSkill());
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -169,7 +180,7 @@ class Player
     }
 
     public UpdateHitboxes(dt: number): void {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });
@@ -182,7 +193,7 @@ class Player
         let isOutsideTopScreen = false;
         let isOutsideRightScreen = false;
         let isOutsideBottomScreen = false;
-        for (const hitbox of this.Hitboxes) {
+        for (const hitbox of this.CurrentHitbox) {
             isOutsideLeftScreen =
                 isOutsideLeftScreen || hitbox.CheckIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
             isOutsideTopScreen =
@@ -207,8 +218,12 @@ class Player
         }
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
-            const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+            let bulletXOffset = 34 * CANVA_SCALEX;
+            let bulletYOffset = 8 * CANVA_SCALEY;
+            const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
+            // ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+
+            this.currentSkill.get('special')?.Effect();
         } else {
             if (this.currentTimeBeforeNextShoot >= 0) {
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;
@@ -222,7 +237,7 @@ class Player
         return { x: this.X, y: this.Y };
     }
 
-    get Hitboxes(): RectangleHitbox[] {
+    get CurrentHitbox(): RectangleHitbox[] {
         return this.hitboxes;
     }
 

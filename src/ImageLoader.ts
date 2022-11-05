@@ -46,6 +46,9 @@ export function LoadImageLoader() {
     assets.push('images/Enemies/Diamond/BigDiamond/BigDiamond.png');
     assets.push('images/Enemies/Triangle/Triangle.png');
     assets.push('images/Enemies/EnemiesBullet.png');
+    assets.push('images/Skills/Rocket/RocketProjectileLevel1.png');
+    assets.push('images/Skills/Rocket/RocketProjectileLevel2.png');
+    assets.push('images/Skills/Rocket/RocketProjectileLevel3.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

@@ -1,7 +1,6 @@
 export interface ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
-    HitboxesByFrame?: HitboxesByFrame;
 }
 
 export class RectangleHitbox {
@@ -11,7 +10,7 @@ export class RectangleHitbox {
     private offsetY: number;
     private width: number;
     private height: number;
-
+    public static readonly NoHitbox: [] = [];
     constructor(spriteX: number, spriteY: number, offsetX: number, offsetY: number, width: number, height: number) {
         this.SpriteX = spriteX;
         this.SpriteY = spriteY;
@@ -45,29 +44,6 @@ export class RectangleHitbox {
     public TestHitboxDrawing(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = 'purple';
         ctx.strokeRect(this.x, this.y, this.width, this.height);
-    }
-}
-
-type keyForHitboxesByFrame = number | 'noHitbox' | 'default';
-export class HitboxesByFrame {
-    private hitboxesMap: Map<keyForHitboxesByFrame, RectangleHitbox[]>;
-
-    constructor() {
-        this.hitboxesMap = new Map();
-        this.hitboxesMap.set('noHitbox', []); // useful to remove a sprite from the flow of the game
-    }
-
-    public SetHitboxes(frame: keyForHitboxesByFrame, hitboxes: RectangleHitbox[]) {
-        this.hitboxesMap.set(frame, hitboxes);
-    }
-
-    public GetHitboxes(frame: keyForHitboxesByFrame): RectangleHitbox[] {
-        const hitbox = this.hitboxesMap.get(frame);
-        if (hitbox) {
-            return hitbox;
-        }
-
-        return this.hitboxesMap.get('noHitbox')!;
     }
 }
 
