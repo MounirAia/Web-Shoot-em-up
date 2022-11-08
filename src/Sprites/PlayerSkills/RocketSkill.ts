@@ -44,8 +44,8 @@ export class RocketBulletLevel1
         );
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
-                offsetX: 0,
-                offsetY: 0,
+                offsetX: 0 * CANVA_SCALEX,
+                offsetY: 0 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 1 * CANVA_SCALEY,
             },
@@ -56,7 +56,7 @@ export class RocketBulletLevel1
                 height: 3 * CANVA_SCALEY,
             },
             {
-                offsetX: 0,
+                offsetX: 0 * CANVA_SCALEX,
                 offsetY: 4 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 1 * CANVA_SCALEY,
@@ -176,8 +176,8 @@ export class RocketBulletLevel2
 
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
-                offsetX: 0,
-                offsetY: 1,
+                offsetX: 0 * CANVA_SCALEX,
+                offsetY: 1 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 1 * CANVA_SCALEY,
             },
@@ -188,7 +188,7 @@ export class RocketBulletLevel2
                 height: 3 * CANVA_SCALEY,
             },
             {
-                offsetX: 5,
+                offsetX: 5 * CANVA_SCALEX,
                 offsetY: 1 * CANVA_SCALEY,
                 width: 1 * CANVA_SCALEX,
                 height: 1 * CANVA_SCALEY,
@@ -215,7 +215,7 @@ export class RocketBulletLevel2
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation(
             'destroyed',
-            [0, 1, 2, 3, 4, 5, 6],
+            [0, 1, 2, 3, 4, 5],
             0.03,
             () => {
                 this.BaseSpeed /= 2;
@@ -279,6 +279,259 @@ export class RocketBulletLevel2
         super.Draw(ctx);
     }
 }
+class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite {
+    Type: 'player' | 'enemy' = 'player';
+    BaseSpeed: number;
+    Damage: number = 3;
+    CurrentHitbox: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
+    constructor(x: number, y: number, direction: 'up' | 'down') {
+        super(
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
+                'images/Skills/Rocket/RocketSubProjectileLevel3.png',
+            ),
+            16,
+            16,
+            x,
+            y,
+            6 * CANVA_SCALEX,
+            7 * CANVA_SCALEY,
+            CANVA_SCALEX,
+            CANVA_SCALEY,
+        );
+
+        this.BaseSpeed = direction === 'up' ? -10 : 10;
+
+        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: 0 * CANVA_SCALEX,
+                offsetY: 0 * CANVA_SCALEY,
+                width: 3 * CANVA_SCALEX,
+                height: 2 * CANVA_SCALEY,
+            },
+        ]);
+        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: -2 * CANVA_SCALEX,
+                offsetY: -2 * CANVA_SCALEY,
+                width: 7 * CANVA_SCALEX,
+                height: 7 * CANVA_SCALEY,
+            },
+        ]);
+        this.CurrentHitbox = defaultHitbox;
+
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation(
+            'destroyed',
+            [0, 1, 2, 3, 4],
+            0.03,
+            () => {
+                this.BaseSpeed /= 2;
+            },
+            () => {
+                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            },
+            new Map([
+                [
+                    1,
+                    () => {
+                        this.CurrentHitbox = frame1Hitbox;
+                    },
+                ],
+                [
+                    2,
+                    () => {
+                        this.CurrentHitbox = RectangleHitbox.NoHitbox;
+                    },
+                ],
+            ]),
+        );
+        this.PlayAnimation('idle', false);
+
+        this.Collide = new Map();
+        this.Collide.set('WithEnemy', () => {
+            this.PlayAnimation('destroyed');
+        });
+    }
+
+    UpdateHitboxes(dt: number) {
+        this.CurrentHitbox.forEach((hitbox) => {
+            hitbox.SpriteX = this.X;
+            hitbox.SpriteY = this.Y;
+        });
+    }
+
+    public Update(dt: number) {
+        super.Update(dt);
+
+        this.Y += this.BaseSpeed;
+
+        if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+        }
+
+        const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+        collideManager.HandleWhenBulletCollideWithEnemies(this);
+
+        this.UpdateHitboxes(dt);
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D): void {
+        super.Draw(ctx);
+    }
+}
+
+export class RocketBulletLevel3
+    extends Sprite
+    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+{
+    Type: 'player' | 'enemy' = 'player';
+    BaseSpeed: number = 10;
+    Damage: number = 3;
+    CurrentHitbox: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
+    constructor(x: number, y: number) {
+        super(
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
+                'images/Skills/Rocket/RocketProjectileLevel3.png',
+            ),
+            16,
+            16,
+            x,
+            y,
+            4 * CANVA_SCALEX,
+            5 * CANVA_SCALEY,
+            CANVA_SCALEX,
+            CANVA_SCALEY,
+        );
+
+        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: 0 * CANVA_SCALEX,
+                offsetY: 2 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 2 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 1 * CANVA_SCALEX,
+                offsetY: 1 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 4 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 2 * CANVA_SCALEX,
+                offsetY: 0 * CANVA_SCALEY,
+                width: 5 * CANVA_SCALEX,
+                height: 6 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 7 * CANVA_SCALEX,
+                offsetY: 1 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 4 * CANVA_SCALEY,
+            },
+            {
+                offsetX: 8 * CANVA_SCALEX,
+                offsetY: 2 * CANVA_SCALEY,
+                width: 1 * CANVA_SCALEX,
+                height: 2 * CANVA_SCALEY,
+            },
+        ]);
+        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: -3 * CANVA_SCALEX,
+                offsetY: -2 * CANVA_SCALEY,
+                width: 15 * CANVA_SCALEX,
+                height: 13 * CANVA_SCALEY,
+            },
+        ]);
+        const frame2Hitbox = CreateHitboxes(this.X, this.Y, [
+            {
+                offsetX: -4 * CANVA_SCALEX,
+                offsetY: -5 * CANVA_SCALEY,
+                width: 16 * CANVA_SCALEX,
+                height: 16 * CANVA_SCALEY,
+            },
+        ]);
+        this.CurrentHitbox = defaultHitbox;
+
+        this.AddAnimation('idle', [0], 1);
+        this.AddAnimation(
+            'destroyed',
+            [0, 1, 2, 3, 4, 5],
+            0.03,
+            () => {
+                this.BaseSpeed /= 2;
+            },
+            () => {
+                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            },
+            new Map([
+                [
+                    1,
+                    () => {
+                        this.CurrentHitbox = frame1Hitbox;
+                    },
+                ],
+                [
+                    2,
+                    () => {
+                        this.CurrentHitbox = frame2Hitbox;
+                        const upSubBullet = new RocketSubBullet(this.X + 3 * CANVA_SCALEX, this.Y, 'up');
+                        const downSubBullet = new RocketSubBullet(
+                            this.X + 3 * CANVA_SCALEX,
+                            this.Y + 4 * CANVA_SCALEY,
+                            'down',
+                        );
+                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(upSubBullet);
+                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(downSubBullet);
+                    },
+                ],
+                [
+                    3,
+                    () => {
+                        // remove hitbox there
+                        this.CurrentHitbox = RectangleHitbox.NoHitbox;
+                    },
+                ],
+            ]),
+        );
+        this.PlayAnimation('idle', false);
+
+        this.Collide = new Map();
+        this.Collide.set('WithEnemy', () => {
+            this.PlayAnimation('destroyed');
+        });
+    }
+
+    UpdateHitboxes(dt: number) {
+        this.CurrentHitbox.forEach((hitbox) => {
+            hitbox.SpriteX = this.X;
+            hitbox.SpriteY = this.Y;
+        });
+    }
+
+    public Update(dt: number) {
+        super.Update(dt);
+
+        this.X += this.BaseSpeed;
+
+        if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+        }
+
+        const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+        collideManager.HandleWhenBulletCollideWithEnemies(this);
+
+        this.UpdateHitboxes(dt);
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D): void {
+        super.Draw(ctx);
+    }
+}
 
 type SkillsTypeName = 'special' | 'support' | 'effect';
 
@@ -292,7 +545,7 @@ export class RocketSkill {
     public Effect() {
         let { x, y } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
 
-        const rocket = new RocketBulletLevel2(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+        const rocket = new RocketBulletLevel3(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
         ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
     }
 }
