@@ -8,6 +8,8 @@ import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
+import { RocketDamageStats } from '../../StatsJSON/Skills/Rocket/RocketDamage.js';
+import { GetSkillsConstants } from '../../StatsJSON/Skills/Constant.js';
 
 // based on the level of the skills you call the good private effect method
 // I will need an Upgrade method, that add a level to the rocket skill
@@ -22,9 +24,9 @@ export class RocketBulletLevel1
     extends Sprite
     implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
 {
-    Type: 'player' | 'enemy' = 'player';
-    BaseSpeed: number = 10;
-    Damage: number = 3;
+    Type: 'player' | 'enemy';
+    BaseSpeed: number;
+    Damage: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -42,6 +44,10 @@ export class RocketBulletLevel1
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
+        this.Type = 'player';
+        this.BaseSpeed = GetSkillsConstants('Rocket', 1).projectileSpeed;
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -80,7 +86,6 @@ export class RocketBulletLevel1
         ]);
 
         this.CurrentHitbox = defaultHitbox;
-
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation(
             'destroyed',
@@ -97,12 +102,14 @@ export class RocketBulletLevel1
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L1;
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L1;
                     },
                 ],
                 [
@@ -131,7 +138,6 @@ export class RocketBulletLevel1
 
     public Update(dt: number) {
         super.Update(dt);
-
         this.X += this.BaseSpeed;
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -154,8 +160,8 @@ export class RocketBulletLevel2
     implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy' = 'player';
-    BaseSpeed: number = 10;
-    Damage: number = 3;
+    BaseSpeed: number;
+    Damage: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -173,7 +179,9 @@ export class RocketBulletLevel2
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-
+        this.BaseSpeed = GetSkillsConstants('Rocket', 2).projectileSpeed;
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -228,12 +236,14 @@ export class RocketBulletLevel2
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L2;
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L2;
                     },
                 ],
                 [
@@ -262,7 +272,6 @@ export class RocketBulletLevel2
 
     public Update(dt: number) {
         super.Update(dt);
-
         this.X += this.BaseSpeed;
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -282,7 +291,7 @@ export class RocketBulletLevel2
 class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite {
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number;
-    Damage: number = 3;
+    Damage: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -300,9 +309,10 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-
-        this.BaseSpeed = direction === 'up' ? -10 : 10;
-
+        const projectileSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -364,7 +374,6 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
 
     public Update(dt: number) {
         super.Update(dt);
-
         this.Y += this.BaseSpeed;
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -387,8 +396,8 @@ export class RocketBulletLevel3
     implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy' = 'player';
-    BaseSpeed: number = 10;
-    Damage: number = 3;
+    BaseSpeed: number;
+    Damage: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -406,7 +415,9 @@ export class RocketBulletLevel3
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-
+        this.BaseSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -473,12 +484,14 @@ export class RocketBulletLevel3
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L3;
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
+                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L3;
                         const upSubBullet = new RocketSubBullet(this.X + 3 * CANVA_SCALEX, this.Y, 'up');
                         const downSubBullet = new RocketSubBullet(
                             this.X + 3 * CANVA_SCALEX,
@@ -515,7 +528,6 @@ export class RocketBulletLevel3
 
     public Update(dt: number) {
         super.Update(dt);
-
         this.X += this.BaseSpeed;
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -544,8 +556,19 @@ export class RocketSkill {
 
     public Effect() {
         let { x, y } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+        let rocket;
 
-        const rocket = new RocketBulletLevel3(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
-        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+        if (skillLevel === 1) {
+            rocket = new RocketBulletLevel1(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+        } else if (skillLevel === 2) {
+            rocket = new RocketBulletLevel2(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+        } else if (skillLevel === 3) {
+            rocket = new RocketBulletLevel3(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+        }
+
+        if (rocket) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+        }
     }
 }

@@ -28,6 +28,8 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     DamageStats: number;
+    NumberOfDamageUpgrade: number;
+    SpecialSkillLevel: number;
     CurrentHitbox: RectangleHitbox[];
 }
 
@@ -58,6 +60,7 @@ class Player
     BaseAttackSpeed: number;
 
     private moneyInWallet: number;
+    private specialSkillLevel: number;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -91,6 +94,7 @@ class Player
         this.AttackSpeedUpgrades = [];
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
+        this.specialSkillLevel = 1;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -260,6 +264,9 @@ class Player
     AddDamageUpgrade(upgrade: number): void {
         if (upgrade > 0) this.DamageUpgrades.push(upgrade);
     }
+    get NumberOfDamageUpgrade(): number {
+        return this.DamageUpgrades.length;
+    }
 
     AddHealthUpgrade(upgrade: number): void {
         if (upgrade > 0) this.HealthUpgrades.push(upgrade);
@@ -323,6 +330,10 @@ class Player
         if (this.moneyInWallet < 0) {
             this.moneyInWallet = 0;
         }
+    }
+
+    get SpecialSkillLevel(): number {
+        return this.specialSkillLevel;
     }
 
     IsInvulnerable(): boolean {
