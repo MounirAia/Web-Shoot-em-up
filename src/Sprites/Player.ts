@@ -18,6 +18,8 @@ import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { RocketSkill } from './PlayerSkills/RocketSkill.js';
+import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
+import { CannonConfiguration, CannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -29,8 +31,10 @@ export interface IServicePlayer {
     IsInvulnerable(): boolean;
     DamageStats: number;
     NumberOfDamageUpgrade: number;
-    SpecialSkillLevel: number;
+    SpecialSkillLevel: PossibleSkillLevel;
+    SpeciallSkillName: PossibleSkillName | undefined;
     CurrentHitbox: RectangleHitbox[];
+    InvulnerabilityTimePeriod: number;
 }
 
 type PlayerSkill = 'effect' | 'special' | 'support';
@@ -60,7 +64,7 @@ class Player
     BaseAttackSpeed: number;
 
     private moneyInWallet: number;
-    private specialSkillLevel: number;
+    private specialSkillLevel: PossibleSkillLevel;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -70,6 +74,8 @@ class Player
     private currentTimeBeforeNextShoot: number;
 
     private currentSkill: Map<PlayerSkill, RocketSkill>;
+
+    private cannonConfiguration: CannonConfiguration;
 
     constructor(
         image: HTMLImageElement,
@@ -102,6 +108,8 @@ class Player
         // Skill setup
         this.currentSkill = new Map();
         this.currentSkill.set('special', new RocketSkill());
+
+        this.cannonConfiguration = new CannonConfiguration(CannonConfigurationGenerator.GetConfig());
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -155,12 +163,28 @@ class Player
         ]);
 
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [1], 0.1, undefined, () => {
-            this.PlayAnimation('idle');
-        });
-        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5, undefined, () => {
-            this.PlayAnimation('idle');
-        });
+        this.AddAnimation(
+            'damaged',
+            [1],
+            0.1,
+            () => {
+                this.cannonConfiguration.PlayAnimation('damaged');
+            },
+            () => {
+                this.PlayAnimation('idle');
+            },
+        );
+        this.AddAnimation(
+            'invulnerable',
+            [1, 0, 1, 0, 1],
+            this.invulnerabilityTimePeriod / 5,
+            () => {
+                this.cannonConfiguration.PlayAnimation('invulnerable');
+            },
+            () => {
+                this.PlayAnimation('idle');
+            },
+        );
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
             this.removePlayerFromGameFlow();
         });
@@ -235,6 +259,13 @@ class Player
         }
 
         this.UpdateHitboxes(dt);
+
+        this.cannonConfiguration.Update(dt);
+    }
+
+    Draw(ctx: CanvasRenderingContext2D) {
+        super.Draw(ctx);
+        this.cannonConfiguration.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {
@@ -242,7 +273,7 @@ class Player
     }
 
     get CurrentHitbox(): RectangleHitbox[] {
-        return this.hitboxes;
+        return [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
     }
 
     public get BaseSpeed(): number {
@@ -332,12 +363,20 @@ class Player
         }
     }
 
-    get SpecialSkillLevel(): number {
+    get SpecialSkillLevel(): PossibleSkillLevel {
         return this.specialSkillLevel;
+    }
+
+    get SpeciallSkillName(): PossibleSkillName | undefined {
+        return this.currentSkill.get('special')?.SkillName;
     }
 
     IsInvulnerable(): boolean {
         return this.CurrentAnimationName === 'invulnerable';
+    }
+
+    get InvulnerabilityTimePeriod(): number {
+        return this.invulnerabilityTimePeriod;
     }
 
     private removePlayerFromGameFlow() {

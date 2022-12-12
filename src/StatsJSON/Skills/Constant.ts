@@ -21,7 +21,7 @@ const constant = [
         skillPrice: 9600,
         projectileSpeed: 10,
         cannonType: 'regular',
-        numberOfCannon: 4,
+        numberOfCannon: 2,
     },
 ] as const;
 
@@ -29,16 +29,16 @@ const possibleSkillNameArray = constant.map((skill) => {
     return skill.skillName;
 });
 
-type possibleSkillName = typeof possibleSkillNameArray[0];
+export type PossibleSkillName = typeof possibleSkillNameArray[0];
 
 // do the map method for the level of the skill
 const possibleLevelArray = constant.map((skill) => {
     return skill.level;
 });
 
-type possibleLevelType = typeof possibleLevelArray[0];
+export type PossibleSkillLevel = typeof possibleLevelArray[0];
 
-export function GetSkillsConstants(skillName: possibleSkillName, level: possibleLevelType) {
+export function GetSkillsConstants(skillName: PossibleSkillName, level: PossibleSkillLevel) {
     const obj = constant.filter((element) => {
         return element.skillName === skillName && element.level === level;
     })[0];

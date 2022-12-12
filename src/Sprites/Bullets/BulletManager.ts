@@ -39,7 +39,10 @@ class BulletManager implements IServiceBulletManager {
     public RemoveBullet(bullet: IBullet): void {
         const index = this.bulletsList[bullet.Type].indexOf(bullet);
         if (index > -1) {
-            this.bulletsList[bullet.Type].splice(index, 1);
+            // this.bulletsList[bullet.Type].splice(index, 1);
+            const lastElementArray = this.bulletsList[bullet.Type][this.bulletsList[bullet.Type].length - 1];
+            this.bulletsList[bullet.Type][index] = lastElementArray; // replace the element to delete by the last one
+            this.bulletsList[bullet.Type].pop(); // delete the duplicate version
         }
     }
 }

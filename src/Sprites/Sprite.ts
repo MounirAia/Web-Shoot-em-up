@@ -1,4 +1,4 @@
-type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
+export type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
 
 export abstract class Sprite {
     /* Image properties */

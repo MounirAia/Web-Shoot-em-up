@@ -9,7 +9,7 @@ import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../Interfa
 import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
 import { RocketDamageStats } from '../../StatsJSON/Skills/Rocket/RocketDamage.js';
-import { GetSkillsConstants } from '../../StatsJSON/Skills/Constant.js';
+import { GetSkillsConstants, PossibleSkillName } from '../../StatsJSON/Skills/Constant.js';
 
 // based on the level of the skills you call the good private effect method
 // I will need an Upgrade method, that add a level to the rocket skill
@@ -272,7 +272,12 @@ export class RocketBulletLevel2
 
     public Update(dt: number) {
         super.Update(dt);
+        const oldX = this.X;
         this.X += this.BaseSpeed;
+
+        if (oldX > this.X) {
+            console.log('problem!');
+        }
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
@@ -548,27 +553,33 @@ export class RocketBulletLevel3
 type SkillsTypeName = 'special' | 'support' | 'effect';
 
 export class RocketSkill {
-    Type: SkillsTypeName;
-
+    readonly Type: SkillsTypeName;
+    readonly SkillName: PossibleSkillName;
     constructor() {
         this.Type = 'special';
+        this.SkillName = GetSkillsConstants('Rocket', 1).skillName;
     }
 
     public Effect() {
-        let { x, y } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        let { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
-        let rocket;
+        const rockets: IBullet[] = [];
 
         if (skillLevel === 1) {
-            rocket = new RocketBulletLevel1(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+            rockets.push(new RocketBulletLevel1(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
         } else if (skillLevel === 2) {
-            rocket = new RocketBulletLevel2(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+            rockets.push(new RocketBulletLevel2(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
+            rockets.push(new RocketBulletLevel2(playerX + 19 * CANVA_SCALEX, playerY + 12 * CANVA_SCALEY));
         } else if (skillLevel === 3) {
-            rocket = new RocketBulletLevel3(x + 24 * CANVA_SCALEX, y - 4 * CANVA_SCALEY);
+            const rocket1 = new RocketBulletLevel3(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY);
+            const rocket2 = new RocketBulletLevel3(playerX + 19 * CANVA_SCALEX, playerY + 12 * CANVA_SCALEY);
+            rockets.push(rocket1, rocket2);
         }
 
-        if (rocket) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+        if (rockets) {
+            rockets.forEach((rocket) => {
+                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+            });
         }
     }
 }
