@@ -72,10 +72,9 @@ export class EnemyBullet
 
     public Update(dt: number) {
         super.Update(dt);
-        this.UpdateHitboxes(dt);
-
         this.X -= this.XSpeed;
         this.Y -= this.YSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);

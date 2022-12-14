@@ -139,6 +139,7 @@ export class RocketBulletLevel1
     public Update(dt: number) {
         super.Update(dt);
         this.X += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
@@ -146,8 +147,6 @@ export class RocketBulletLevel1
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
         collideManager.HandleWhenBulletCollideWithEnemies(this);
-
-        this.UpdateHitboxes(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -272,12 +271,8 @@ export class RocketBulletLevel2
 
     public Update(dt: number) {
         super.Update(dt);
-        const oldX = this.X;
         this.X += this.BaseSpeed;
-
-        if (oldX > this.X) {
-            console.log('problem!');
-        }
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
@@ -285,8 +280,6 @@ export class RocketBulletLevel2
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
         collideManager.HandleWhenBulletCollideWithEnemies(this);
-
-        this.UpdateHitboxes(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -380,6 +373,7 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
     public Update(dt: number) {
         super.Update(dt);
         this.Y += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
@@ -387,8 +381,6 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
         collideManager.HandleWhenBulletCollideWithEnemies(this);
-
-        this.UpdateHitboxes(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -534,15 +526,13 @@ export class RocketBulletLevel3
     public Update(dt: number) {
         super.Update(dt);
         this.X += this.BaseSpeed;
-
+        this.UpdateHitboxes(dt);
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
         collideManager.HandleWhenBulletCollideWithEnemies(this);
-
-        this.UpdateHitboxes(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {

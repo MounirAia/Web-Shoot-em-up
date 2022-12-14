@@ -13,23 +13,23 @@ class BulletManager implements IServiceBulletManager {
     }
 
     public Update(dt: number) {
-        this.bulletsList.player.forEach((playerBullet) => {
-            playerBullet.Update(dt);
-        });
-
-        this.bulletsList.enemy.forEach((enemyBullet) => {
-            enemyBullet.Update(dt);
-        });
+        // Loop from end to begining to avoid skipping projectile Update/Draw when projectiles gets deleted
+        for (let i = this.bulletsList.player.length - 1; i >= 0; --i) {
+            this.bulletsList.player[i].Update(dt);
+        }
+        for (let i = this.bulletsList.enemy.length - 1; i >= 0; --i) {
+            this.bulletsList.enemy[i].Update(dt);
+        }
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
-        this.bulletsList.player.forEach((playerBullet) => {
-            playerBullet.Draw(ctx);
-        });
+        for (let i = this.bulletsList.player.length - 1; i >= 0; --i) {
+            this.bulletsList.player[i].Draw(ctx);
+        }
 
-        this.bulletsList.enemy.forEach((enemyBullet) => {
-            enemyBullet.Draw(ctx);
-        });
+        for (let i = this.bulletsList.enemy.length - 1; i >= 0; --i) {
+            this.bulletsList.enemy[i].Draw(ctx);
+        }
     }
 
     public AddBullet(bullet: IBullet): void {
@@ -39,7 +39,6 @@ class BulletManager implements IServiceBulletManager {
     public RemoveBullet(bullet: IBullet): void {
         const index = this.bulletsList[bullet.Type].indexOf(bullet);
         if (index > -1) {
-            // this.bulletsList[bullet.Type].splice(index, 1);
             const lastElementArray = this.bulletsList[bullet.Type][this.bulletsList[bullet.Type].length - 1];
             this.bulletsList[bullet.Type][index] = lastElementArray; // replace the element to delete by the last one
             this.bulletsList[bullet.Type].pop(); // delete the duplicate version

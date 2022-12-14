@@ -100,7 +100,7 @@ class Player
         this.AttackSpeedUpgrades = [];
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
-        this.specialSkillLevel = 1;
+        this.specialSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -161,6 +161,8 @@ class Player
                 height: 4 * CANVA_SCALEY,
             },
         ]);
+
+        this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
 
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation(
@@ -244,12 +246,14 @@ class Player
         if (Keyboard.s.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
+        this.UpdateHitboxes(dt);
+        this.cannonConfiguration.Update(dt);
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
             let bulletXOffset = 34 * CANVA_SCALEX;
             let bulletYOffset = 8 * CANVA_SCALEY;
             const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
-            // ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
 
             this.currentSkill.get('special')?.Effect();
         } else {
@@ -257,10 +261,6 @@ class Player
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;
             }
         }
-
-        this.UpdateHitboxes(dt);
-
-        this.cannonConfiguration.Update(dt);
     }
 
     Draw(ctx: CanvasRenderingContext2D) {
@@ -273,7 +273,7 @@ class Player
     }
 
     get CurrentHitbox(): RectangleHitbox[] {
-        return [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
+        return this.hitboxes;
     }
 
     public get BaseSpeed(): number {

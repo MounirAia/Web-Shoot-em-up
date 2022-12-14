@@ -7,13 +7,6 @@ import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../Inte
 import { IServicePlayer } from '../../Player.js';
 import { AvailableAnimation, Sprite } from '../../Sprite.js';
 
-// Create ticket to update Cannoanon sprite image when the drawing is finished for them and add the destroyed animaton and damaged
-// Test the cannon config method and polish it (test for level 1)
-// Need some interface for a cannon
-// continue working on the static class Cannon Configuration
-// Try to implement it on the player Class elegantly
-// Maybe put the CannonConfigurationGenerator as a service
-
 class RegularCannon extends Sprite implements ISpriteWithHitboxes, ICollidableSprite {
     CurrentHitbox: RectangleHitbox[];
     private offsetXOnSprite: number;
@@ -125,11 +118,11 @@ export class CannonConfiguration {
 export class CannonConfigurationGenerator {
     public static GetConfig(): RegularCannon[] | undefined {
         const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpeciallSkillName;
-        if (!playerSpecialSkillName) {
+        const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+        if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {
             return undefined;
         }
 
-        const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
         const cannonType = GetSkillsConstants(playerSpecialSkillName, playerSpecialSkillLevel).cannonType;
         let cannonConfig: RegularCannon[] | undefined;
         if (cannonType === 'regular') {
