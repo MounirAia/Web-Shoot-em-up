@@ -10,10 +10,12 @@ import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManag
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
 import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
+import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
 
 const ctx = canvas.getContext('2d')!;
 
 function load() {
+    LoadCannonConfiguration();
     LoadImageLoader();
     LoadSceneManager();
     LoadGalaxyMap();

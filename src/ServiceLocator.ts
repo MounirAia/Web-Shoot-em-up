@@ -1,4 +1,11 @@
-type AvailableServices = 'ImageLoader' | 'SceneManager' | 'Player' | 'WaveManager' | 'BulletManager' | 'CollideManager';
+type AvailableServices =
+    | 'ImageLoader'
+    | 'SceneManager'
+    | 'Player'
+    | 'WaveManager'
+    | 'BulletManager'
+    | 'CollideManager'
+    | 'CannonConfigurationGenerator';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 

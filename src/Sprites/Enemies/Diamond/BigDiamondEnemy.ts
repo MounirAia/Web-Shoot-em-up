@@ -14,7 +14,7 @@ import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
 export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, ISpriteWithBaseAttackSpeed {
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
@@ -34,7 +34,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
         this.BaseSpeed = 350;
         this.BaseAttackSpeed = 2;
 
-        this.Hitboxes = CreateHitboxes(this.X, this.Y, [
+        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
                 offsetY: 4 * CANVA_SCALEY,
@@ -96,7 +96,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
     }
 
     UpdateHitboxes(dt: number): void {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });
@@ -130,7 +130,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
 
     private removeEnemyFromGameFlow(): void {
         // make the enemy uncollidable
-        this.Hitboxes = [];
+        this.CurrentHitbox = [];
     }
 
     get MoneyValue(): number {
