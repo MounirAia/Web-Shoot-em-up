@@ -115,23 +115,32 @@ export class CannonConfiguration {
     }
 }
 
-export class CannonConfigurationGenerator {
-    public static GetConfig(): RegularCannon[] | undefined {
+export interface IServiceCannonConfigurationGenerator {
+    GetConfig: () => CannonConfiguration;
+}
+class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerator {
+    constructor() {
+        ServiceLocator.AddService('CannonConfigurationGenerator', this);
+    }
+
+    public GetConfig(): CannonConfiguration {
         const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpeciallSkillName;
         const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
         if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {
-            return undefined;
+            return new CannonConfiguration(undefined);
         }
 
         const cannonType = GetSkillsConstants(playerSpecialSkillName, playerSpecialSkillLevel).cannonType;
         let cannonConfig: RegularCannon[] | undefined;
         if (cannonType === 'regular') {
-            cannonConfig = CannonConfigurationGenerator.getRegularCannonConfiguration(playerSpecialSkillLevel);
-            return cannonConfig;
+            cannonConfig = this.getRegularCannonConfiguration(playerSpecialSkillLevel);
+            return new CannonConfiguration(cannonConfig);
         }
+
+        return new CannonConfiguration(undefined);
     }
 
-    private static getRegularCannonConfiguration(skillLevel: PossibleSkillLevel): RegularCannon[] | undefined {
+    private getRegularCannonConfiguration(skillLevel: PossibleSkillLevel): RegularCannon[] | undefined {
         const cannonConfig: RegularCannon[] = [];
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         if (skillLevel === 1) {
@@ -147,4 +156,8 @@ export class CannonConfigurationGenerator {
 
         return undefined;
     }
+}
+
+export function LoadCannonConfiguration() {
+    const cannonConfigurationGenrator = new CannonConfigurationGenerator();
 }

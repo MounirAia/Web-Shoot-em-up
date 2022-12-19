@@ -19,7 +19,7 @@ import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { RocketSkill } from './PlayerSkills/RocketSkill.js';
 import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
-import { CannonConfiguration, CannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
+import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -109,7 +109,8 @@ class Player
         this.currentSkill = new Map();
         this.currentSkill.set('special', new RocketSkill());
 
-        this.cannonConfiguration = new CannonConfiguration(CannonConfigurationGenerator.GetConfig());
+        this.cannonConfiguration =
+            ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
