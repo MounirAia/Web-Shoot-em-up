@@ -25,8 +25,58 @@ Tile Dimension: 8*8
 Sprite Shift Position: 3*3
 Offset on player : 34 * 8
 Hitboxes: 
-- 2*2 at position on the tile (0,0)
+1- 2*2 at position on the tile (0,0)
 
 List Animations (AS: Animation Speed): 
 Idle: [0]
 Destroyed: [0 to 4]
+
+// Cannon.png
+
+Tile Dimension: 8*8
+Sprite Shift Position: 3*1
+Hitboxes:
+1- 3*5 at position on the tile (0,0) 
+
+Cannon Position on Player
+
+	Special Skill Level 1: 
+		c1: (19, -5)
+
+	Special Skill Level 2: 
+		c1: (19, -5)
+		c2: (19, 12)
+
+	Special Skill Level 3: 
+		c1: (19, -5)
+		c2: (19, 12)
+		c3: (19, -10)
+		c4: (19, 17)
+
+List Animations (AS: Animation Speed): 
+Idle: [0]
+Damaged: [1]
+
+// EffectEvolution.png
+Tile Dimension: 4*4
+Sprite Shift Position: 0*0
+Hitboxes:
+1- 4*4 at position on the tile (0,0) 
+
+Effect Position on Player
+
+1st bar: (5,2)
+2nd bar: (10,2)
+3rd bar: (15,2)
+
+// SupportEvolution.png
+Tile Dimension: 4*4
+Sprite Shift Position: 0*0
+Hitboxes:
+1- 4*4 at position on the tile (0,0) 
+
+Support Position on Player
+
+1st bar: (20,2)
+2nd bar: (22,4)
+3rd bar: (24,6)

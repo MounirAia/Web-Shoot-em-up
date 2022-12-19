@@ -4,7 +4,6 @@ import { IBullet } from './Bullets/IBullet.js';
 import { ISpriteWithHitboxes } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from './Player.js';
 
-// put it in InterfaceBehaviour
 export type CollideScenario = 'WithBullet' | 'WithPlayer' | 'WithEnemy';
 
 export interface ICollidableSprite {
@@ -27,7 +26,7 @@ export class CollideManager implements IServiceCollideManager {
         let isColliding = false;
 
         for (const [key, enemy] of waveManager.GetListEnemies()) {
-            for (const hitbox of enemy.Hitboxes) {
+            for (const hitbox of enemy.CurrentHitbox) {
                 isColliding = hitbox.CheckCollision(bullet);
 
                 if (isColliding) {
@@ -46,7 +45,7 @@ export class CollideManager implements IServiceCollideManager {
 
         if (player.IsInvulnerable()) return;
 
-        for (const hitbox of player.Hitboxes) {
+        for (const hitbox of player.CurrentHitbox) {
             if (hitbox.CheckCollision(bullet)) {
                 const bulletCollisionMethod = bullet.Collide.get('WithPlayer');
                 if (bulletCollisionMethod) bulletCollisionMethod();
@@ -61,7 +60,7 @@ export class CollideManager implements IServiceCollideManager {
 
         if (player.IsInvulnerable()) return;
 
-        for (const hitbox of player.Hitboxes) {
+        for (const hitbox of player.CurrentHitbox) {
             if (hitbox.CheckCollision(enemy)) {
                 const enemyCollisionMethod = enemy.Collide.get('WithPlayer');
                 if (enemyCollisionMethod) enemyCollisionMethod();

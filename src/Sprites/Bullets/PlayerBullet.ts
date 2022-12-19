@@ -15,7 +15,7 @@ export class RegularPlayerBullet
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number = 10;
     Damage: number = 3;
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
     constructor(x: number, y: number) {
@@ -33,7 +33,7 @@ export class RegularPlayerBullet
             CANVA_SCALEY,
         );
 
-        this.Hitboxes = CreateHitboxes(this.X, this.Y, [
+        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
                 offsetY: 0,
@@ -55,7 +55,7 @@ export class RegularPlayerBullet
     }
 
     UpdateHitboxes(dt: number) {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });

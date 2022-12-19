@@ -1,5 +1,5 @@
 export interface ISpriteWithHitboxes {
-    Hitboxes: RectangleHitbox[];
+    CurrentHitbox: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
 }
 
@@ -10,7 +10,7 @@ export class RectangleHitbox {
     private offsetY: number;
     private width: number;
     private height: number;
-
+    public static readonly NoHitbox: [] = [];
     constructor(spriteX: number, spriteY: number, offsetX: number, offsetY: number, width: number, height: number) {
         this.SpriteX = spriteX;
         this.SpriteY = spriteY;
@@ -27,7 +27,7 @@ export class RectangleHitbox {
     }
 
     public CheckCollision(spriteWithHitBox: ISpriteWithHitboxes): boolean {
-        for (const hitbox of spriteWithHitBox.Hitboxes) {
+        for (const hitbox of spriteWithHitBox.CurrentHitbox) {
             if (this.CheckIfBoxOverlap(hitbox.x, hitbox.y, hitbox.width, hitbox.height)) return true;
         }
         return false;
@@ -38,6 +38,12 @@ export class RectangleHitbox {
     }
     private get y(): number {
         return this.SpriteY + this.offsetY;
+    }
+
+    // Only there to test hitbox visually
+    public TestHitboxDrawing(ctx: CanvasRenderingContext2D) {
+        ctx.strokeStyle = 'purple';
+        ctx.strokeRect(this.x, this.y, this.width, this.height);
     }
 }
 
