@@ -17,6 +17,9 @@ import {
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
+import { RocketSkill } from './PlayerSkills/RocketSkill.js';
+import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
+import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -27,8 +30,14 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     DamageStats: number;
-    Hitboxes: RectangleHitbox[];
+    NumberOfDamageUpgrade: number;
+    SpecialSkillLevel: PossibleSkillLevel;
+    SpeciallSkillName: PossibleSkillName | undefined;
+    CurrentHitbox: RectangleHitbox[];
+    InvulnerabilityTimePeriod: number;
 }
+
+type PlayerSkill = 'effect' | 'special' | 'support';
 
 class Player
     extends Sprite
@@ -46,13 +55,16 @@ class Player
     private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
+
     DamageUpgrades: number[];
     HealthUpgrades: number[];
     BaseHealth: number;
     private currentHealth: number;
     AttackSpeedUpgrades: number[];
     BaseAttackSpeed: number;
+
     private moneyInWallet: number;
+    private specialSkillLevel: PossibleSkillLevel;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -60,6 +72,10 @@ class Player
     // Manage shooting rate of the player
     private baseTimeBeforeNextShoot: number;
     private currentTimeBeforeNextShoot: number;
+
+    private currentSkill: Map<PlayerSkill, RocketSkill>;
+
+    private cannonConfiguration: CannonConfiguration;
 
     constructor(
         image: HTMLImageElement,
@@ -84,9 +100,17 @@ class Player
         this.AttackSpeedUpgrades = [];
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
+        this.specialSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
+
+        // Skill setup
+        this.currentSkill = new Map();
+        this.currentSkill.set('special', new RocketSkill());
+
+        this.cannonConfiguration =
+            ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -139,13 +163,31 @@ class Player
             },
         ]);
 
+        this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
+
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [1], 0.1, undefined, () => {
-            this.PlayAnimation('idle');
-        });
-        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], this.invulnerabilityTimePeriod / 5, undefined, () => {
-            this.PlayAnimation('idle');
-        });
+        this.AddAnimation(
+            'damaged',
+            [1],
+            0.1,
+            () => {
+                this.cannonConfiguration.PlayAnimation('damaged');
+            },
+            () => {
+                this.PlayAnimation('idle');
+            },
+        );
+        this.AddAnimation(
+            'invulnerable',
+            [1, 0, 1, 0, 1],
+            this.invulnerabilityTimePeriod / 5,
+            () => {
+                this.cannonConfiguration.PlayAnimation('invulnerable');
+            },
+            () => {
+                this.PlayAnimation('idle');
+            },
+        );
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
             this.removePlayerFromGameFlow();
         });
@@ -169,7 +211,7 @@ class Player
     }
 
     public UpdateHitboxes(dt: number): void {
-        this.Hitboxes.forEach((hitbox) => {
+        this.CurrentHitbox.forEach((hitbox) => {
             hitbox.SpriteX = this.X;
             hitbox.SpriteY = this.Y;
         });
@@ -182,7 +224,7 @@ class Player
         let isOutsideTopScreen = false;
         let isOutsideRightScreen = false;
         let isOutsideBottomScreen = false;
-        for (const hitbox of this.Hitboxes) {
+        for (const hitbox of this.CurrentHitbox) {
             isOutsideLeftScreen =
                 isOutsideLeftScreen || hitbox.CheckIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
             isOutsideTopScreen =
@@ -205,24 +247,33 @@ class Player
         if (Keyboard.s.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
+        this.UpdateHitboxes(dt);
+        this.cannonConfiguration.Update(dt);
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
-            const bullet = new RegularPlayerBullet(this.X + 34 * CANVA_SCALEX, this.Y + 8 * CANVA_SCALEY);
+            let bulletXOffset = 34 * CANVA_SCALEX;
+            let bulletYOffset = 8 * CANVA_SCALEY;
+            const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+
+            this.currentSkill.get('special')?.Effect();
         } else {
             if (this.currentTimeBeforeNextShoot >= 0) {
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;
             }
         }
+    }
 
-        this.UpdateHitboxes(dt);
+    Draw(ctx: CanvasRenderingContext2D) {
+        super.Draw(ctx);
+        this.cannonConfiguration.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
     }
 
-    get Hitboxes(): RectangleHitbox[] {
+    get CurrentHitbox(): RectangleHitbox[] {
         return this.hitboxes;
     }
 
@@ -244,6 +295,9 @@ class Player
     }
     AddDamageUpgrade(upgrade: number): void {
         if (upgrade > 0) this.DamageUpgrades.push(upgrade);
+    }
+    get NumberOfDamageUpgrade(): number {
+        return this.DamageUpgrades.length;
     }
 
     AddHealthUpgrade(upgrade: number): void {
@@ -310,8 +364,20 @@ class Player
         }
     }
 
+    get SpecialSkillLevel(): PossibleSkillLevel {
+        return this.specialSkillLevel;
+    }
+
+    get SpeciallSkillName(): PossibleSkillName | undefined {
+        return this.currentSkill.get('special')?.SkillName;
+    }
+
     IsInvulnerable(): boolean {
         return this.CurrentAnimationName === 'invulnerable';
+    }
+
+    get InvulnerabilityTimePeriod(): number {
+        return this.invulnerabilityTimePeriod;
     }
 
     private removePlayerFromGameFlow() {

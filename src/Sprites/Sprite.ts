@@ -1,4 +1,4 @@
-type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
+export type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
 
 export abstract class Sprite {
     /* Image properties */
@@ -19,6 +19,7 @@ export abstract class Sprite {
             framesLengthInTime: number;
             beforePlayingAnimation?: () => void;
             afterPlayingAnimation?: () => void;
+            methodToPlayOnSpecificFrames?: Map<number, () => void>;
         };
     };
     private currentAnimationName: AvailableAnimation;
@@ -62,8 +63,15 @@ export abstract class Sprite {
         framesLengthInTime = 1,
         beforePlayingAnimation?: () => void,
         afterPlayingAnimation?: () => void,
+        methodToPlayOnSpecificFrames?: Map<number, () => void>,
     ) {
-        this.animationList[key] = { frames, framesLengthInTime, beforePlayingAnimation, afterPlayingAnimation };
+        this.animationList[key] = {
+            frames,
+            framesLengthInTime,
+            beforePlayingAnimation,
+            afterPlayingAnimation,
+            methodToPlayOnSpecificFrames,
+        };
     }
 
     public PlayAnimation(animation: AvailableAnimation, loop = false) {
@@ -93,6 +101,14 @@ export abstract class Sprite {
                 if (this.currentFrameTimer <= 0) {
                     this.currentFrame++;
                     this.currentFrameTimer = animationObject.framesLengthInTime;
+
+                    const methodToPlayOnSpecificFrame = animationObject.methodToPlayOnSpecificFrames?.get(
+                        this.frameNumber,
+                    );
+                    if (methodToPlayOnSpecificFrame) {
+                        methodToPlayOnSpecificFrame();
+                    }
+
                     if (this.currentFrame >= animationLength + 1) {
                         this.currentFrame--;
                         this.isAnimationFinished = true;
