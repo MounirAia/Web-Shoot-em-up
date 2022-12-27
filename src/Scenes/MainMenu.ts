@@ -4,10 +4,6 @@ import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { FieldWithText } from '../UserInterface/Field.js';
 
-// Add onclick event for play and option button
-// Refactor how we call function (if it can be better)
-// Especially the load method (problem with the canvas obj)
-
 let title: FieldWithText;
 let playButton: undefined | FieldWithText;
 let optionButton: FieldWithText | undefined;

@@ -3,8 +3,6 @@ import { canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { Map } from './Map.js';
 
-// Create Wave class
-
 class Galaxy extends Map {
     constructor(horizontalSpeed: number, x?: number, y?: number, scaleX?: number, scaleY?: number) {
         const image = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/galaxy.png');
