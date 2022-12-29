@@ -11,10 +11,12 @@ import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js
 import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
+import { LoadEventManager } from './EventManager.js';
 
 const ctx = canvas.getContext('2d')!;
 
 function load() {
+    LoadEventManager();
     LoadCannonConfiguration();
     LoadImageLoader();
     LoadSceneManager();
