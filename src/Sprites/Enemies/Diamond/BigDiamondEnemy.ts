@@ -1,3 +1,4 @@
+import { IServiceEventManager } from '../../../EventManager.js';
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
@@ -75,6 +76,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
         });
         this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05, () => {
             this.removeEnemyFromGameFlow();
+            ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
+            });
         });
 
         this.Collide = new Map();

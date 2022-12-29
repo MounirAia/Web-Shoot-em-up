@@ -17,10 +17,11 @@ import {
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
-import { RocketSkill } from './PlayerSkills/RocketSkill.js';
+import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
-
+import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
+import { IServiceEventManager } from '../EventManager';
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -73,7 +74,7 @@ class Player
     private baseTimeBeforeNextShoot: number;
     private currentTimeBeforeNextShoot: number;
 
-    private currentSkill: Map<PlayerSkill, RocketSkill>;
+    private currentSkill: Map<PlayerSkill, RocketSkill | BladeExplosionSkill>;
 
     private cannonConfiguration: CannonConfiguration;
 
@@ -108,9 +109,13 @@ class Player
         // Skill setup
         this.currentSkill = new Map();
         this.currentSkill.set('special', new RocketSkill());
-
         this.cannonConfiguration =
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+
+        this.currentSkill.set('effect', new BladeExplosionSkill());
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe('enemy destroyed', () => {
+            this.currentSkill.get('effect')?.Effect();
+        });
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -369,7 +374,7 @@ class Player
     }
 
     get SpeciallSkillName(): PossibleSkillName | undefined {
-        return this.currentSkill.get('special')?.SkillName;
+        return this.currentSkill.get('special')?.SkillName as PossibleSkillName;
     }
 
     IsInvulnerable(): boolean {

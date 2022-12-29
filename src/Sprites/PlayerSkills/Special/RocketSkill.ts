@@ -1,24 +1,16 @@
-import { IServiceImageLoader } from '../../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
-import { ServiceLocator } from '../../ServiceLocator.js';
-import { IServiceBulletManager } from '../Bullets/BulletManager.js';
-import { IBullet } from '../Bullets/IBullet.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
-import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { IServicePlayer } from '../Player.js';
-import { Sprite } from '../Sprite.js';
-import { RocketDamageStats } from '../../StatsJSON/Skills/Rocket/RocketDamage.js';
-import { GetSkillsConstants, PossibleSkillName } from '../../StatsJSON/Skills/Constant.js';
-
-// based on the level of the skills you call the good private effect method
-// I will need an Upgrade method, that add a level to the rocket skill
-// I will need to update the collision system to handle special collision based on the frame of the sprite
-// I will need to change the type of the possible type of a skills in the rocket skill class
-// I will have to remove the rocket skills from the player class (preventing of forgeting it)
-// From that start deriving a common interface for a skill to follow (Will probably be finalized when I will implement the 3 types of skills)
-// How to manage the shooting rate of a special skill (when player press space bar shoot?)
-// How can the service locator be useful for managing the different skills
+import { IServiceImageLoader } from '../../../ImageLoader.js';
+import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
+import { ServiceLocator } from '../../../ServiceLocator.js';
+import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
+import { IBullet } from '../../Bullets/IBullet.js';
+import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
+import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { IServicePlayer } from '../../Player.js';
+import { Sprite } from '../../Sprite.js';
+import { RocketDamageStats } from '../../../StatsJSON/Skills/Rocket/RocketDamage.js';
+import { GetSkillsConstants, PossibleSkillName } from '../../../StatsJSON/Skills/Constant.js';
+import { SkillsTypeName } from '../Skills.js';
 
 export class RocketBulletLevel1
     extends Sprite
@@ -539,8 +531,6 @@ export class RocketBulletLevel3
         super.Draw(ctx);
     }
 }
-
-type SkillsTypeName = 'special' | 'support' | 'effect';
 
 export class RocketSkill {
     readonly Type: SkillsTypeName;

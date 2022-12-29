@@ -7,16 +7,20 @@ import { WaveEnemies } from './WaveEnemies.js';
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
     GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
+    SetLastEnemyDestroyed(enemy: IEnemy): void;
+    GetLastEnemyCenterCoordinate(): { x: number; y: number };
 }
 
 class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
     private round: number = 1;
+    private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
         this.listWaves = this.createWaves();
 
         this.currentWave = this.listWaves.shift();
+        this.lastEnemyDestroyed = undefined;
 
         ServiceLocator.AddService('WaveManager', this);
     }
@@ -128,6 +132,17 @@ class WaveManager implements IServiceWaveManager {
         }
 
         return new Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>();
+    }
+
+    SetLastEnemyDestroyed(enemy: IEnemy): void {
+        this.lastEnemyDestroyed = enemy;
+    }
+
+    GetLastEnemyCenterCoordinate(): { x: number; y: number } {
+        if (this.lastEnemyDestroyed)
+            return { x: this.lastEnemyDestroyed?.FrameXCenter, y: this.lastEnemyDestroyed?.FrameYCenter };
+
+        return { x: 0, y: 0 };
     }
 }
 
