@@ -36,7 +36,6 @@ class WaveManager implements IServiceWaveManager {
         }
 
         this.currentWave.Update(dt);
-
         if (this.currentWave.HasNoEnemyLeft) {
             this.currentWave = this.listWaves.shift();
         }

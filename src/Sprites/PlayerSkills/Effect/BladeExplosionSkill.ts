@@ -10,14 +10,6 @@ import { SkillsTypeName } from '../Skills.js';
 import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 
-// Implement the service Event listener pattern and link it with the effect skill and all that stuff.
-// Test the level 1, commit, change the fact that level 1 will have no distance to travel the blade will be  removed when it exceeds the frame
-// Also I must remove the enemy when destroyed animation is finished as a method to trigger when the destroyed animation is finished, not inside the update of the enemy
-// Re study the idea of an event manager
-// Search the place where to trigger the generation of the blade
-// How to get the position of the monster that has died? Test the blade spawning system.
-// Continue the implementation of the hitbox of the bladeLevel1
-// Continue the implementation of the bladeLevel1 class
 // Refactor the IBullet interface and all the reference of IBullet to be IProjectile
 class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, IMovableSprite {
     CurrentHitbox: RectangleHitbox[];
@@ -57,7 +49,6 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.PlayAnimation('spin', true);
 
         this.Collide = new Map();
-        this.Collide.set('WithEnemy', () => {});
     }
 
     UpdateHitboxes(dt: number) {
@@ -84,10 +75,6 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
         collideManager.HandleWhenBulletCollideWithEnemies(this);
-    }
-
-    private get Direction(): typeof this.direction {
-        return this.direction;
     }
 }
 
