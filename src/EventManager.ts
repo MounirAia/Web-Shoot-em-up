@@ -5,6 +5,7 @@ type action = () => void;
 
 export interface IServiceEventManager {
     Subscribe(event: possibleEvent, actionToAdd: action): void;
+    Unsubscribe(event: possibleEvent, actionToDelete: action): void;
     Notify(event: possibleEvent, actionToDoBeforeNotifying?: () => void): void;
 }
 
@@ -17,13 +18,23 @@ class EventManager implements IServiceEventManager {
         ServiceLocator.AddService('EventManager', this);
     }
 
-    Subscribe(event: possibleEvent, actionToAdd: action) {
+    Subscribe(event: possibleEvent, actionToAdd: action): void {
         const callbacksForTheEvent = this.events.get(event);
         if (callbacksForTheEvent) {
             callbacksForTheEvent.push(actionToAdd);
         } else {
             this.events.set(event, []);
             this.events.get(event)?.push(actionToAdd);
+        }
+    }
+
+    Unsubscribe(event: possibleEvent, actionToDelete: action) {
+        const callbacksForTheEvent = this.events.get(event);
+        if (callbacksForTheEvent) {
+            const indexActionToDelete = callbacksForTheEvent.indexOf(actionToDelete);
+            const lastActionToExecute = callbacksForTheEvent[callbacksForTheEvent.length - 1];
+            callbacksForTheEvent[indexActionToDelete] = lastActionToExecute;
+            callbacksForTheEvent.pop();
         }
     }
 
