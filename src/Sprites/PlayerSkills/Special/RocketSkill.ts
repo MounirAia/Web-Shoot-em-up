@@ -8,9 +8,10 @@ import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
-import { RocketDamageStats } from '../../../StatsJSON/Skills/Rocket/RocketDamage.js';
-import { GetSkillsConstants, PossibleSkillName } from '../../../StatsJSON/Skills/Constant.js';
+import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
+import { PossibleSkillName } from '../Skills';
 import { SkillsTypeName } from '../Skills.js';
+import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 
 export class RocketBulletLevel1
     extends Sprite
@@ -37,7 +38,7 @@ export class RocketBulletLevel1
             CANVA_SCALEY,
         );
         this.Type = 'player';
-        this.BaseSpeed = GetSkillsConstants('Rocket', 1).projectileSpeed;
+        this.BaseSpeed = RocketConstant[0].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -170,7 +171,7 @@ export class RocketBulletLevel2
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.BaseSpeed = GetSkillsConstants('Rocket', 2).projectileSpeed;
+        this.BaseSpeed = RocketConstant[1].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -299,7 +300,7 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        const projectileSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        const projectileSpeed = RocketConstant[2].projectileSpeed;
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
@@ -404,7 +405,7 @@ export class RocketBulletLevel3
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.BaseSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        this.BaseSpeed = RocketConstant[2].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -537,7 +538,7 @@ export class RocketSkill {
     readonly SkillName: PossibleSkillName;
     constructor() {
         this.Type = 'special';
-        this.SkillName = GetSkillsConstants('Rocket', 1).skillName;
+        this.SkillName = RocketConstant[0].skillName;
     }
 
     public Effect() {

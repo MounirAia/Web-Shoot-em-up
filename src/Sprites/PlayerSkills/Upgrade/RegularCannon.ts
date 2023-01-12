@@ -1,7 +1,6 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { GetSkillsConstants, PossibleSkillLevel } from '../../../StatsJSON/Skills/Constant.js';
 import { CollideScenario, ICollidableSprite } from '../../CollideManager.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { IServicePlayer } from '../../Player.js';
@@ -126,28 +125,28 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
     public GetConfig(): CannonConfiguration {
         const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpeciallSkillName;
         const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+
         if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {
             return new CannonConfiguration(undefined);
         }
 
-        const cannonType = GetSkillsConstants(playerSpecialSkillName, playerSpecialSkillLevel).cannonType;
         let cannonConfig: RegularCannon[] | undefined;
-        if (cannonType === 'regular') {
-            cannonConfig = this.getRegularCannonConfiguration(playerSpecialSkillLevel);
+        if (playerSpecialSkillName === 'Rocket') {
+            cannonConfig = this.getRocketCannonConfiguration(playerSpecialSkillLevel);
             return new CannonConfiguration(cannonConfig);
         }
 
         return new CannonConfiguration(undefined);
     }
 
-    private getRegularCannonConfiguration(skillLevel: PossibleSkillLevel): RegularCannon[] | undefined {
+    private getRocketCannonConfiguration(skillLevel: number): RegularCannon[] | undefined {
         const cannonConfig: RegularCannon[] = [];
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         if (skillLevel === 1) {
             const cannon1 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * -5);
             cannonConfig.push(cannon1);
             return cannonConfig;
-        } else if (skillLevel >= 2) {
+        } else if (skillLevel == 2 || skillLevel == 3) {
             const cannon1 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * -5);
             const cannon2 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * 12);
             cannonConfig.push(cannon1, cannon2);

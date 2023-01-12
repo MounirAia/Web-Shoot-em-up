@@ -18,7 +18,7 @@ import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
-import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
+import { PossibleSkillName } from './PlayerSkills/Skills';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { IServiceEventManager } from '../EventManager';
@@ -32,8 +32,9 @@ export interface IServicePlayer {
     IsInvulnerable(): boolean;
     DamageStats: number;
     NumberOfDamageUpgrade: number;
-    SpecialSkillLevel: PossibleSkillLevel;
+    SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
+    EffectSkillLevel: number;
     CurrentHitbox: RectangleHitbox[];
     InvulnerabilityTimePeriod: number;
 }
@@ -65,7 +66,8 @@ class Player
     BaseAttackSpeed: number;
 
     private moneyInWallet: number;
-    private specialSkillLevel: PossibleSkillLevel;
+    private specialSkillLevel: number;
+    private effectSkillLevel: number;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -102,6 +104,7 @@ class Player
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
+        this.effectSkillLevel = 3;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -113,9 +116,13 @@ class Player
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
 
         this.currentSkill.set('effect', new BladeExplosionSkill());
-        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe('enemy destroyed', () => {
+        const actionOnEnemyDestroyed = () => {
             this.currentSkill.get('effect')?.Effect();
-        });
+        };
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'enemy destroyed',
+            actionOnEnemyDestroyed,
+        );
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -195,6 +202,10 @@ class Player
         );
         this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
             this.removePlayerFromGameFlow();
+            ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                'enemy destroyed',
+                actionOnEnemyDestroyed,
+            );
         });
 
         this.Collide = new Map();
@@ -369,12 +380,16 @@ class Player
         }
     }
 
-    get SpecialSkillLevel(): PossibleSkillLevel {
+    get SpecialSkillLevel(): number {
         return this.specialSkillLevel;
     }
 
     get SpeciallSkillName(): PossibleSkillName | undefined {
-        return this.currentSkill.get('special')?.SkillName as PossibleSkillName;
+        return this.currentSkill.get('special')?.SkillName;
+    }
+
+    get EffectSkillLevel(): number {
+        return this.effectSkillLevel;
     }
 
     IsInvulnerable(): boolean {

@@ -10,9 +10,12 @@ import { SkillsTypeName } from '../Skills.js';
 import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceEventManager } from '../../../EventManager.js';
+import { PossibleSkillName } from '../Skills';
+import { IServicePlayer } from '../../Player.js';
+import { FRAME_RATE } from '../../../ScreenConstant.js';
+import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
+import { BladeDamage } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
 
-// remove the action field blade level 3 to check when to delete blade, rather use the name of the animation if equall === disapear or destroyed.
-// add the damage increase on enemy destroyed event
 class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, IMovableSprite {
     CurrentHitbox: RectangleHitbox[];
     Type: 'enemy' | 'player';
@@ -20,6 +23,9 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
+    private readonly baseTimeBeforeBladeCanHit: number;
+    private timeLeftBeforeBladeCanHit: number;
+
     constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -35,9 +41,12 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             CANVA_SCALEY,
         );
         this.Type = 'player';
-        this.Damage = 0;
-        this.BaseSpeed = 10 / Math.sqrt(2);
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = BladeDamage[playersDamageUpgrade].bladeL1;
+        this.BaseSpeed = BladeConstant[0].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[0].hitRatePerSecond);
+        this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -51,6 +60,10 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.PlayAnimation('spin', true);
 
         this.Collide = new Map();
+
+        this.Collide.set('WithEnemy', () => {
+            this.resetBladeCanHitTimer();
+        });
     }
 
     UpdateHitboxes(dt: number) {
@@ -75,8 +88,22 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
         }
 
-        const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        this.timeLeftBeforeBladeCanHit -= dt;
+        if (this.CanBladeHit) {
+            const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+            collideManager.HandleWhenBulletCollideWithEnemies(this);
+        }
+    }
+
+    get CanBladeHit(): boolean {
+        if (this.timeLeftBeforeBladeCanHit <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private resetBladeCanHitTimer() {
+        this.timeLeftBeforeBladeCanHit = this.baseTimeBeforeBladeCanHit;
     }
 }
 
@@ -87,6 +114,9 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
+    private readonly baseTimeBeforeBladeCanHit: number;
+    private timeLeftBeforeBladeCanHit: number;
+
     constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -102,9 +132,12 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             CANVA_SCALEY,
         );
         this.Type = 'player';
-        this.Damage = 0;
-        this.BaseSpeed = 10 / Math.sqrt(2);
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = BladeDamage[playersDamageUpgrade].bladeL2;
+        this.BaseSpeed = BladeConstant[1].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[1].hitRatePerSecond);
+        this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -118,6 +151,10 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.PlayAnimation('spin', true);
 
         this.Collide = new Map();
+
+        this.Collide.set('WithEnemy', () => {
+            this.resetBladeCanHitTimer();
+        });
     }
 
     UpdateHitboxes(dt: number) {
@@ -135,15 +172,28 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         } else if (this.direction === 'down-diagonal') {
             this.Y += this.BaseSpeed;
         }
-
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
         }
 
-        const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        this.timeLeftBeforeBladeCanHit -= dt;
+        if (this.CanBladeHit) {
+            const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+            collideManager.HandleWhenBulletCollideWithEnemies(this);
+        }
+    }
+
+    get CanBladeHit(): boolean {
+        if (this.timeLeftBeforeBladeCanHit <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private resetBladeCanHitTimer() {
+        this.timeLeftBeforeBladeCanHit = this.baseTimeBeforeBladeCanHit;
     }
 }
 
@@ -156,6 +206,9 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
     private isSpeedReverted: boolean;
     private readonly spawnXPosition: number;
+    private readonly baseTimeBeforeBladeCanHit: number;
+    private timeLeftBeforeBladeCanHit: number;
+
     constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -171,14 +224,17 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             CANVA_SCALEY,
         );
         this.Type = 'player';
-        this.Damage = 1;
-        this.baseSpeed = 10 / Math.sqrt(2);
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        this.Damage = BladeDamage[playersDamageUpgrade].bladeL3;
+        this.baseSpeed = BladeConstant[2].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
         this.isSpeedReverted = false;
         this.spawnXPosition = this.X;
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[2].hitRatePerSecond);
+        this.timeLeftBeforeBladeCanHit = 0;
 
         const actionOnEnemyDestroyed = () => {
-            this.Damage = this.Damage + this.Damage * 0.25;
+            this.Damage = this.Damage * BladeConstant[2].damageIncrease;
         };
         ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
             'enemy destroyed',
@@ -206,6 +262,10 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.PlayAnimation('spin', true);
 
         this.Collide = new Map();
+
+        this.Collide.set('WithEnemy', () => {
+            this.resetBladeCanHitTimer();
+        });
     }
 
     UpdateHitboxes(dt: number) {
@@ -223,7 +283,6 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         } else if (this.direction === 'down-diagonal') {
             this.Y += this.BaseSpeed;
         }
-
         this.UpdateHitboxes(dt);
 
         // Apply the boomerang effect if blade hits the edge of the screen
@@ -235,29 +294,63 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             this.PlayAnimation('destroyed');
         }
 
-        const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        this.timeLeftBeforeBladeCanHit -= dt;
+        if (this.CanBladeHit) {
+            const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
+            collideManager.HandleWhenBulletCollideWithEnemies(this);
+        }
     }
 
     get BaseSpeed(): number {
         return this.isSpeedReverted ? -this.baseSpeed : this.baseSpeed;
     }
+
+    get CanBladeHit(): boolean {
+        if (this.timeLeftBeforeBladeCanHit <= 0) {
+            return true;
+        }
+        return false;
+    }
+
+    private resetBladeCanHitTimer() {
+        this.timeLeftBeforeBladeCanHit = this.baseTimeBeforeBladeCanHit;
+    }
 }
 
 export class BladeExplosionSkill {
     readonly Type: SkillsTypeName;
-    readonly SkillName: string;
+    readonly SkillName: PossibleSkillName;
     constructor() {
         this.Type = 'effect';
-        this.SkillName = 'BladeExplosion';
+        this.SkillName = 'Blade';
     }
 
     public Effect() {
         const { x: enemyX, y: enemyY } =
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetLastEnemyCenterCoordinate();
-        const blade1 = new BladeLevel3(enemyX, enemyY, 'upper-diagonal');
-        const blade2 = new BladeLevel3(enemyX, enemyY, 'down-diagonal');
-        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(blade1);
-        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(blade2);
+        const effectSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillLevel;
+
+        if (effectSkillLevel === 1) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel1(enemyX, enemyY, 'upper-diagonal'),
+            );
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel1(enemyX, enemyY, 'down-diagonal'),
+            );
+        } else if (effectSkillLevel === 2) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel2(enemyX, enemyY, 'upper-diagonal'),
+            );
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel2(enemyX, enemyY, 'down-diagonal'),
+            );
+        } else if (effectSkillLevel === 3) {
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel3(enemyX, enemyY, 'upper-diagonal'),
+            );
+            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+                new BladeLevel3(enemyX, enemyY, 'down-diagonal'),
+            );
+        }
     }
 }
