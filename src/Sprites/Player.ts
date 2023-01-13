@@ -104,7 +104,7 @@ class Player
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
-        this.effectSkillLevel = 3;
+        this.effectSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
