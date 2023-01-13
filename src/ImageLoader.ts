@@ -51,6 +51,8 @@ export function LoadImageLoader() {
     assets.push('images/Skills/Rocket/RocketProjectileLevel3.png');
     assets.push('images/Skills/Rocket/RocketSubProjectileLevel3.png');
     assets.push('images/Player/Cannon.png');
+    assets.push('images/Skills/Blade/BladeLevel1.png');
+    assets.push('images/Skills/Blade/BladeLevel2&3.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

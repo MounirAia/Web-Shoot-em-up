@@ -1,4 +1,4 @@
-export type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting';
+export type AvailableAnimation = '' | 'idle' | 'damaged' | 'invulnerable' | 'destroyed' | 'shooting' | 'spin';
 
 export abstract class Sprite {
     /* Image properties */
@@ -161,5 +161,13 @@ export abstract class Sprite {
 
     protected get Height(): number {
         return this.frameHeight * this.scaleY;
+    }
+
+    public get FrameXCenter(): number {
+        return this.X - this.spriteXOffset + this.Width / 2;
+    }
+
+    public get FrameYCenter(): number {
+        return this.Y - this.spriteYOffset + this.Height / 2;
     }
 }

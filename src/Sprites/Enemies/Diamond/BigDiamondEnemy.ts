@@ -1,3 +1,4 @@
+import { IServiceEventManager } from '../../../EventManager.js';
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
@@ -73,9 +74,20 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
             const bullet = new EnemyBullet(this.X - 2 * CANVA_SCALEX, this.Y + 6 * CANVA_SCALEY);
             ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
         });
-        this.AddAnimation('destroyed', [5, 6, 7, 8, 9, 10, 11], 0.05, () => {
-            this.removeEnemyFromGameFlow();
-        });
+        this.AddAnimation(
+            'destroyed',
+            [5, 6, 7, 8, 9, 10, 11],
+            0.05,
+            () => {
+                this.removeEnemyFromGameFlow();
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
+                    ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
+                });
+            },
+            () => {
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
+            },
+        );
 
         this.Collide = new Map();
         this.Collide.set('WithBullet', (bullet: unknown) => {
@@ -111,7 +123,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
             return;
         }
 
-        if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
+        if (this.X < -this.Width) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
             return;
         }
