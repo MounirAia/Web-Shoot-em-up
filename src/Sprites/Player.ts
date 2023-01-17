@@ -18,7 +18,7 @@ import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
-import { PossibleSkillName } from './PlayerSkills/Skills';
+import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { IServiceEventManager } from '../EventManager';
@@ -76,7 +76,7 @@ class Player
     private baseTimeBeforeNextShoot: number;
     private currentTimeBeforeNextShoot: number;
 
-    private currentSkill: Map<PlayerSkill, RocketSkill | BladeExplosionSkill>;
+    private currentSkill: Map<PlayerSkill, ISkill>;
 
     private cannonConfiguration: CannonConfiguration;
 

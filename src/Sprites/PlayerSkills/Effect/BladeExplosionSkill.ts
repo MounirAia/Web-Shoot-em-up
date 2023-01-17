@@ -6,7 +6,7 @@ import { IBullet } from '../../Bullets/IBullet.js';
 import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
 import { Sprite } from '../../Sprite.js';
-import { SkillsTypeName } from '../Skills.js';
+import { ISkill, SkillsTypeName } from '../Skills.js';
 import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceEventManager } from '../../../EventManager.js';
@@ -317,7 +317,7 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     }
 }
 
-export class BladeExplosionSkill {
+export class BladeExplosionSkill implements ISkill {
     readonly Type: SkillsTypeName;
     readonly SkillName: PossibleSkillName;
     constructor() {

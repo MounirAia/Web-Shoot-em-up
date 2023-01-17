@@ -9,7 +9,7 @@ import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../Inte
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
-import { PossibleSkillName } from '../Skills';
+import { ISkill, PossibleSkillName } from '../Skills.js';
 import { SkillsTypeName } from '../Skills.js';
 import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 
@@ -533,7 +533,7 @@ export class RocketBulletLevel3
     }
 }
 
-export class RocketSkill {
+export class RocketSkill implements ISkill {
     readonly Type: SkillsTypeName;
     readonly SkillName: PossibleSkillName;
     constructor() {
