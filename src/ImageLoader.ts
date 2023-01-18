@@ -53,6 +53,9 @@ export function LoadImageLoader() {
     assets.push('images/Player/Cannon.png');
     assets.push('images/Skills/Blade/BladeLevel1.png');
     assets.push('images/Skills/Blade/BladeLevel2&3.png');
+    assets.push('images/Skills/Mirror/MirrorLevel1.png');
+    assets.push('images/Skills/Mirror/MirrorLevel2&3.png');
+    assets.push('images/Skills/Mirror/Portal.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }
