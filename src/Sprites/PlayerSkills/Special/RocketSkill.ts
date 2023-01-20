@@ -1,11 +1,11 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
+import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { IBullet } from '../../Bullets/IBullet.js';
 import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
-import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
@@ -15,7 +15,7 @@ import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketC
 
 export class RocketBulletLevel1
     extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy';
     BaseSpeed: number;
@@ -88,7 +88,9 @@ export class RocketBulletLevel1
                 this.BaseSpeed /= 2;
             },
             () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
             new Map([
                 [
@@ -135,7 +137,7 @@ export class RocketBulletLevel1
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
@@ -149,7 +151,7 @@ export class RocketBulletLevel1
 
 export class RocketBulletLevel2
     extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number;
@@ -221,7 +223,9 @@ export class RocketBulletLevel2
                 this.BaseSpeed /= 2;
             },
             () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
             new Map([
                 [
@@ -268,7 +272,7 @@ export class RocketBulletLevel2
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
@@ -279,7 +283,7 @@ export class RocketBulletLevel2
         super.Draw(ctx);
     }
 }
-class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite {
+class RocketSubBullet extends Sprite implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite {
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number;
     Damage: number;
@@ -331,7 +335,9 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
                 this.BaseSpeed /= 2;
             },
             () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
             new Map([
                 [
@@ -369,7 +375,7 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
@@ -383,7 +389,7 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
 
 export class RocketBulletLevel3
     extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy' = 'player';
     BaseSpeed: number;
@@ -467,7 +473,9 @@ export class RocketBulletLevel3
                 this.BaseSpeed /= 2;
             },
             () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
             new Map([
                 [
@@ -488,8 +496,12 @@ export class RocketBulletLevel3
                             this.Y + 4 * CANVA_SCALEY,
                             'down',
                         );
-                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(upSubBullet);
-                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(downSubBullet);
+                        ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                            upSubBullet,
+                        );
+                        ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                            downSubBullet,
+                        );
                     },
                 ],
                 [
@@ -521,7 +533,7 @@ export class RocketBulletLevel3
         this.X += this.BaseSpeed;
         this.UpdateHitboxes(dt);
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
@@ -544,7 +556,7 @@ export class RocketSkill implements ISkill {
     public Effect() {
         let { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
-        const rockets: IBullet[] = [];
+        const rockets: Sprite[] = [];
 
         if (skillLevel === 1) {
             rockets.push(new RocketBulletLevel1(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
@@ -559,7 +571,7 @@ export class RocketSkill implements ISkill {
 
         if (rockets) {
             rockets.forEach((rocket) => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(rocket);
             });
         }
     }

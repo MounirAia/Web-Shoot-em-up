@@ -3,16 +3,16 @@ import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
 import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
-import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
-import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithSpeed } from '../SpriteAttributes.js';
+import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../SpriteHitbox.js';
 import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
-import { IServiceBulletManager } from './BulletManager.js';
+import { IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
 import { IBullet, ITargetableBullet } from './IBullet.js';
 
 export class EnemyBullet
     extends Sprite
-    implements IBullet, ITargetableBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
+    implements IBullet, ITargetableBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
 {
     Type: 'player' | 'enemy' = 'enemy';
     BaseSpeed: number;
@@ -38,7 +38,7 @@ export class EnemyBullet
 
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         });
         this.PlayAnimation('idle', false);
 
@@ -77,7 +77,7 @@ export class EnemyBullet
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {

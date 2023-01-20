@@ -3,17 +3,17 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceImageLoader } from '../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
-import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { IServiceBulletManager } from './Bullets/BulletManager.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
+import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
 import {
     ISpriteWithAttackSpeedUpgrades,
-    ISpriteWithBaseAttackSpeed,
-    ISpriteWithBaseHealth,
+    ISpriteWithAttackSpeed,
+    ISpriteWithHealth,
     ISpriteWithDamageUpgrades,
     ISpriteWithHealthUpgrades,
-} from './InterfaceBehaviour/ISpriteWithStats.js';
+    ISpriteWithSpeed,
+} from './SpriteAttributes.js';
 import { CollideScenario, ICollidableSprite } from './CollideManager.js';
 import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
@@ -45,13 +45,13 @@ class Player
     extends Sprite
     implements
         IServicePlayer,
-        IMovableSprite,
+        ISpriteWithSpeed,
         ISpriteWithHitboxes,
         ICollidableSprite,
         ISpriteWithDamageUpgrades,
-        ISpriteWithBaseHealth,
+        ISpriteWithHealth,
         ISpriteWithHealthUpgrades,
-        ISpriteWithBaseAttackSpeed,
+        ISpriteWithAttackSpeed,
         ISpriteWithAttackSpeedUpgrades
 {
     private baseSpeed: number;
@@ -270,7 +270,7 @@ class Player
             let bulletXOffset = 34 * CANVA_SCALEX;
             let bulletYOffset = 8 * CANVA_SCALEY;
             const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
 
             this.currentSkill.get('special')?.Effect();
         } else {

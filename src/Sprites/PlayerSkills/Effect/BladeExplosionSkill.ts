@@ -1,13 +1,13 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
+import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { IBullet } from '../../Bullets/IBullet.js';
 import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { Sprite } from '../../Sprite.js';
 import { ISkill, SkillsTypeName } from '../Skills.js';
-import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
+import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceEventManager } from '../../../EventManager.js';
 import { PossibleSkillName } from '../Skills';
@@ -16,7 +16,7 @@ import { FRAME_RATE } from '../../../ScreenConstant.js';
 import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
 import { BladeDamage } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
 
-class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, IMovableSprite {
+class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
     CurrentHitbox: RectangleHitbox[];
     Type: 'enemy' | 'player';
     Damage: number;
@@ -85,7 +85,7 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         this.timeLeftBeforeBladeCanHit -= dt;
@@ -107,7 +107,7 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     }
 }
 
-class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, IMovableSprite {
+class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
     CurrentHitbox: RectangleHitbox[];
     Type: 'enemy' | 'player';
     Damage: number;
@@ -175,7 +175,7 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         this.timeLeftBeforeBladeCanHit -= dt;
@@ -197,7 +197,7 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     }
 }
 
-class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, IMovableSprite {
+class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
     CurrentHitbox: RectangleHitbox[];
     Type: 'enemy' | 'player';
     Damage: number;
@@ -256,7 +256,7 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
                 'enemy destroyed',
                 actionOnEnemyDestroyed,
             );
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         });
 
         this.PlayAnimation('spin', true);
@@ -331,24 +331,24 @@ export class BladeExplosionSkill implements ISkill {
         const effectSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillLevel;
 
         if (effectSkillLevel === 1) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel1(enemyX, enemyY, 'upper-diagonal'),
             );
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel1(enemyX, enemyY, 'down-diagonal'),
             );
         } else if (effectSkillLevel === 2) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel2(enemyX, enemyY, 'upper-diagonal'),
             );
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel2(enemyX, enemyY, 'down-diagonal'),
             );
         } else if (effectSkillLevel === 3) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel3(enemyX, enemyY, 'upper-diagonal'),
             );
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new BladeLevel3(enemyX, enemyY, 'down-diagonal'),
             );
         }

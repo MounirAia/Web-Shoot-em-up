@@ -1,7 +1,7 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
-import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {

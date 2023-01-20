@@ -8,7 +8,7 @@ import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
-import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/Bullets/BulletManager.js';
+import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/GeneratedSpriteManager.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
 import { LoadEventManager } from './EventManager.js';

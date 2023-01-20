@@ -1,7 +1,7 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceWaveManager } from '../WaveManager/WaveManager.js';
 import { IBullet } from './Bullets/IBullet.js';
-import { ISpriteWithHitboxes } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithHitboxes } from './SpriteHitbox.js';
 import { IServicePlayer } from './Player.js';
 
 export type CollideScenario = 'WithBullet' | 'WithPlayer' | 'WithEnemy';

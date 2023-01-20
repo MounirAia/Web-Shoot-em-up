@@ -3,7 +3,7 @@ type AvailableServices =
     | 'SceneManager'
     | 'Player'
     | 'WaveManager'
-    | 'BulletManager'
+    | 'GeneratedSpritesManager'
     | 'CollideManager'
     | 'CannonConfigurationGenerator'
     | 'EventManager';

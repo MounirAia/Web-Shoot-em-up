@@ -3,18 +3,17 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
-import { IServiceBulletManager } from '../../Bullets/BulletManager.js';
+import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
 import { IBullet } from '../../Bullets/IBullet.js';
 import { CollideScenario, IServiceCollideManager } from '../../CollideManager.js';
-import { IMovableSprite } from '../../InterfaceBehaviour/IMovableSprite.js';
-import { RectangleHitbox, CreateHitboxes } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { ISpriteWithBaseAttackSpeed } from '../../InterfaceBehaviour/ISpriteWithStats.js';
+import { RectangleHitbox, CreateHitboxes } from '../../SpriteHitbox.js';
+import { ISpriteWithAttackSpeed, ISpriteWithSpeed } from '../../SpriteAttributes.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
-export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, ISpriteWithBaseAttackSpeed {
+export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
@@ -72,7 +71,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, IMovableSprite, I
         this.AddAnimation('damaged', [4], 1);
         this.AddAnimation('shooting', [1, 2, 3], 3 / this.AttackSpeed, undefined, () => {
             const bullet = new EnemyBullet(this.X - 2 * CANVA_SCALEX, this.Y + 6 * CANVA_SCALEY);
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         });
         this.AddAnimation(
             'destroyed',

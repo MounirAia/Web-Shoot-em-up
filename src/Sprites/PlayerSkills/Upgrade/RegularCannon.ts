@@ -2,7 +2,7 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { CollideScenario, ICollidableSprite } from '../../CollideManager.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IServicePlayer } from '../../Player.js';
 import { AvailableAnimation, Sprite } from '../../Sprite.js';
 
