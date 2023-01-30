@@ -1,55 +1,112 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { Sprite } from './Sprite.js';
+import { ISpriteWithHitboxes } from './SpriteHitbox.js';
+
+export interface IGeneratedSprite extends Sprite, ISpriteWithHitboxes {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
+}
 
 export interface IServiceGeneratedSpritesManager {
-    AddSprite: (sprite: Sprite) => void;
-    RemoveSprite: (sprite: Sprite) => void;
+    AddSprite: (sprite: IGeneratedSprite) => void;
+    RemoveSprite: (sprite: IGeneratedSprite) => void;
+    EnemyProjectiles: ReadonlyMap<IGeneratedSprite, IGeneratedSprite>;
 }
+
 class GeneratedSpritesManager implements IServiceGeneratedSpritesManager {
-    private generatedSpritesList: Sprite[];
+    private generatedSpritesList: {
+        player: {
+            projectiles: Map<IGeneratedSprite, IGeneratedSprite>;
+            nonProjectiles: Map<IGeneratedSprite, IGeneratedSprite>;
+        };
+        enemy: {
+            projectiles: Map<IGeneratedSprite, IGeneratedSprite>;
+            nonProjectiles: Map<IGeneratedSprite, IGeneratedSprite>;
+        };
+    };
 
     constructor() {
-        this.generatedSpritesList = [];
+        this.generatedSpritesList = {
+            player: {
+                projectiles: new Map(),
+                nonProjectiles: new Map(),
+            },
+            enemy: {
+                projectiles: new Map(),
+                nonProjectiles: new Map(),
+            },
+        };
         ServiceLocator.AddService('GeneratedSpritesManager', this);
     }
 
     public Update(dt: number) {
-        // Loop from end to begining to avoid skipping sprites Update/Draw when sprites gets deleted
-        for (let i = this.generatedSpritesList.length - 1; i >= 0; --i) {
-            this.generatedSpritesList[i].Update(dt);
-        }
+        objectKeys(this.generatedSpritesList.player).forEach((key) => {
+            this.generatedSpritesList.player[key].forEach((sprite) => {
+                sprite.Update(dt);
+            });
+        });
+        objectKeys(this.generatedSpritesList.enemy).forEach((key) => {
+            this.generatedSpritesList.enemy[key].forEach((sprite) => {
+                sprite.Update(dt);
+            });
+        });
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
-        for (let i = this.generatedSpritesList.length - 1; i >= 0; --i) {
-            this.generatedSpritesList[i].Draw(ctx);
+        objectKeys(this.generatedSpritesList.player).forEach((key) => {
+            this.generatedSpritesList.player[key].forEach((sprite) => {
+                sprite.Draw(ctx);
+            });
+        });
+        objectKeys(this.generatedSpritesList.enemy).forEach((key) => {
+            this.generatedSpritesList.enemy[key].forEach((sprite) => {
+                sprite.Draw(ctx);
+            });
+        });
+    }
+
+    public AddSprite(sprite: IGeneratedSprite): void {
+        const { Generator, Category } = sprite;
+
+        if (Category == 'projectile') {
+            this.generatedSpritesList[Generator]['projectiles'].set(sprite, sprite);
+        } else if (Category == 'nonProjectile') {
+            this.generatedSpritesList[Generator]['nonProjectiles'].set(sprite, sprite);
         }
     }
 
-    public AddSprite(sprite: Sprite): void {
-        this.generatedSpritesList.push(sprite);
+    public RemoveSprite(sprite: IGeneratedSprite): void {
+        const { Generator, Category } = sprite;
+        let listToRemoveSprite = new Map();
+
+        if (Category == 'projectile') {
+            listToRemoveSprite = this.generatedSpritesList[Generator]['projectiles'];
+        } else if (Category == 'nonProjectile') {
+            listToRemoveSprite = this.generatedSpritesList[Generator]['nonProjectiles'];
+        }
+
+        listToRemoveSprite.delete(sprite);
     }
 
-    public RemoveSprite(sprite: Sprite): void {
-        const indexElementToDelete = this.generatedSpritesList.indexOf(sprite);
-        if (indexElementToDelete > -1) {
-            const lastElementArray = this.generatedSpritesList.slice(-1)[0];
-            this.generatedSpritesList[indexElementToDelete] = lastElementArray; // replace the element to delete by the last one
-            this.generatedSpritesList.pop(); // delete the duplicate version
-        }
+    get EnemyProjectiles(): ReadonlyMap<IGeneratedSprite, IGeneratedSprite> {
+        return this.generatedSpritesList.player.projectiles;
     }
 }
 
 let bulletManager: GeneratedSpritesManager;
 
-export function LoadBulletManager() {
+export function LoadGeneratedSpritesManager() {
     bulletManager = new GeneratedSpritesManager();
 }
 
-export function UpdateBulletManager(dt: number) {
+export function UpdateGeneratedSpritesManager(dt: number) {
     bulletManager.Update(dt);
 }
 
-export function DrawBulletManager(ctx: CanvasRenderingContext2D) {
+export function DrawGeneratedSpritesManager(ctx: CanvasRenderingContext2D) {
     bulletManager.Draw(ctx);
+}
+
+function objectKeys<T extends Object>(obj: T): (keyof T)[] {
+    return Object.keys(obj) as (keyof T)[];
 }

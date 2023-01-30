@@ -1,20 +1,17 @@
 import { IServiceImageLoader } from '../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
+import { IServiceCollideManager } from '../CollideManager.js';
 import { ISpriteWithSpeed } from '../SpriteAttributes.js';
-import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../SpriteHitbox.js';
+import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes, CollideScenario } from '../SpriteHitbox.js';
 import { Sprite } from '../Sprite.js';
-import { IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
-import { IBullet } from './IBullet.js';
+import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../GeneratedSpriteManager.js';
 
-export class RegularPlayerBullet
-    extends Sprite
-    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy' = 'player';
-    BaseSpeed: number = 10;
-    Damage: number = 3;
+export class RegularPlayerBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
+    BaseSpeed: number;
+    Damage: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -27,12 +24,15 @@ export class RegularPlayerBullet
             8,
             x,
             y,
-            3 * CANVA_SCALEX,
-            3 * CANVA_SCALEY,
+            -3 * CANVA_SCALEX,
+            -3 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        this.BaseSpeed = 10;
+        this.Damage = 3;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -73,7 +73,7 @@ export class RegularPlayerBullet
 
         if (this.CurrentAnimationName !== 'destroyed') {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-            collideManager.HandleWhenBulletCollideWithEnemies(this);
+            collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
     }
 }

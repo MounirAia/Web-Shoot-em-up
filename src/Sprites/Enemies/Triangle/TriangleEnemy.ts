@@ -2,8 +2,7 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
-import { CollideScenario } from '../../CollideManager.js';
-import { RectangleHitbox, CreateHitboxes } from '../../SpriteHitbox.js';
+import { RectangleHitbox, CreateHitboxes, CollideScenario } from '../../SpriteHitbox.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
 
@@ -22,7 +21,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         const frameHeight = 16;
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
-        super(imgTriangle, frameWidth, frameHeight, x, y, 2 * CANVA_SCALEX, 3 * CANVA_SCALEY, scaleX, scaleY);
+        super(imgTriangle, frameWidth, frameHeight, x, y, -2 * CANVA_SCALEX, -3 * CANVA_SCALEY, scaleX, scaleY);
 
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;

@@ -1,10 +1,9 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
-import { IBullet } from '../../Bullets/IBullet.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../../GeneratedSpriteManager.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
 import { Sprite } from '../../Sprite.js';
 import { ISkill, SkillsTypeName } from '../Skills.js';
 import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
@@ -16,9 +15,10 @@ import { FRAME_RATE } from '../../../ScreenConstant.js';
 import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
 import { BladeDamage } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
 
-class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
+class BladeLevel1 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
     CurrentHitbox: RectangleHitbox[];
-    Type: 'enemy' | 'player';
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     Damage: number;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
@@ -35,12 +35,13 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             9,
             x,
             y,
-            3 * CANVA_SCALEX,
-            3 * CANVA_SCALEY,
+            -3 * CANVA_SCALEX,
+            -3 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.Type = 'player';
+        this.Generator = 'player';
+        this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL1;
         this.BaseSpeed = BladeConstant[0].projectileSpeed / Math.sqrt(2);
@@ -91,7 +92,7 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.timeLeftBeforeBladeCanHit -= dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-            collideManager.HandleWhenBulletCollideWithEnemies(this);
+            collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
     }
 
@@ -107,9 +108,10 @@ class BladeLevel1 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     }
 }
 
-class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
+class BladeLevel2 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
     CurrentHitbox: RectangleHitbox[];
-    Type: 'enemy' | 'player';
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     Damage: number;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
@@ -126,12 +128,13 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             9,
             x,
             y,
-            0 * CANVA_SCALEX,
-            0 * CANVA_SCALEY,
+            -0 * CANVA_SCALEX,
+            -0 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.Type = 'player';
+        this.Generator = 'player';
+        this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL2;
         this.BaseSpeed = BladeConstant[1].projectileSpeed / Math.sqrt(2);
@@ -181,7 +184,7 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.timeLeftBeforeBladeCanHit -= dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-            collideManager.HandleWhenBulletCollideWithEnemies(this);
+            collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
     }
 
@@ -197,9 +200,10 @@ class BladeLevel2 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
     }
 }
 
-class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, ICollidableSprite, ISpriteWithSpeed {
+class BladeLevel3 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
     CurrentHitbox: RectangleHitbox[];
-    Type: 'enemy' | 'player';
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     Damage: number;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     baseSpeed: number;
@@ -223,7 +227,8 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.Type = 'player';
+        this.Generator = 'player';
+        this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL3;
         this.baseSpeed = BladeConstant[2].projectileSpeed / Math.sqrt(2);
@@ -297,7 +302,7 @@ class BladeLevel3 extends Sprite implements IBullet, ISpriteWithHitboxes, IColli
         this.timeLeftBeforeBladeCanHit -= dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-            collideManager.HandleWhenBulletCollideWithEnemies(this);
+            collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
     }
 

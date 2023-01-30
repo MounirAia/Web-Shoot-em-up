@@ -1,12 +1,11 @@
 import { ServiceLocator } from '../ServiceLocator.js';
-import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
 }
@@ -125,12 +124,12 @@ class WaveManager implements IServiceWaveManager {
         return waves;
     }
 
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
         if (this.currentWave) {
             return this.currentWave.ListEnemies;
         }
 
-        return new Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>();
+        return new Map<IEnemy, ISpriteWithHitboxes>();
     }
 
     SetLastEnemyDestroyed(enemy: IEnemy): void {

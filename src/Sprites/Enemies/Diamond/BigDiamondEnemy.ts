@@ -5,10 +5,9 @@ import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
-import { IBullet } from '../../Bullets/IBullet.js';
-import { CollideScenario, IServiceCollideManager } from '../../CollideManager.js';
-import { RectangleHitbox, CreateHitboxes } from '../../SpriteHitbox.js';
-import { ISpriteWithAttackSpeed, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
+import { RectangleHitbox, CreateHitboxes, CollideScenario } from '../../SpriteHitbox.js';
+import { ISpriteWithAttackSpeed, ISpriteWithDamage, ISpriteWithSpeed } from '../../SpriteAttributes.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { IEnemy } from '../IEnemy.js';
@@ -28,7 +27,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         const frameHeight = 32;
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
-        super(imgDiamond, frameWidth, frameHeight, x, y, 8 * CANVA_SCALEX, 9 * CANVA_SCALEY, scaleX, scaleY);
+        super(imgDiamond, frameWidth, frameHeight, x, y, -8 * CANVA_SCALEX, -9 * CANVA_SCALEY, scaleX, scaleY);
 
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
@@ -89,8 +88,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         );
 
         this.Collide = new Map();
-        this.Collide.set('WithBullet', (bullet: unknown) => {
-            bullet = bullet as IBullet;
+        this.Collide.set('WithProjectile', (bullet: unknown) => {
+            bullet = bullet as ISpriteWithDamage;
 
             this.PlayAnimation('destroyed');
 

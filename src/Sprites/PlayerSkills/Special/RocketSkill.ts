@@ -1,11 +1,10 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
-import { IBullet } from '../../Bullets/IBullet.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../../CollideManager.js';
+import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../../GeneratedSpriteManager.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
 import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
@@ -13,11 +12,9 @@ import { ISkill, PossibleSkillName } from '../Skills.js';
 import { SkillsTypeName } from '../Skills.js';
 import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 
-export class RocketBulletLevel1
-    extends Sprite
-    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy';
+export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -32,12 +29,13 @@ export class RocketBulletLevel1
             16,
             x,
             y,
-            6 * CANVA_SCALEX,
-            5 * CANVA_SCALEY,
+            -6 * CANVA_SCALEX,
+            -5 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.Type = 'player';
+        this.Generator = 'player';
+        this.Category = 'projectile';
         this.BaseSpeed = RocketConstant[0].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
@@ -141,7 +139,7 @@ export class RocketBulletLevel1
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -149,11 +147,9 @@ export class RocketBulletLevel1
     }
 }
 
-export class RocketBulletLevel2
-    extends Sprite
-    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy' = 'player';
+export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -168,11 +164,13 @@ export class RocketBulletLevel2
             16,
             x,
             y,
-            5 * CANVA_SCALEX,
-            6 * CANVA_SCALEY,
+            -5 * CANVA_SCALEX,
+            -6 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
+        this.Generator = 'player';
+        this.Category = 'projectile';
         this.BaseSpeed = RocketConstant[1].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
@@ -276,15 +274,16 @@ export class RocketBulletLevel2
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
         super.Draw(ctx);
     }
 }
-class RocketSubBullet extends Sprite implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite {
-    Type: 'player' | 'enemy' = 'player';
+class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -299,11 +298,13 @@ class RocketSubBullet extends Sprite implements IBullet, ISpriteWithSpeed, ISpri
             16,
             x,
             y,
-            6 * CANVA_SCALEX,
-            7 * CANVA_SCALEY,
+            -6 * CANVA_SCALEX,
+            -7 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
+        this.Generator = 'player';
+        this.Category = 'projectile';
         const projectileSpeed = RocketConstant[2].projectileSpeed;
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
@@ -379,7 +380,7 @@ class RocketSubBullet extends Sprite implements IBullet, ISpriteWithSpeed, ISpri
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -387,11 +388,9 @@ class RocketSubBullet extends Sprite implements IBullet, ISpriteWithSpeed, ISpri
     }
 }
 
-export class RocketBulletLevel3
-    extends Sprite
-    implements IBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy' = 'player';
+export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -406,11 +405,13 @@ export class RocketBulletLevel3
             16,
             x,
             y,
-            4 * CANVA_SCALEX,
-            5 * CANVA_SCALEY,
+            -4 * CANVA_SCALEX,
+            -5 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
+        this.Generator = 'player';
+        this.Category = 'projectile';
         this.BaseSpeed = RocketConstant[2].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
@@ -537,7 +538,7 @@ export class RocketBulletLevel3
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -556,7 +557,7 @@ export class RocketSkill implements ISkill {
     public Effect() {
         let { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
-        const rockets: Sprite[] = [];
+        const rockets: IGeneratedSprite[] = [];
 
         if (skillLevel === 1) {
             rockets.push(new RocketBulletLevel1(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));

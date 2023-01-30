@@ -2,19 +2,19 @@ import { IServiceImageLoader } from '../../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
-import { ISpriteWithSpeed } from '../SpriteAttributes.js';
-import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../SpriteHitbox.js';
+import { IServiceCollideManager } from '../CollideManager.js';
+import { ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithTarget } from '../SpriteAttributes.js';
+import { CollideScenario, ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes } from '../SpriteHitbox.js';
 import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
-import { IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
-import { IBullet, ITargetableBullet } from './IBullet.js';
+import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../GeneratedSpriteManager.js';
 
 export class EnemyBullet
     extends Sprite
-    implements IBullet, ITargetableBullet, ISpriteWithSpeed, ISpriteWithHitboxes, ICollidableSprite
+    implements ISpriteWithTarget, ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite
 {
-    Type: 'player' | 'enemy' = 'enemy';
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -30,12 +30,13 @@ export class EnemyBullet
             8,
             x,
             y,
-            3 * CANVA_SCALEX,
-            3 * CANVA_SCALEY,
+            -3 * CANVA_SCALEX,
+            -3 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-
+        this.Generator = 'enemy';
+        this.Category = 'projectile';
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
@@ -45,8 +46,8 @@ export class EnemyBullet
         this.BaseSpeed = 3;
         this.Damage = 3;
 
-        this.XSpeed = Math.cos(this.BulletAngle) * this.BaseSpeed;
-        this.YSpeed = Math.sin(this.BulletAngle) * this.BaseSpeed;
+        this.XSpeed = Math.cos(this.TargetAngle) * this.BaseSpeed;
+        this.YSpeed = Math.sin(this.TargetAngle) * this.BaseSpeed;
 
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -81,11 +82,13 @@ export class EnemyBullet
         }
 
         if (this.CurrentAnimationName !== 'destroyed') {
-            ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenBulletCollideWithPlayer(this);
+            ServiceLocator.GetService<IServiceCollideManager>(
+                'CollideManager',
+            ).HandleWhenEnemyProjectileCollideWithPlayer(this);
         }
     }
 
-    get BulletAngle(): number {
+    get TargetAngle(): number {
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const distX = this.X - playerX;
         const distY = this.Y - playerY;

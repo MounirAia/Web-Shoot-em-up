@@ -29,3 +29,9 @@ export interface ISpriteWithAttackSpeedUpgrades {
 export interface ISpriteWithSpeed {
     BaseSpeed: number;
 }
+
+export interface ISpriteWithTarget {
+    TargetAngle: number;
+    XSpeed: number;
+    YSpeed: number;
+}

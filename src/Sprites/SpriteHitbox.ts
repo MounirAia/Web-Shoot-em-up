@@ -1,6 +1,9 @@
+export type CollideScenario = 'WithProjectile' | 'WithNonProjectile' | 'WithPlayer' | 'WithEnemy';
+
 export interface ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
 }
 
 export class RectangleHitbox {

@@ -3,7 +3,7 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceImageLoader } from '../ImageLoader.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
+import { CreateHitboxes, ISpriteWithHitboxes, CollideScenario, RectangleHitbox } from './SpriteHitbox.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
 import {
@@ -13,9 +13,8 @@ import {
     ISpriteWithDamageUpgrades,
     ISpriteWithHealthUpgrades,
     ISpriteWithSpeed,
+    ISpriteWithDamage,
 } from './SpriteAttributes.js';
-import { CollideScenario, ICollidableSprite } from './CollideManager.js';
-import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
@@ -47,7 +46,6 @@ class Player
         IServicePlayer,
         ISpriteWithSpeed,
         ISpriteWithHitboxes,
-        ICollidableSprite,
         ISpriteWithDamageUpgrades,
         ISpriteWithHealth,
         ISpriteWithHealthUpgrades,
@@ -210,10 +208,10 @@ class Player
 
         this.Collide = new Map();
 
-        this.Collide.set('WithBullet', (bullet: unknown) => {
+        this.Collide.set('WithProjectile', (bullet: unknown) => {
             this.PlayAnimation('damaged', false);
 
-            const myBullet = bullet as IBullet;
+            const myBullet = bullet as ISpriteWithDamage;
             this.CurrentHealth -= myBullet.Damage;
         });
 
@@ -415,7 +413,17 @@ export function LoadPlayer() {
     const y = 250;
     const scaleX = CANVA_SCALEX;
     const scaleY = CANVA_SCALEY;
-    player = new Player(imgPlayer, frameWidth, frameHeight, x, y, 18 * CANVA_SCALEX, 25 * CANVA_SCALEY, scaleX, scaleY);
+    player = new Player(
+        imgPlayer,
+        frameWidth,
+        frameHeight,
+        x,
+        y,
+        -18 * CANVA_SCALEX,
+        -25 * CANVA_SCALEY,
+        scaleX,
+        scaleY,
+    );
 }
 
 export function UpdatePlayer(dt: number) {

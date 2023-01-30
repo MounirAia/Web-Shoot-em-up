@@ -131,8 +131,8 @@ export abstract class Sprite {
             yFramePosition,
             frameWidth,
             frameHeight,
-            x - spriteXOffset,
-            y - spriteYOffset,
+            x + spriteXOffset,
+            y + spriteYOffset,
             scaleX * frameWidth,
             scaleY * frameHeight,
         );
@@ -164,10 +164,10 @@ export abstract class Sprite {
     }
 
     public get FrameXCenter(): number {
-        return this.X - this.spriteXOffset + this.Width / 2;
+        return this.X + this.spriteXOffset + this.Width / 2;
     }
 
     public get FrameYCenter(): number {
-        return this.Y - this.spriteYOffset + this.Height / 2;
+        return this.Y + this.spriteYOffset + this.Height / 2;
     }
 }

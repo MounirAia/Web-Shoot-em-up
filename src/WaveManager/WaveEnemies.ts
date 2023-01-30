@@ -1,5 +1,4 @@
 import { canvas } from '../ScreenConstant.js';
-import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
@@ -76,7 +75,7 @@ export class WaveEnemies {
         return this.listEnemies.size === 0 ? true : false;
     }
 
-    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
-        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
+    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
+        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes>;
     }
 }

@@ -8,7 +8,11 @@ import { ServiceLocator } from './ServiceLocator.js';
 import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
 import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
-import { DrawBulletManager, LoadBulletManager, UpdateBulletManager } from './Sprites/GeneratedSpriteManager.js';
+import {
+    DrawGeneratedSpritesManager,
+    LoadGeneratedSpritesManager,
+    UpdateGeneratedSpritesManager,
+} from './Sprites/GeneratedSpriteManager.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
 import { LoadEventManager } from './EventManager.js';
@@ -23,7 +27,7 @@ function load() {
     LoadGalaxyMap();
     LoadPlayer();
     LoadMainMenu();
-    LoadBulletManager();
+    LoadGeneratedSpritesManager();
     LoadCollideManager();
     LoadWaveManager();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
@@ -38,7 +42,7 @@ function update(dt: number) {
         UpdateGalaxyMap(dt);
         UpdatePlayer(dt);
         UpdateWaveManager(dt);
-        UpdateBulletManager(dt);
+        UpdateGeneratedSpritesManager(dt);
 
         if (Keyboard.Escape.IsPressed) {
             SceneManager.PlayScene('InGameMenu');
@@ -60,12 +64,12 @@ function draw(ctx: CanvasRenderingContext2D) {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
-        DrawBulletManager(ctx);
+        DrawGeneratedSpritesManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
-        DrawBulletManager(ctx);
+        DrawGeneratedSpritesManager(ctx);
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         DrawMainMenu(ctx);
     }
