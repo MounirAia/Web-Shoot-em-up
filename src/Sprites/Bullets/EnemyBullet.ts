@@ -38,9 +38,19 @@ export class EnemyBullet
         this.Generator = 'enemy';
         this.Category = 'projectile';
         this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
-        });
+        this.AddAnimation(
+            'destroyed',
+            [0, 1, 2, 3, 4],
+            0.03,
+            () => {
+                this.CurrentHitbox = RectangleHitbox.NoHitbox;
+            },
+            () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
+            },
+        );
         this.PlayAnimation('idle', false);
 
         this.BaseSpeed = 3;
@@ -60,6 +70,10 @@ export class EnemyBullet
 
         this.Collide = new Map();
         this.Collide.set('WithPlayer', () => {
+            this.PlayAnimation('destroyed');
+        });
+
+        this.Collide.set('WithNonProjectile', () => {
             this.PlayAnimation('destroyed');
         });
     }

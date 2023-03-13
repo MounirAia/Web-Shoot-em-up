@@ -53,12 +53,30 @@ export class RectangleHitbox {
 export function CreateHitboxes(
     spriteX: number,
     spriteY: number,
-    additionalHitboxesInfo: { offsetX: number; offsetY: number; width: number; height: number }[],
+    additionalHitboxesInfo: {
+        readonly offsetX: number;
+        readonly offsetY: number;
+        readonly width: number;
+        readonly height: number;
+    }[],
 ): RectangleHitbox[] {
     let hitboxes: RectangleHitbox[] = [];
 
     additionalHitboxesInfo.forEach(({ offsetX, offsetY, width, height }) => {
         hitboxes.push(new RectangleHitbox(spriteX, spriteY, offsetX, offsetY, width, height));
+    });
+
+    return hitboxes;
+}
+
+export function CreateHitboxesWithInfoFile(
+    spriteX: number,
+    spriteY: number,
+    hitboxArray: { X: number; Y: number; Width: number; Height: number }[],
+) {
+    const hitboxes: RectangleHitbox[] = [];
+    hitboxArray.forEach(({ X, Y, Width, Height }) => {
+        hitboxes.push(new RectangleHitbox(spriteX, spriteY, X, Y, Width, Height));
     });
 
     return hitboxes;

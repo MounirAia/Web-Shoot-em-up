@@ -42,9 +42,4 @@ export function UpdateGalaxyMap(dt: number) {
     galaxyMap.Update(dt);
 }
 
-export function DrawGalaxyMap(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.fillStyle = '#CCCCCC';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-}
+export function DrawGalaxyMap(ctx: CanvasRenderingContext2D) {}

@@ -89,7 +89,7 @@ class GeneratedSpritesManager implements IServiceGeneratedSpritesManager {
     }
 
     get EnemyProjectiles(): ReadonlyMap<IGeneratedSprite, IGeneratedSprite> {
-        return this.generatedSpritesList.player.projectiles;
+        return this.generatedSpritesList.enemy.projectiles;
     }
 }
 
@@ -107,6 +107,7 @@ export function DrawGeneratedSpritesManager(ctx: CanvasRenderingContext2D) {
     bulletManager.Draw(ctx);
 }
 
+// Util function
 function objectKeys<T extends Object>(obj: T): (keyof T)[] {
     return Object.keys(obj) as (keyof T)[];
 }

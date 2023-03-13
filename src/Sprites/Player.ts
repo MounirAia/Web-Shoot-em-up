@@ -21,6 +21,7 @@ import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { IServiceEventManager } from '../EventManager';
+import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield.js';
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -90,7 +91,6 @@ class Player
         scaleY: number = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
-
         ServiceLocator.AddService('Player', this);
 
         this.baseSpeed = 5;
@@ -121,6 +121,9 @@ class Player
             'enemy destroyed',
             actionOnEnemyDestroyed,
         );
+
+        this.currentSkill.set('support', new MirrorShieldSkill());
+        this.currentSkill.get('support')?.Effect();
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {

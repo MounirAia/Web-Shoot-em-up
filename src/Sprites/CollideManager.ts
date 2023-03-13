@@ -26,7 +26,7 @@ export class CollideManager implements IServiceCollideManager {
 
                 if (isColliding) {
                     const playerNonProjectileCollisionMethod = playerNonProjectile.Collide.get('WithProjectile');
-                    if (playerNonProjectileCollisionMethod) playerNonProjectileCollisionMethod();
+                    if (playerNonProjectileCollisionMethod) playerNonProjectileCollisionMethod(enemyProjectile);
 
                     const enemyProjectileCollisionMethod = enemyProjectile.Collide.get('WithNonProjectile');
                     if (enemyProjectileCollisionMethod) enemyProjectileCollisionMethod(playerNonProjectile);

@@ -9,7 +9,7 @@ export interface ISpriteWithDamageUpgrades {
 
 export interface ISpriteWithHealth {
     BaseHealth: number;
-    MaxHealth: number;
+    MaxHealth?: number;
     CurrentHealth: number;
 }
 export interface ISpriteWithHealthUpgrades {

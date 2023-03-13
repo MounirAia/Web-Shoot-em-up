@@ -18,16 +18,15 @@ import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularC
 import { LoadEventManager } from './EventManager.js';
 
 const ctx = canvas.getContext('2d')!;
-
 function load() {
     LoadEventManager();
+    LoadGeneratedSpritesManager();
     LoadCannonConfiguration();
     LoadImageLoader();
     LoadSceneManager();
     LoadGalaxyMap();
     LoadPlayer();
     LoadMainMenu();
-    LoadGeneratedSpritesManager();
     LoadCollideManager();
     LoadWaveManager();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');

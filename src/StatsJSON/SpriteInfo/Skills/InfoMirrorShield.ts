@@ -1,3 +1,5 @@
+import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
+
 const Info = {
     Level1: {
         Meta: {
@@ -6,37 +8,38 @@ const Info = {
                 Height: 64,
             },
             RealDimension: {
-                Width: 8,
-                Height: 24,
+                Width: 8 * CANVA_SCALEX,
+                Height: 24 * CANVA_SCALEY,
             },
             SpriteShiftPosition: {
-                X: 27,
-                Y: 20,
+                X: -27 * CANVA_SCALEX,
+                Y: -20 * CANVA_SCALEY,
+            },
+            SpriteShiftPositionOnPlayer: {
+                X: 38 * CANVA_SCALEX,
+                Y: -6 * CANVA_SCALEY,
             },
         },
-        Hitbox: {
-            Width: 8,
-            Height: 24,
-        },
+        Hitbox: [{ X: 0, Y: 0, Width: 8 * CANVA_SCALEX, Height: 24 * CANVA_SCALEY }],
         Animations: {
             Idle: {
                 FrameLengthInTime: 1,
                 Frames: [0],
             },
             OnHit: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: 3 / 60,
                 Frames: [10],
             },
             Damaged: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: Infinity,
                 Frames: [0, 1, 2, 3],
             },
             Destroyed: {
-                FrameLengthInTime: 0.1,
+                FrameLengthInTime: 3 / 60,
                 Frames: [4, 5, 6, 7],
             },
             Spawning: {
-                FrameLengthInTime: 0.05,
+                FrameLengthInTime: 3 / 60,
                 Frames: [7, 8, 9, 3, 2, 1, 0],
             },
         },
@@ -52,14 +55,22 @@ const Info = {
                 Height: 24,
             },
             SpriteShiftPosition: {
-                X: 27,
-                Y: 20,
+                X: -27 * CANVA_SCALEX,
+                Y: -20 * CANVA_SCALEY,
+            },
+            SpriteShiftPositionOnPlayer: {
+                X: 38 * CANVA_SCALEX,
+                Y: -6 * CANVA_SCALEY,
             },
         },
-        Hitbox: {
-            Width: 8,
-            Height: 24,
-        },
+        Hitbox: [
+            {
+                X: 0,
+                Y: 0,
+                Width: 8 * CANVA_SCALEX,
+                Height: 24 * CANVA_SCALEY,
+            },
+        ],
         Animations: {
             Idle: {
                 FrameLengthInTime: 1,
@@ -94,8 +105,12 @@ const Info = {
                 Height: 24,
             },
             SpriteShiftPosition: {
-                X: 27,
-                Y: 20,
+                X: -27 * CANVA_SCALEX,
+                Y: -20 * CANVA_SCALEY,
+            },
+            SpriteShiftPositionOnPlayer: {
+                X: 38 * CANVA_SCALEX,
+                Y: -6 * CANVA_SCALEY,
             },
         },
         Hitbox: {
@@ -136,65 +151,65 @@ const Info = {
                 Height: 5,
             },
             SpriteShiftPosition: {
-                X: 2,
-                Y: 2,
+                X: -2 * CANVA_SCALEX,
+                Y: -2 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnMirror: [
                 {
-                    X: 2,
-                    Y: -5,
+                    X: 2 * CANVA_SCALEX,
+                    Y: -5 * CANVA_SCALEY,
                 },
                 {
-                    X: 5,
-                    Y: -2,
+                    X: 5 * CANVA_SCALEX,
+                    Y: -2 * CANVA_SCALEY,
                 },
                 {
-                    X: 7,
-                    Y: 2,
+                    X: 7 * CANVA_SCALEX,
+                    Y: 2 * CANVA_SCALEY,
                 },
                 {
-                    X: 7,
-                    Y: 7,
+                    X: 7 * CANVA_SCALEX,
+                    Y: 7 * CANVA_SCALEY,
                 },
                 {
-                    X: 7,
-                    Y: 12,
+                    X: 7 * CANVA_SCALEX,
+                    Y: 12 * CANVA_SCALEY,
                 },
                 {
-                    X: 7,
-                    Y: 17,
+                    X: 7 * CANVA_SCALEX,
+                    Y: 17 * CANVA_SCALEY,
                 },
                 {
-                    X: 5,
-                    Y: 21,
+                    X: 5 * CANVA_SCALEX,
+                    Y: 21 * CANVA_SCALEY,
                 },
                 {
-                    X: 2,
-                    Y: 23,
+                    X: 2 * CANVA_SCALEX,
+                    Y: 23 * CANVA_SCALEY,
                 },
                 {
-                    X: -1,
-                    Y: 21,
+                    X: -1 * CANVA_SCALEX,
+                    Y: 21 * CANVA_SCALEY,
                 },
                 {
-                    X: -3,
-                    Y: 17,
+                    X: -3 * CANVA_SCALEX,
+                    Y: 17 * CANVA_SCALEY,
                 },
                 {
-                    X: -3,
-                    Y: 12,
+                    X: -3 * CANVA_SCALEX,
+                    Y: 12 * CANVA_SCALEY,
                 },
                 {
-                    X: -3,
-                    Y: 7,
+                    X: -3 * CANVA_SCALEX,
+                    Y: 7 * CANVA_SCALEY,
                 },
                 {
-                    X: -3,
-                    Y: 2,
+                    X: -3 * CANVA_SCALEX,
+                    Y: 2 * CANVA_SCALEY,
                 },
                 {
-                    X: -1,
-                    Y: -2,
+                    X: -1 * CANVA_SCALEX,
+                    Y: -2 * CANVA_SCALEY,
                 },
             ],
         },
@@ -217,6 +232,6 @@ const Info = {
             },
         },
     },
-} as const;
+};
 
 export default Info;
