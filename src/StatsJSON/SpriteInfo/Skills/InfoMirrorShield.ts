@@ -51,8 +51,8 @@ const Info = {
                 Height: 64,
             },
             RealDimension: {
-                Width: 8,
-                Height: 24,
+                Width: 8 * CANVA_SCALEX,
+                Height: 24 * CANVA_SCALEY,
             },
             SpriteShiftPosition: {
                 X: -27 * CANVA_SCALEX,
@@ -81,8 +81,8 @@ const Info = {
                 Frames: [13],
             },
             Damaged: {
-                FrameLengthInTime: 1,
-                Frames: [1, 2, 3, 4, 5],
+                FrameLengthInTime: Infinity,
+                Frames: [0, 1, 2, 3, 4, 5],
             },
             Destroyed: {
                 FrameLengthInTime: 0.1,

@@ -24,8 +24,8 @@ export abstract class Sprite {
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
     private readonly frameHeight: number;
-    protected X: number;
-    protected Y: number;
+    private x: number;
+    private y: number;
     private readonly spriteXOffset: number;
     private readonly spriteYOffset: number;
     private scaleX: number;
@@ -59,8 +59,8 @@ export abstract class Sprite {
         this.image = image;
         this.frameWidth = frameWidth;
         this.frameHeight = frameHeight;
-        this.X = x;
-        this.Y = y;
+        this.x = x;
+        this.y = y;
         this.spriteXOffset = spriteXOffset;
         this.spriteYOffset = spriteYOffset;
         this.scaleX = scaleX;
@@ -219,11 +219,33 @@ export abstract class Sprite {
         return this.frameHeight * this.scaleY;
     }
 
+    public get X(): number {
+        return this.x;
+    }
+
+    protected set X(value: number) {
+        this.x = value;
+    }
+    public get Y(): number {
+        return this.y;
+    }
+
+    protected set Y(value: number) {
+        this.y = value;
+    }
+
     public get FrameXCenter(): number {
+        if (this.realWidth) {
+            return this.X + this.Width / 2;
+        }
+
         return this.X + this.spriteXOffset + this.Width / 2;
     }
 
     public get FrameYCenter(): number {
+        if (this.realHeight) {
+            return this.Y + this.Height / 2;
+        }
         return this.Y + this.spriteYOffset + this.Height / 2;
     }
 

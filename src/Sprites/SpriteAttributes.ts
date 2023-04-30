@@ -1,3 +1,8 @@
+export interface ISpriteWithUpdateAndDraw {
+    Update: (dt: number) => void;
+    Draw: (ctx: CanvasRenderingContext2D) => void;
+}
+
 // generally used for bullets
 export interface ISpriteWithDamage {
     Damage: number;

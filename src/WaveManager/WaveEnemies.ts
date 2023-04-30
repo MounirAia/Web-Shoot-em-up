@@ -78,4 +78,18 @@ export class WaveEnemies {
     public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
         return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes>;
     }
+
+    public get RandomEnemyPosition(): undefined | { x: number; y: number } {
+        const randomIndex = Math.floor(this.listEnemies.size * Math.random());
+
+        let i = 0;
+        for (const [key, enemy] of this.listEnemies) {
+            if (i === randomIndex) {
+                return { x: enemy.FrameXCenter, y: enemy.FrameYCenter };
+            }
+            i++;
+        }
+
+        return undefined;
+    }
 }

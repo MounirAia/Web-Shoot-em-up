@@ -47,6 +47,7 @@ export class RectangleHitbox {
     public TestHitboxDrawing(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = 'purple';
         ctx.strokeRect(this.x, this.y, this.width, this.height);
+        ctx.strokeStyle = 'black';
     }
 }
 

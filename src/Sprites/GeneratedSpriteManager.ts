@@ -1,8 +1,8 @@
 import { ServiceLocator } from '../ServiceLocator.js';
-import { Sprite } from './Sprite.js';
+import { ISpriteWithUpdateAndDraw } from './SpriteAttributes.js';
 import { ISpriteWithHitboxes } from './SpriteHitbox.js';
 
-export interface IGeneratedSprite extends Sprite, ISpriteWithHitboxes {
+export interface IGeneratedSprite extends ISpriteWithHitboxes, ISpriteWithUpdateAndDraw {
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
 }

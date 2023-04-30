@@ -8,6 +8,7 @@ export interface IServiceWaveManager {
     GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
+    GetPositionOfARandomEnemy(): { x: number; y: number } | undefined;
 }
 
 class WaveManager implements IServiceWaveManager {
@@ -141,6 +142,10 @@ class WaveManager implements IServiceWaveManager {
             return { x: this.lastEnemyDestroyed?.FrameXCenter, y: this.lastEnemyDestroyed?.FrameYCenter };
 
         return { x: 0, y: 0 };
+    }
+
+    GetPositionOfARandomEnemy(): { x: number; y: number } | undefined {
+        return this.currentWave?.RandomEnemyPosition;
     }
 }
 
