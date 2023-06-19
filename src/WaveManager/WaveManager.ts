@@ -8,13 +8,14 @@ export interface IServiceWaveManager {
     GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
-    GetPositionOfARandomEnemy(): { x: number; y: number } | undefined;
+    GetARandomEnemy(): IEnemy | undefined;
+    GetIfListHasNoEnemyLeft(): boolean;
 }
 
 class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
-    private round: number = 1;
+    private round = 1;
     private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
         this.listWaves = this.createWaves();
@@ -106,14 +107,14 @@ class WaveManager implements IServiceWaveManager {
         ];
 
         let numberWaves = 0;
-        let roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
+        const roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
         let index = Math.floor(this.round / roundTiers);
         if (index > roundsChart.length - 1) {
             index = roundsChart.length - 1;
         }
         const { minNumberWaves, maxNumberWaves } = roundsChart[index];
         numberWaves = Math.round(Math.random() * (maxNumberWaves - minNumberWaves)) + minNumberWaves;
-        let waves: WaveEnemies[] = [];
+        const waves: WaveEnemies[] = [];
 
         for (let i = 0; i < numberWaves; i++) {
             const { minNumberEnemies, maxNumberEnemies } = roundsChart[index];
@@ -144,8 +145,14 @@ class WaveManager implements IServiceWaveManager {
         return { x: 0, y: 0 };
     }
 
-    GetPositionOfARandomEnemy(): { x: number; y: number } | undefined {
-        return this.currentWave?.RandomEnemyPosition;
+    GetARandomEnemy(): IEnemy | undefined {
+        return this.currentWave?.RandomEnemy;
+    }
+
+    GetIfListHasNoEnemyLeft(): boolean {
+        if (this.currentWave) return this.currentWave?.HasNoEnemyLeft;
+
+        return true;
     }
 }
 

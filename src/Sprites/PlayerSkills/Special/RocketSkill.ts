@@ -305,7 +305,7 @@ class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHit
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        const projectileSpeed = RocketConstant[2].projectileSpeed;
+        const { projectileSpeed } = RocketConstant[2];
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
@@ -555,7 +555,7 @@ export class RocketSkill implements ISkill {
     }
 
     public Effect() {
-        let { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
         const rockets: IGeneratedSprite[] = [];
 

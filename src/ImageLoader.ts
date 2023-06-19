@@ -8,7 +8,7 @@ export interface IServiceImageLoader {
 class ImageLoader implements IServiceImageLoader {
     private static isGameReady = false;
     private listImages: { [key: string]: HTMLImageElement };
-    private numberImagesLoaded: number = 0;
+    private numberImagesLoaded = 0;
 
     constructor(imagesPath: string[]) {
         this.listImages = {};
@@ -56,6 +56,7 @@ export function LoadImageLoader() {
     assets.push('images/Skills/Mirror/MirrorLevel1.png');
     assets.push('images/Skills/Mirror/MirrorLevel2&3.png');
     assets.push('images/Skills/Mirror/Portal.png');
+    assets.push('images/Skills/Mirror/ExplosiveEntity.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

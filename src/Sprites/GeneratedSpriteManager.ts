@@ -91,6 +91,19 @@ class GeneratedSpritesManager implements IServiceGeneratedSpritesManager {
     get EnemyProjectiles(): ReadonlyMap<IGeneratedSprite, IGeneratedSprite> {
         return this.generatedSpritesList.enemy.projectiles;
     }
+
+    private testQuantity() {
+        // for testing purpose
+        const playerProjectilesSize = this.generatedSpritesList.player.projectiles.size;
+        const playerNonProjectilesSize = this.generatedSpritesList.player.nonProjectiles;
+        const enemyProjectilesSize = this.generatedSpritesList.enemy.projectiles.size;
+        const enemyNonProjectilesSize = this.generatedSpritesList.enemy.nonProjectiles.size;
+
+        console.log('playerProjectile', playerProjectilesSize);
+        console.log('playerNonProjectile', playerNonProjectilesSize);
+        console.log('enemyProjectile', enemyProjectilesSize);
+        console.log('enemyNonProjectilesSize', enemyNonProjectilesSize);
+    }
 }
 
 let bulletManager: GeneratedSpritesManager;

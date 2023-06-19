@@ -101,8 +101,8 @@ const Info = {
                 Height: 64,
             },
             RealDimension: {
-                Width: 8,
-                Height: 24,
+                Width: 8 * CANVA_SCALEX,
+                Height: 24 * CANVA_SCALEY,
             },
             SpriteShiftPosition: {
                 X: -27 * CANVA_SCALEX,
@@ -113,10 +113,14 @@ const Info = {
                 Y: -6 * CANVA_SCALEY,
             },
         },
-        Hitbox: {
-            Width: 8,
-            Height: 24,
-        },
+        Hitbox: [
+            {
+                X: 0,
+                Y: 0,
+                Width: 8 * CANVA_SCALEX,
+                Height: 24 * CANVA_SCALEY,
+            },
+        ],
         Animations: {
             Idle: {
                 FrameLengthInTime: 1,
@@ -127,8 +131,8 @@ const Info = {
                 Frames: [13],
             },
             Damaged: {
-                FrameLengthInTime: 1,
-                Frames: [1, 2, 3, 4, 5],
+                FrameLengthInTime: Infinity,
+                Frames: [0, 1, 2, 3, 4, 5],
             },
             Destroyed: {
                 FrameLengthInTime: 0.1,
@@ -143,16 +147,22 @@ const Info = {
     Portal: {
         Meta: {
             TileDimensions: {
-                Width: 8,
-                Height: 8,
+                Width: 32,
+                Height: 32,
             },
             RealDimension: {
-                Width: 4,
-                Height: 5,
+                Short: {
+                    Width: 4 * CANVA_SCALEX,
+                    Height: 5 * CANVA_SCALEY,
+                },
+                Long: {
+                    Width: 4 * CANVA_SCALEX,
+                    Height: 24 * CANVA_SCALEY,
+                },
             },
             SpriteShiftPosition: {
-                X: -2 * CANVA_SCALEX,
-                Y: -2 * CANVA_SCALEY,
+                X: -4 * CANVA_SCALEX,
+                Y: -4 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnMirror: [
                 {
@@ -215,20 +225,62 @@ const Info = {
         },
         Animations: {
             Idle: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: Infinity,
                 Frames: [0],
             },
             Detaching: {
-                FrameLengthInTime: 0.1,
-                Frames: [0, 1, 2, 3],
+                FrameLengthInTime: 6 / 60,
+                Frames: [1, 2, 3],
             },
             Attaching: {
-                FrameLengthInTime: 0.05,
-                Frames: [9, 10, 0],
+                FrameLengthInTime: 6 / 60,
+                Frames: [4, 5, 0],
             },
             Spawning: {
-                FrameLengthInTime: 0.05,
-                Frames: [4, 5, 6, 7, 8],
+                FrameLengthInTime: 3 / 60,
+                Frames: [6, 7, 8, 9, 10, 11, 12, 13, 14],
+            },
+            Generating: {
+                FrameLengthInTime: 6 / 60,
+                Frames: [15, 16, 17],
+            },
+            Disappearing: {
+                FrameLengthInTime: 3 / 60,
+                Frames: [14, 13, 12, 11, 10, 1, 2, 3],
+            },
+        },
+    },
+    ExplosiveEntity: {
+        Meta: {
+            TileDimensions: {
+                Width: 8,
+                Height: 8,
+            },
+            RealDimension: {
+                Width: 6 * CANVA_SCALEX,
+                Height: 5 * CANVA_SCALEY,
+            },
+            SpriteShiftPosition: {
+                X: -1 * CANVA_SCALEX,
+                Y: -1 * CANVA_SCALEY,
+            },
+        },
+        Hitbox: [
+            {
+                X: 0,
+                Y: 0,
+                Width: 6 * CANVA_SCALEX,
+                Height: 5 * CANVA_SCALEY,
+            },
+        ],
+        Animations: {
+            Idle: {
+                FrameLengthInTime: Infinity,
+                Frames: [0],
+            },
+            Destroyed: {
+                FrameLengthInTime: 3 / 60,
+                Frames: [1, 2, 3],
             },
         },
     },

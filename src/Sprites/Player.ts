@@ -21,7 +21,7 @@ import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { IServiceEventManager } from '../EventManager';
-import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield.js';
+import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield/MirrorShield.js';
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -83,12 +83,12 @@ class Player
         image: HTMLImageElement,
         frameWidth: number,
         frameHeight: number,
-        x: number = 0,
-        y: number = 0,
-        spriteXOffset: number = 0,
-        spriteYOffset: number = 0,
-        scaleX: number = 1,
-        scaleY: number = 1,
+        x = 0,
+        y = 0,
+        spriteXOffset = 0,
+        spriteYOffset = 0,
+        scaleX = 1,
+        scaleY = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
         ServiceLocator.AddService('Player', this);
@@ -181,7 +181,7 @@ class Player
         this.AddAnimation('idle', [0], 1);
         this.AddAnimation(
             'damaged',
-            [1],
+            [1, 0],
             0.1,
             () => {
                 this.cannonConfiguration.PlayAnimation('damaged');
@@ -268,8 +268,8 @@ class Player
         this.cannonConfiguration.Update(dt);
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
-            let bulletXOffset = 34 * CANVA_SCALEX;
-            let bulletYOffset = 8 * CANVA_SCALEY;
+            const bulletXOffset = 34 * CANVA_SCALEX;
+            const bulletYOffset = 8 * CANVA_SCALEY;
             const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
 

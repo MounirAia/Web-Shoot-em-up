@@ -16,9 +16,11 @@ import {
 import { LoadCollideManager } from './Sprites/CollideManager.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
 import { LoadEventManager } from './EventManager.js';
+import { LoadUtilManager } from './UtilManager.js';
 
 const ctx = canvas.getContext('2d')!;
 function load() {
+    LoadUtilManager();
     LoadEventManager();
     LoadGeneratedSpritesManager();
     LoadCannonConfiguration();
@@ -39,8 +41,8 @@ function update(dt: number) {
 
     if (SceneManager.CurrentScene === 'Game') {
         UpdateGalaxyMap(dt);
-        UpdatePlayer(dt);
         UpdateWaveManager(dt);
+        UpdatePlayer(dt);
         UpdateGeneratedSpritesManager(dt);
 
         if (Keyboard.Escape.IsPressed) {
@@ -61,9 +63,9 @@ function draw(ctx: CanvasRenderingContext2D) {
 
     if (SceneManager.CurrentScene === 'Game') {
         DrawGalaxyMap(ctx);
+        DrawGeneratedSpritesManager(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
-        DrawGeneratedSpritesManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
         DrawGalaxyMap(ctx);
         DrawPlayer(ctx);

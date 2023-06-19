@@ -1,7 +1,9 @@
 import { canvas } from '../ScreenConstant.js';
+import { ServiceLocator } from '../ServiceLocator.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
+import { IServiceUtilManager } from '../UtilManager.js';
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns = 8;
@@ -79,17 +81,11 @@ export class WaveEnemies {
         return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes>;
     }
 
-    public get RandomEnemyPosition(): undefined | { x: number; y: number } {
-        const randomIndex = Math.floor(this.listEnemies.size * Math.random());
+    public get RandomEnemy(): IEnemy | undefined {
+        const { GetRandomObjectFromMap } = ServiceLocator.GetService<IServiceUtilManager>('UtilManager');
 
-        let i = 0;
-        for (const [key, enemy] of this.listEnemies) {
-            if (i === randomIndex) {
-                return { x: enemy.FrameXCenter, y: enemy.FrameYCenter };
-            }
-            i++;
-        }
+        const randomEnemy = GetRandomObjectFromMap<IEnemy>({ theMap: this.listEnemies });
 
-        return undefined;
+        return randomEnemy;
     }
 }
