@@ -37,21 +37,21 @@ export class EnemyBullet
         );
         this.Generator = 'enemy';
         this.Category = 'projectile';
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.CurrentHitbox = RectangleHitbox.NoHitbox;
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
             },
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.BaseSpeed = 3;
         this.Damage = 3;
@@ -70,11 +70,11 @@ export class EnemyBullet
 
         this.Collide = new Map();
         this.Collide.set('WithPlayer', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
 
         this.Collide.set('WithNonProjectile', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -95,7 +95,7 @@ export class EnemyBullet
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
-        if (this.CurrentAnimationName !== 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
             ServiceLocator.GetService<IServiceCollideManager>(
                 'CollideManager',
             ).HandleWhenEnemyProjectileCollideWithPlayer(this);

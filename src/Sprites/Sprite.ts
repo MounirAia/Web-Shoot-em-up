@@ -1,27 +1,5 @@
-import { SpriteStateController } from './SpriteState.js';
-
-export type AvailableAnimation =
-    | ''
-    | 'idle'
-    | 'damaged'
-    | 'onHit'
-    | 'spawning'
-    | 'invulnerable'
-    | 'destroyed'
-    | 'shooting'
-    | 'spin'
-    | 'detaching'
-    | 'attaching'
-    | 'disappearing'
-    | 'generating';
-
-interface IAnimationObject {
-    frames: number[];
-    framesLengthInTime: number;
-    beforePlayingAnimation?: () => void;
-    afterPlayingAnimation?: () => void;
-    methodToPlayOnSpecificFrames?: Map<number, () => void>;
-}
+import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { SpriteStatesController } from './SpriteStatesController.js';
 
 export abstract class Sprite {
     /* Image properties */
@@ -38,14 +16,10 @@ export abstract class Sprite {
     private realHeight: number | undefined;
 
     /* Animation properties */
-    private animationList: Map<AvailableAnimation, IAnimationObject>;
-    private currentAnimationName: AvailableAnimation;
-    private currentFrame;
-    private currentFrameTimer;
-    private doesAnimationLoop;
+    private readonly animationsController: SpriteAnimationsController;
 
     /* State properties */
-    private readonly statesController: SpriteStateController;
+    private readonly statesController: SpriteStatesController;
 
     constructor(
         image: HTMLImageElement,
@@ -72,118 +46,31 @@ export abstract class Sprite {
         this.realWidth = realWidth;
         this.realHeight = realHeight;
 
-        this.animationList = new Map();
-        this.currentAnimationName = '';
-        this.currentFrame = 0;
-        this.currentFrameTimer = 1;
-        this.doesAnimationLoop = false;
-
-        this.statesController = new SpriteStateController();
-    }
-
-    public AddAnimation(
-        key: AvailableAnimation,
-        frames: number[],
-        framesLengthInTime = 1,
-        beforePlayingAnimation?: () => void,
-        afterPlayingAnimation?: () => void,
-        methodToPlayOnSpecificFrames?: Map<number, () => void>,
-    ) {
-        this.animationList.set(key, {
-            frames,
-            framesLengthInTime,
-            beforePlayingAnimation,
-            afterPlayingAnimation,
-            methodToPlayOnSpecificFrames,
-        });
-    }
-
-    public PlayAnimation(animation: AvailableAnimation, loop = false) {
-        const animationObject = this.animationList.get(animation);
-
-        if (animationObject) {
-            if (this.CurrentAnimationName !== animation) {
-                if (animationObject.beforePlayingAnimation) animationObject.beforePlayingAnimation();
-
-                this.currentAnimationName = animation;
-                this.currentFrame = 0;
-                if (animationObject.framesLengthInTime != Infinity) {
-                    this.currentFrameTimer = animationObject.framesLengthInTime;
-                }
-                this.doesAnimationLoop = loop;
-            }
-        }
-    }
-
-    public PlayManuallyNextFrame() {
-        if (this.currentAnimationObject) {
-            const { framesLengthInTime, afterPlayingAnimation } = this.currentAnimationObject;
-            if (framesLengthInTime == Infinity) {
-                if (!this.IsAnimationFinished) {
-                    this.currentFrame++;
-
-                    if (this.IsAnimationFinished) {
-                        if (afterPlayingAnimation) afterPlayingAnimation();
-                    }
-                }
-            }
-        }
+        this.animationsController = new SpriteAnimationsController();
+        this.statesController = new SpriteStatesController();
     }
 
     public Update(dt: number) {
-        if (this.CurrentAnimationName) {
-            if (this.currentAnimationObject) {
-                const { frames, framesLengthInTime, afterPlayingAnimation, methodToPlayOnSpecificFrames } =
-                    this.currentAnimationObject;
-                if (framesLengthInTime != Infinity) {
-                    if (this.doesAnimationLoop && this.IsAnimationFinished) {
-                        this.currentFrame = 0;
-                        if (afterPlayingAnimation) afterPlayingAnimation(); // play the first method at first frame
-                    } else {
-                        if (!this.IsAnimationFinished) {
-                            this.currentFrameTimer -= dt;
-                            if (this.currentFrameTimer <= 0) {
-                                this.currentFrame++;
-                                this.currentFrameTimer = framesLengthInTime;
-
-                                const methodToPlayOnSpecificFrame = methodToPlayOnSpecificFrames?.get(this.frameNumber);
-                                if (methodToPlayOnSpecificFrame) {
-                                    methodToPlayOnSpecificFrame();
-                                }
-
-                                if (this.IsAnimationFinished && !this.doesAnimationLoop) {
-                                    if (afterPlayingAnimation) {
-                                        afterPlayingAnimation();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
+        this.AnimationsController.Update(dt);
         this.StatesController.Update(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        const { image, frameWidth, frameHeight, X: x, Y: y, spriteXOffset, spriteYOffset, scaleX, scaleY } = this;
-
-        const xFramePosition = frameWidth * (this.frameNumber % this.numberFramesPerLine);
-        const yFramePosition = frameHeight * Math.floor(this.frameNumber / this.numberFramesPerLine);
-        ctx.drawImage(
+        const { image, frameWidth, frameHeight, X, Y, spriteXOffset, spriteYOffset, scaleX, scaleY } = this;
+        this.AnimationsController.Draw(ctx, {
             image,
-            xFramePosition,
-            yFramePosition,
             frameWidth,
             frameHeight,
-            x + spriteXOffset,
-            y + spriteYOffset,
-            scaleX * frameWidth,
-            scaleY * frameHeight,
-        );
+            X,
+            Y,
+            spriteXOffset,
+            spriteYOffset,
+            scaleX,
+            scaleY,
+            numberFramesPerLine: this.numberFramesPerLine,
+        });
 
-        this.StatesController.Draw(ctx, x, y, this.Width, this.Height);
+        this.StatesController.Draw(ctx, X, Y, this.Width, this.Height);
     }
 
     public get ImagePath(): string {
@@ -216,37 +103,6 @@ export abstract class Sprite {
 
     private get numberFramesPerLine(): number {
         return this.image.width / this.frameWidth;
-    }
-
-    private get frameNumber(): number {
-        const animationObject = this.currentAnimationObject;
-        if (animationObject) {
-            if (this.IsAnimationFinished) return animationObject.frames.slice(-1)[0];
-            return animationObject.frames[this.currentFrame];
-        }
-
-        return 0;
-    }
-
-    private get currentAnimationObject(): IAnimationObject | undefined {
-        const animationObject = this.animationList.get(this.CurrentAnimationName);
-        return animationObject;
-    }
-
-    protected get IsAnimationFinished(): boolean {
-        if (this.currentAnimationObject) {
-            const animationLenght = this.currentAnimationObject.frames.length - 1;
-
-            if (this.currentFrame >= animationLenght) {
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
-
-    public get CurrentAnimationName(): AvailableAnimation {
-        return this.currentAnimationName;
     }
 
     public get Width(): number {
@@ -297,7 +153,11 @@ export abstract class Sprite {
         return this.Y + this.spriteYOffset + this.Height / 2;
     }
 
-    public get StatesController(): SpriteStateController {
+    public get StatesController(): SpriteStatesController {
         return this.statesController;
+    }
+
+    public get AnimationsController(): SpriteAnimationsController {
+        return this.animationsController;
     }
 }

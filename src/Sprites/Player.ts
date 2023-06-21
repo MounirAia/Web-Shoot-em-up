@@ -35,6 +35,7 @@ export interface IServicePlayer {
     SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
     EffectSkillLevel: number;
+    SupportSkillLevel: number;
     CurrentHitbox: RectangleHitbox[];
     InvulnerabilityTimePeriod: number;
 }
@@ -67,6 +68,7 @@ class Player
     private moneyInWallet: number;
     private specialSkillLevel: number;
     private effectSkillLevel: number;
+    private supportSkillLevel: number;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -103,6 +105,7 @@ class Player
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
+        this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -178,53 +181,58 @@ class Player
 
         this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'damaged',
-            [1, 0],
-            0.1,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: [1, 0],
+            framesLengthInTime: 0.1,
+            beforePlayingAnimation: () => {
                 this.cannonConfiguration.PlayAnimation('damaged');
             },
-            () => {
-                this.PlayAnimation('idle');
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
             },
-        );
-        this.AddAnimation(
-            'invulnerable',
-            [1, 0, 1, 0, 1],
-            this.invulnerabilityTimePeriod / 5,
-            () => {
+        });
+        this.AnimationsController.AddAnimation({
+            animation: 'invulnerable',
+            frames: [1, 0, 1, 0, 1],
+            framesLengthInTime: this.invulnerabilityTimePeriod / 5,
+            beforePlayingAnimation: () => {
                 this.cannonConfiguration.PlayAnimation('invulnerable');
             },
-            () => {
-                this.PlayAnimation('idle');
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
             },
-        );
-        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
-            this.removePlayerFromGameFlow();
-            ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
-                'enemy destroyed',
-                actionOnEnemyDestroyed,
-            );
+        });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [2, 3, 4, 5, 6, 7, 8, 9],
+            framesLengthInTime: 0.1,
+            beforePlayingAnimation: () => {
+                this.removePlayerFromGameFlow();
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'enemy destroyed',
+                    actionOnEnemyDestroyed,
+                );
+            },
         });
 
         this.Collide = new Map();
 
         this.Collide.set('WithProjectile', (bullet: unknown) => {
-            this.PlayAnimation('damaged', false);
+            this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
             const myBullet = bullet as ISpriteWithDamage;
             this.CurrentHealth -= myBullet.Damage;
         });
 
         this.Collide.set('WithEnemy', (enemy: unknown) => {
-            this.PlayAnimation('invulnerable', false);
+            this.AnimationsController.PlayAnimation({ animation: 'invulnerable' });
 
             this.CurrentHealth -= this.MaxHealth * 0.5;
         });
 
-        this.PlayAnimation('idle', false);
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     public UpdateHitboxes(dt: number): void {
@@ -340,7 +348,7 @@ class Player
 
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('GameOver');
         }
     }
@@ -393,8 +401,12 @@ class Player
         return this.effectSkillLevel;
     }
 
+    get SupportSkillLevel(): number {
+        return this.supportSkillLevel;
+    }
+
     IsInvulnerable(): boolean {
-        return this.CurrentAnimationName === 'invulnerable';
+        return this.AnimationsController.CurrentAnimationName === 'invulnerable';
     }
 
     get InvulnerabilityTimePeriod(): number {

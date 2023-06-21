@@ -77,20 +77,20 @@ export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpr
         ]);
 
         this.CurrentHitbox = defaultHitbox;
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -113,12 +113,12 @@ export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpr
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -212,20 +212,20 @@ export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpr
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -248,12 +248,12 @@ export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpr
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -327,20 +327,20 @@ class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHit
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -354,12 +354,12 @@ class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHit
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -465,20 +465,20 @@ export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpr
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -513,12 +513,12 @@ export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpr
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 

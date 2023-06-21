@@ -19,7 +19,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
     BaseSpeed: number;
     BaseAttackSpeed: number;
 
-    constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
+    constructor(x = 0, y = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/BigDiamond/BigDiamond.png',
         );
@@ -66,43 +66,48 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
             },
         ]);
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [4], 1);
-        this.AddAnimation('shooting', [1, 2, 3], 3 / this.AttackSpeed, undefined, () => {
-            const bullet = new EnemyBullet(this.X - 2 * CANVA_SCALEX, this.Y + 6 * CANVA_SCALEY);
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({ animation: 'damaged', frames: [4], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'shooting',
+            frames: [1, 2, 3],
+            framesLengthInTime: 3 / this.AttackSpeed,
+            afterPlayingAnimation: () => {
+                const bullet = new EnemyBullet(this.X - 2 * CANVA_SCALEX, this.Y + 6 * CANVA_SCALEY);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
+            },
         });
-        this.AddAnimation(
-            'destroyed',
-            [5, 6, 7, 8, 9, 10, 11],
-            0.05,
-            () => {
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [5, 6, 7, 8, 9, 10, 11],
+            framesLengthInTime: 0.05,
+            beforePlayingAnimation: () => {
                 this.removeEnemyFromGameFlow();
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
                     ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
                 });
             },
-            () => {
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
             },
-        );
+        });
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (bullet: unknown) => {
             bullet = bullet as ISpriteWithDamage;
 
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
 
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
 
         this.Collide.set('WithPlayer', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
 
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
 
-        this.PlayAnimation('idle', true);
+        this.AnimationsController.PlayAnimation({ animation: 'idle', loop: true });
     }
 
     UpdateHitboxes(dt: number): void {
@@ -127,8 +132,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         }
 
         // Shooting flow of the enemy
-        if (this.CurrentAnimationName !== 'destroyed') {
-            this.PlayAnimation('shooting', true);
+        if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
+            this.AnimationsController.PlayAnimation({ animation: 'shooting', loop: true });
 
             ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenEnemyCollideWithPlayer(this);
         }

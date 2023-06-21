@@ -3,7 +3,8 @@ import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
 import { IServicePlayer } from '../../Player.js';
-import { AvailableAnimation, Sprite } from '../../Sprite.js';
+import { Sprite } from '../../Sprite.js';
+import { AvailableAnimation } from '../../SpriteAnimationsController.js';
 
 class RegularCannon extends Sprite implements ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
@@ -12,7 +13,7 @@ class RegularCannon extends Sprite implements ISpriteWithHitboxes {
 
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
-    constructor(x: number = 0, y: number = 0, offsetXOnSprite: number, offsetYOnSprite: number) {
+    constructor(x = 0, y = 0, offsetXOnSprite: number, offsetYOnSprite: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/Cannon.png'),
             8,
@@ -37,24 +38,34 @@ class RegularCannon extends Sprite implements ISpriteWithHitboxes {
             },
         ]);
 
-        this.AddAnimation('idle', [0], 1);
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
 
-        this.AddAnimation('damaged', [1], 0.1, undefined, () => {
-            this.PlayAnimation('idle');
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: [1],
+            framesLengthInTime: 0.1,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
+            },
         });
 
         const playerInvulnerabilityTimePeriod =
             ServiceLocator.GetService<IServicePlayer>('Player').InvulnerabilityTimePeriod;
-        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], playerInvulnerabilityTimePeriod / 5, undefined, () => {
-            this.PlayAnimation('idle');
+        this.AnimationsController.AddAnimation({
+            animation: 'invulnerable',
+            frames: [1, 0, 1, 0, 1],
+            framesLengthInTime: playerInvulnerabilityTimePeriod / 5,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
+            },
         });
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', () => {
-            this.PlayAnimation('damaged');
+            this.AnimationsController.PlayAnimation({ animation: 'damaged' });
         });
 
-        this.PlayAnimation('idle');
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     UpdateHitboxes(dt: number) {
@@ -95,7 +106,7 @@ export class CannonConfiguration {
 
     public PlayAnimation(animationName: AvailableAnimation) {
         this.cannonConfiguration?.forEach((cannon) => {
-            cannon.PlayAnimation(animationName);
+            cannon.AnimationsController.PlayAnimation({ animation: animationName });
         });
     }
 

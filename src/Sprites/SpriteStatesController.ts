@@ -6,7 +6,7 @@ interface IStateObject {
     afterPlayingState?: () => void;
 }
 
-export class SpriteStateController {
+export class SpriteStatesController {
     private statesList: Map<AvailableState, IStateObject>;
     private currentStateName: AvailableState;
     private currentStateTimer: number;
@@ -61,7 +61,7 @@ export class SpriteStateController {
         rectangleWidth: number,
         rectangleHeight: number,
     ) {
-        const color = SpriteStateController.colorScheme.get(this.currentStateName);
+        const color = SpriteStatesController.colorScheme.get(this.currentStateName);
         if (color) {
             ctx.globalCompositeOperation = 'source-atop';
             ctx.fillStyle = color;

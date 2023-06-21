@@ -62,18 +62,33 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         const { Destroyed, Spawning, Damaged } = InfoMirrorShield.Level1.Animations;
 
-        this.AddAnimation('destroyed', Destroyed.Frames, Destroyed.FrameLengthInTime, () => {
-            this.CurrentHitbox = RectangleHitbox.NoHitbox;
-            this.currentTimeToRespawn = this.baseTimeToRespawn;
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                this.CurrentHitbox = RectangleHitbox.NoHitbox;
+                this.currentTimeToRespawn = this.baseTimeToRespawn;
+            },
         });
-        this.AddAnimation('spawning', Spawning.Frames, Spawning.FrameLengthInTime, undefined, () => {
-            this.CurrentHitbox = defaultHitbox;
-            this.PlayAnimation('damaged');
+        this.AnimationsController.AddAnimation({
+            animation: 'spawning',
+            frames: Spawning.Frames,
+            framesLengthInTime: Spawning.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.CurrentHitbox = defaultHitbox;
+                this.AnimationsController.PlayAnimation({ animation: 'damaged' });
+            },
         });
-        this.AddAnimation('damaged', Damaged.Frames, Damaged.FrameLengthInTime, undefined, () => {
-            this.PlayAnimation('destroyed');
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: Damaged.Frames,
+            framesLengthInTime: Damaged.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            },
         });
-        this.PlayAnimation('damaged');
+        this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
         this.StatesController.AddState('onHit', { statesDuration: 0.1 });
 
@@ -89,7 +104,7 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
                 this.CurrentHealth -= projectile.Damage;
                 const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
                 if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
-                    this.PlayManuallyNextFrame();
+                    this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
             this.StatesController.PlayState('onHit');
@@ -105,10 +120,10 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
     Update(dt: number): void {
         super.Update(dt);
-        if (this.CurrentAnimationName === 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') {
             this.currentTimeToRespawn -= dt;
             if (this.currentTimeToRespawn <= 0) {
-                this.PlayAnimation('spawning');
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
             }
         } else {
             const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
@@ -166,18 +181,33 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         const { Destroyed, Spawning, Damaged } = InfoMirrorShield.Level2.Animations;
 
-        this.AddAnimation('destroyed', Destroyed.Frames, Destroyed.FrameLengthInTime, () => {
-            this.CurrentHitbox = RectangleHitbox.NoHitbox;
-            this.currentTimeToRespawn = this.baseTimeToRespawn;
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                this.CurrentHitbox = RectangleHitbox.NoHitbox;
+                this.currentTimeToRespawn = this.baseTimeToRespawn;
+            },
         });
-        this.AddAnimation('spawning', Spawning.Frames, Spawning.FrameLengthInTime, undefined, () => {
-            this.CurrentHitbox = defaultHitbox;
-            this.PlayAnimation('damaged');
+        this.AnimationsController.AddAnimation({
+            animation: 'spawning',
+            frames: Spawning.Frames,
+            framesLengthInTime: Spawning.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.CurrentHitbox = defaultHitbox;
+                this.AnimationsController.PlayAnimation({ animation: 'damaged' });
+            },
         });
-        this.AddAnimation('damaged', Damaged.Frames, Damaged.FrameLengthInTime, undefined, () => {
-            this.PlayAnimation('destroyed');
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: Damaged.Frames,
+            framesLengthInTime: Damaged.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            },
         });
-        this.PlayAnimation('damaged');
+        this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
         this.StatesController.AddState('onHit', { statesDuration: 0.1 });
 
@@ -193,7 +223,7 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
                 this.CurrentHealth -= projectile.Damage;
                 const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
                 if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
-                    this.PlayManuallyNextFrame();
+                    this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
             this.StatesController.PlayState('onHit');
@@ -214,10 +244,10 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
     Update(dt: number): void {
         super.Update(dt);
-        if (this.CurrentAnimationName === 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') {
             this.currentTimeToRespawn -= dt;
             if (this.currentTimeToRespawn <= 0) {
-                this.PlayAnimation('spawning');
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
             }
         } else {
             const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
@@ -279,18 +309,33 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         const { Destroyed, Spawning, Damaged } = InfoMirrorShield.Level3.Animations;
 
-        this.AddAnimation('destroyed', Destroyed.Frames, Destroyed.FrameLengthInTime, () => {
-            this.CurrentHitbox = RectangleHitbox.NoHitbox;
-            this.currentTimeToRespawn = this.baseTimeToRespawn;
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                this.CurrentHitbox = RectangleHitbox.NoHitbox;
+                this.currentTimeToRespawn = this.baseTimeToRespawn;
+            },
         });
-        this.AddAnimation('spawning', Spawning.Frames, Spawning.FrameLengthInTime, undefined, () => {
-            this.CurrentHitbox = defaultHitbox;
-            this.PlayAnimation('damaged');
+        this.AnimationsController.AddAnimation({
+            animation: 'spawning',
+            frames: Spawning.Frames,
+            framesLengthInTime: Spawning.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.CurrentHitbox = defaultHitbox;
+                this.AnimationsController.PlayAnimation({ animation: 'damaged' });
+            },
         });
-        this.AddAnimation('damaged', Damaged.Frames, Damaged.FrameLengthInTime, undefined, () => {
-            this.PlayAnimation('destroyed');
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: Damaged.Frames,
+            framesLengthInTime: Damaged.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            },
         });
-        this.PlayAnimation('damaged');
+        this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
         this.StatesController.AddState('onHit', { statesDuration: 0.1 });
 
@@ -306,7 +351,7 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
                 this.CurrentHealth -= projectile.Damage;
                 const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
                 if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
-                    this.PlayManuallyNextFrame();
+                    this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
             this.StatesController.PlayState('onHit');
@@ -326,10 +371,10 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
     Update(dt: number): void {
         super.Update(dt);
-        if (this.CurrentAnimationName === 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') {
             this.currentTimeToRespawn -= dt;
             if (this.currentTimeToRespawn <= 0) {
-                this.PlayAnimation('spawning');
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
             }
         } else {
             const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
@@ -359,8 +404,20 @@ export class MirrorShieldSkill implements ISkill {
     }
 
     Effect() {
-        const mirror = new MirrorShieldLevel3();
+        const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SupportSkillLevel;
 
-        ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(mirror);
+        let mirror: IGeneratedSprite | undefined;
+
+        if (skillLevel === 1) {
+            mirror = new MirrorShieldLevel1();
+        } else if (skillLevel === 2) {
+            mirror = new MirrorShieldLevel2();
+        } else if (skillLevel === 3) {
+            mirror = new MirrorShieldLevel3();
+        }
+
+        if (mirror) {
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(mirror);
+        }
     }
 }

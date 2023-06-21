@@ -57,8 +57,8 @@ class BladeLevel1 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
             },
         ]);
 
-        this.AddAnimation('spin', [0, 1, 2, 3], 0.05);
-        this.PlayAnimation('spin', true);
+        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.PlayAnimation({ animation: 'spin', loop: true });
 
         this.Collide = new Map();
 
@@ -150,8 +150,8 @@ class BladeLevel2 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
             },
         ]);
 
-        this.AddAnimation('spin', [0, 1, 2, 3], 0.05);
-        this.PlayAnimation('spin', true);
+        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.PlayAnimation({ animation: 'spin', loop: true });
 
         this.Collide = new Map();
 
@@ -255,16 +255,23 @@ class BladeLevel3 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
             },
         ]);
 
-        this.AddAnimation('spin', [0, 1, 2, 3], 0.05);
-        this.AddAnimation('destroyed', [4, 5], 0.05, undefined, () => {
-            ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
-                'enemy destroyed',
-                actionOnEnemyDestroyed,
-            );
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
+        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [4, 5],
+            framesLengthInTime: 0.05,
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'enemy destroyed',
+                    actionOnEnemyDestroyed,
+                );
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
+            },
         });
 
-        this.PlayAnimation('spin', true);
+        this.AnimationsController.PlayAnimation({ animation: 'spin', loop: true });
 
         this.Collide = new Map();
 
@@ -296,7 +303,7 @@ class BladeLevel3 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
         }
 
         if (this.isSpeedReverted && this.X <= this.spawnXPosition) {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         }
 
         this.timeLeftBeforeBladeCanHit -= dt;

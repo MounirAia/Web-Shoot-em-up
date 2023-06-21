@@ -58,47 +58,79 @@ class MirrorShieldPortal extends Sprite {
 
         const { Idle, Detaching, Attaching, Disappearing, Generating, Spawning } = InfoMirrorShield.Portal.Animations;
 
-        this.AddAnimation('idle', Idle.Frames, Idle.FrameLengthInTime);
-        this.AddAnimation('attaching', Attaching.Frames, Attaching.FrameLengthInTime, undefined, () => {
-            const { Width, Height } = InfoMirrorShield.Portal.Meta.RealDimension.Short;
-            this.Width = Width;
-            this.Height = Height;
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: Idle.Frames,
+            framesLengthInTime: Idle.FrameLengthInTime,
+        });
+        this.AnimationsController.AddAnimation({
+            animation: 'attaching',
+            frames: Attaching.Frames,
+            framesLengthInTime: Attaching.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                const { Width, Height } = InfoMirrorShield.Portal.Meta.RealDimension.Short;
+                this.Width = Width;
+                this.Height = Height;
 
-            this.PlayAnimation('idle');
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
+            },
         });
-        this.AddAnimation('disappearing', Disappearing.Frames, Disappearing.FrameLengthInTime, undefined, () => {
-            MirrorShieldPortal.potentialMirrorPositions.push({ X: this.X, Y: this.Y });
-            this.PlayAnimation('attaching');
+        this.AnimationsController.AddAnimation({
+            animation: 'disappearing',
+            frames: Disappearing.Frames,
+            framesLengthInTime: Disappearing.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                MirrorShieldPortal.potentialMirrorPositions.push({ X: this.X, Y: this.Y });
+                this.AnimationsController.PlayAnimation({ animation: 'attaching' });
+            },
         });
-        this.AddAnimation('generating', Generating.Frames, Generating.FrameLengthInTime, () => {
-            const { Width, Height } = InfoMirrorShield.Portal.Meta.RealDimension.Long;
-            this.Width = Width;
-            this.Height = Height;
+        this.AnimationsController.AddAnimation({
+            animation: 'generating',
+            frames: Generating.Frames,
+            framesLengthInTime: Generating.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                const { Width, Height } = InfoMirrorShield.Portal.Meta.RealDimension.Long;
+                this.Width = Width;
+                this.Height = Height;
+            },
         });
-        this.AddAnimation('spawning', Spawning.Frames, Spawning.FrameLengthInTime, undefined, () => {
-            this.PlayAnimation('generating', true);
+        this.AnimationsController.AddAnimation({
+            animation: 'spawning',
+            frames: Spawning.Frames,
+            framesLengthInTime: Spawning.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'generating', loop: true });
+            },
         });
-        this.AddAnimation('detaching', Detaching.Frames, Detaching.FrameLengthInTime, undefined, () => {
-            const { X, Y } = this.getRandomPotentialPortalPosition();
-            this.X = X;
-            this.Y = Y;
-            this.PlayAnimation('spawning');
+        this.AnimationsController.AddAnimation({
+            animation: 'detaching',
+            frames: Detaching.Frames,
+            framesLengthInTime: Detaching.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                const { X, Y } = this.getRandomPotentialPortalPosition();
+                this.X = X;
+                this.Y = Y;
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
+            },
         });
 
-        this.PlayAnimation('idle');
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     Update(dt: number) {
         super.Update(dt);
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
-        if (this.CurrentAnimationName === 'idle' || this.CurrentAnimationName === 'attaching') {
+        if (
+            this.AnimationsController.CurrentAnimationName === 'idle' ||
+            this.AnimationsController.CurrentAnimationName === 'attaching'
+        ) {
             this.X = playerX + this.offsetXOnPlayer;
             this.Y = playerY + this.offsetYOnPlayer;
-        } else if (this.CurrentAnimationName === 'generating') {
+        } else if (this.AnimationsController.CurrentAnimationName === 'generating') {
             this.generatesExplosiveEntity();
             this.currentTimeGenerating -= dt;
             if (this.currentTimeGenerating <= 0) {
-                this.PlayAnimation('disappearing');
+                this.AnimationsController.PlayAnimation({ animation: 'disappearing' });
                 this.currentTimeGenerating = this.baseTimeGenerating;
             }
         }
@@ -183,15 +215,26 @@ class PortalExplosiveEntity
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.ExplosiveEntity.Hitbox]);
 
         const { Idle, Destroyed } = InfoMirrorShield.ExplosiveEntity.Animations;
-        this.AddAnimation('idle', Idle.Frames, Idle.FrameLengthInTime);
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: Idle.Frames,
+            framesLengthInTime: Idle.FrameLengthInTime,
+        });
 
-        this.AddAnimation('destroyed', Destroyed.Frames, Destroyed.FrameLengthInTime, undefined, () => {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
+            },
         });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -215,7 +258,7 @@ class PortalExplosiveEntity
         this.X -= this.XSpeed;
         this.Y -= this.YSpeed;
 
-        if (this.CurrentAnimationName !== 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
             ServiceLocator.GetService<IServiceCollideManager>(
                 'CollideManager',
             ).HandleWhenPlayerProjectileCollideWithEnemies(this);
@@ -239,7 +282,7 @@ class PortalExplosiveEntity
     }
 
     get TargetAngle(): number {
-        if (this.target && this.target.CurrentAnimationName !== 'destroyed') {
+        if (this.target && this.target.AnimationsController.CurrentAnimationName !== 'destroyed') {
             const { FrameXCenter: enemyX, FrameYCenter: enemyY } = this.target;
             const distX = this.X - enemyX;
             const distY = this.Y - enemyY;
@@ -255,12 +298,12 @@ class PortalExplosiveEntity
     }
 
     get XSpeed(): number {
-        if (this.CurrentAnimationName === 'destroyed') return 0;
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') return 0;
         return Math.cos(this.TargetAngle) * this.BaseSpeed;
     }
 
     get YSpeed(): number {
-        if (this.CurrentAnimationName === 'destroyed') return 0;
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') return 0;
         return Math.sin(this.TargetAngle) * this.BaseSpeed;
     }
 }
@@ -300,13 +343,15 @@ export class MirrorShieldPortals implements ISpriteWithUpdateAndDraw {
     }
 
     private detachMirrors() {
-        const attachedPortals = this.portals.filter((portal) => portal.CurrentAnimationName === 'idle');
+        const attachedPortals = this.portals.filter(
+            (portal) => portal.AnimationsController.CurrentAnimationName === 'idle',
+        );
         const randomQuantityOfMirrorToDetach = Math.floor(Math.random() * attachedPortals.length);
         for (let i = 0; i < randomQuantityOfMirrorToDetach; i++) {
             const randomIndex = Math.floor(Math.random() * attachedPortals.length);
             const portal = attachedPortals[randomIndex];
             if (portal) {
-                portal.PlayAnimation('detaching');
+                portal.AnimationsController.PlayAnimation({ animation: 'detaching' });
             }
         }
     }

@@ -13,7 +13,7 @@ export class TriangleEnemy extends Sprite implements IEnemy {
 
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
-    constructor(x: number = 0, y: number = 0, horizontalShootingPosition: number) {
+    constructor(x = 0, y = 0, horizontalShootingPosition: number) {
         const imgTriangle = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Triangle/Triangle.png',
         );
@@ -47,10 +47,14 @@ export class TriangleEnemy extends Sprite implements IEnemy {
             },
         ]);
         this.Collide = new Map();
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('damaged', [1], 1);
-        this.AddAnimation('destroyed', [2, 3, 4, 5, 6], 0.05);
-        this.PlayAnimation('idle', true);
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({ animation: 'damaged', frames: [1], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [2, 3, 4, 5, 6],
+            framesLengthInTime: 0.05,
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     UpdateHitboxes(dt: number): void {
@@ -65,7 +69,11 @@ export class TriangleEnemy extends Sprite implements IEnemy {
         this.UpdateHitboxes(dt);
         if (this.X >= this.HorizontalShootingPosition) this.X -= this.BaseSpeed * dt;
 
-        if (this.X < -this.Width || (this.CurrentAnimationName === 'destroyed' && this.IsAnimationFinished)) {
+        if (
+            this.X < -this.Width ||
+            (this.AnimationsController.CurrentAnimationName === 'destroyed' &&
+                this.AnimationsController.IsAnimationFinished)
+        ) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
         }
     }

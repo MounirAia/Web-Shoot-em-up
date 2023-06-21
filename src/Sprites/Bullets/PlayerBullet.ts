@@ -42,15 +42,22 @@ export class RegularPlayerBullet extends Sprite implements ISpriteWithSpeed, ISp
             },
         ]);
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation('destroyed', [0, 1, 2, 3, 4], 0.03, undefined, () => {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4],
+            framesLengthInTime: 0.03,
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
+            },
         });
-        this.PlayAnimation('idle', false);
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -71,7 +78,7 @@ export class RegularPlayerBullet extends Sprite implements ISpriteWithSpeed, ISp
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
-        if (this.CurrentAnimationName !== 'destroyed') {
+        if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
