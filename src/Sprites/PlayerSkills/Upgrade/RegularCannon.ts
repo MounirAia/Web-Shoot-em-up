@@ -1,28 +1,27 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { GetSkillsConstants, PossibleSkillLevel } from '../../../StatsJSON/Skills/Constant.js';
-import { CollideScenario, ICollidableSprite } from '../../CollideManager.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
 import { IServicePlayer } from '../../Player.js';
-import { AvailableAnimation, Sprite } from '../../Sprite.js';
+import { Sprite } from '../../Sprite.js';
+import { AvailableAnimation } from '../../SpriteAnimationsController.js';
 
-class RegularCannon extends Sprite implements ISpriteWithHitboxes, ICollidableSprite {
+class RegularCannon extends Sprite implements ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     private offsetXOnSprite: number;
     private offsetYOnSprite: number;
 
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
-    constructor(x: number = 0, y: number = 0, offsetXOnSprite: number, offsetYOnSprite: number) {
+    constructor(x = 0, y = 0, offsetXOnSprite: number, offsetYOnSprite: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/Cannon.png'),
             8,
             8,
             x,
             y,
-            3 * CANVA_SCALEX,
-            1 * CANVA_SCALEY,
+            -3 * CANVA_SCALEX,
+            -1 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
@@ -39,24 +38,34 @@ class RegularCannon extends Sprite implements ISpriteWithHitboxes, ICollidableSp
             },
         ]);
 
-        this.AddAnimation('idle', [0], 1);
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
 
-        this.AddAnimation('damaged', [1], 0.1, undefined, () => {
-            this.PlayAnimation('idle');
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: [1],
+            framesLengthInTime: 0.1,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
+            },
         });
 
         const playerInvulnerabilityTimePeriod =
             ServiceLocator.GetService<IServicePlayer>('Player').InvulnerabilityTimePeriod;
-        this.AddAnimation('invulnerable', [1, 0, 1, 0, 1], playerInvulnerabilityTimePeriod / 5, undefined, () => {
-            this.PlayAnimation('idle');
+        this.AnimationsController.AddAnimation({
+            animation: 'invulnerable',
+            frames: [1, 0, 1, 0, 1],
+            framesLengthInTime: playerInvulnerabilityTimePeriod / 5,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
+            },
         });
 
         this.Collide = new Map();
-        this.Collide.set('WithBullet', () => {
-            this.PlayAnimation('damaged');
+        this.Collide.set('WithProjectile', () => {
+            this.AnimationsController.PlayAnimation({ animation: 'damaged' });
         });
 
-        this.PlayAnimation('idle');
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     UpdateHitboxes(dt: number) {
@@ -97,7 +106,7 @@ export class CannonConfiguration {
 
     public PlayAnimation(animationName: AvailableAnimation) {
         this.cannonConfiguration?.forEach((cannon) => {
-            cannon.PlayAnimation(animationName);
+            cannon.AnimationsController.PlayAnimation({ animation: animationName });
         });
     }
 
@@ -126,28 +135,28 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
     public GetConfig(): CannonConfiguration {
         const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpeciallSkillName;
         const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+
         if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {
             return new CannonConfiguration(undefined);
         }
 
-        const cannonType = GetSkillsConstants(playerSpecialSkillName, playerSpecialSkillLevel).cannonType;
         let cannonConfig: RegularCannon[] | undefined;
-        if (cannonType === 'regular') {
-            cannonConfig = this.getRegularCannonConfiguration(playerSpecialSkillLevel);
+        if (playerSpecialSkillName === 'Rocket') {
+            cannonConfig = this.getRocketCannonConfiguration(playerSpecialSkillLevel);
             return new CannonConfiguration(cannonConfig);
         }
 
         return new CannonConfiguration(undefined);
     }
 
-    private getRegularCannonConfiguration(skillLevel: PossibleSkillLevel): RegularCannon[] | undefined {
+    private getRocketCannonConfiguration(skillLevel: number): RegularCannon[] | undefined {
         const cannonConfig: RegularCannon[] = [];
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         if (skillLevel === 1) {
             const cannon1 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * -5);
             cannonConfig.push(cannon1);
             return cannonConfig;
-        } else if (skillLevel >= 2) {
+        } else if (skillLevel == 2 || skillLevel == 3) {
             const cannon1 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * -5);
             const cannon2 = new RegularCannon(playerX, playerY, 19 * CANVA_SCALEX, CANVA_SCALEY * 12);
             cannonConfig.push(cannon1, cannon2);

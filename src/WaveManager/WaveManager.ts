@@ -1,22 +1,27 @@
 import { ServiceLocator } from '../ServiceLocator.js';
-import { ICollidableSprite } from '../Sprites/CollideManager.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
-import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
+    SetLastEnemyDestroyed(enemy: IEnemy): void;
+    GetLastEnemyCenterCoordinate(): { x: number; y: number };
+    GetARandomEnemy(): IEnemy | undefined;
+    GetIfListHasNoEnemyLeft(): boolean;
 }
 
 class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
-    private round: number = 1;
+    private round = 1;
+    private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
         this.listWaves = this.createWaves();
 
         this.currentWave = this.listWaves.shift();
+        this.lastEnemyDestroyed = undefined;
 
         ServiceLocator.AddService('WaveManager', this);
     }
@@ -32,7 +37,6 @@ class WaveManager implements IServiceWaveManager {
         }
 
         this.currentWave.Update(dt);
-
         if (this.currentWave.HasNoEnemyLeft) {
             this.currentWave = this.listWaves.shift();
         }
@@ -103,14 +107,14 @@ class WaveManager implements IServiceWaveManager {
         ];
 
         let numberWaves = 0;
-        let roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
+        const roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
         let index = Math.floor(this.round / roundTiers);
         if (index > roundsChart.length - 1) {
             index = roundsChart.length - 1;
         }
         const { minNumberWaves, maxNumberWaves } = roundsChart[index];
         numberWaves = Math.round(Math.random() * (maxNumberWaves - minNumberWaves)) + minNumberWaves;
-        let waves: WaveEnemies[] = [];
+        const waves: WaveEnemies[] = [];
 
         for (let i = 0; i < numberWaves; i++) {
             const { minNumberEnemies, maxNumberEnemies } = roundsChart[index];
@@ -122,12 +126,33 @@ class WaveManager implements IServiceWaveManager {
         return waves;
     }
 
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
+    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
         if (this.currentWave) {
             return this.currentWave.ListEnemies;
         }
 
-        return new Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>();
+        return new Map<IEnemy, ISpriteWithHitboxes>();
+    }
+
+    SetLastEnemyDestroyed(enemy: IEnemy): void {
+        this.lastEnemyDestroyed = enemy;
+    }
+
+    GetLastEnemyCenterCoordinate(): { x: number; y: number } {
+        if (this.lastEnemyDestroyed)
+            return { x: this.lastEnemyDestroyed?.FrameXCenter, y: this.lastEnemyDestroyed?.FrameYCenter };
+
+        return { x: 0, y: 0 };
+    }
+
+    GetARandomEnemy(): IEnemy | undefined {
+        return this.currentWave?.RandomEnemy;
+    }
+
+    GetIfListHasNoEnemyLeft(): boolean {
+        if (this.currentWave) return this.currentWave?.HasNoEnemyLeft;
+
+        return true;
     }
 }
 

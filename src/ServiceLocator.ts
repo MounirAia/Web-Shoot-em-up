@@ -3,9 +3,11 @@ type AvailableServices =
     | 'SceneManager'
     | 'Player'
     | 'WaveManager'
-    | 'BulletManager'
+    | 'GeneratedSpritesManager'
     | 'CollideManager'
-    | 'CannonConfigurationGenerator';
+    | 'CannonConfigurationGenerator'
+    | 'EventManager'
+    | 'UtilManager';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 

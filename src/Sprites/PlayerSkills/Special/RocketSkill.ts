@@ -1,30 +1,20 @@
-import { IServiceImageLoader } from '../../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
-import { ServiceLocator } from '../../ServiceLocator.js';
-import { IServiceBulletManager } from '../Bullets/BulletManager.js';
-import { IBullet } from '../Bullets/IBullet.js';
-import { CollideScenario, ICollidableSprite, IServiceCollideManager } from '../CollideManager.js';
-import { IMovableSprite } from '../InterfaceBehaviour/IMovableSprite.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { IServicePlayer } from '../Player.js';
-import { Sprite } from '../Sprite.js';
-import { RocketDamageStats } from '../../StatsJSON/Skills/Rocket/RocketDamage.js';
-import { GetSkillsConstants, PossibleSkillName } from '../../StatsJSON/Skills/Constant.js';
+import { IServiceImageLoader } from '../../../ImageLoader.js';
+import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
+import { ServiceLocator } from '../../../ServiceLocator.js';
+import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../../GeneratedSpriteManager.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
+import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
+import { IServicePlayer } from '../../Player.js';
+import { Sprite } from '../../Sprite.js';
+import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
+import { ISkill, PossibleSkillName } from '../Skills.js';
+import { SkillsTypeName } from '../Skills.js';
+import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 
-// based on the level of the skills you call the good private effect method
-// I will need an Upgrade method, that add a level to the rocket skill
-// I will need to update the collision system to handle special collision based on the frame of the sprite
-// I will need to change the type of the possible type of a skills in the rocket skill class
-// I will have to remove the rocket skills from the player class (preventing of forgeting it)
-// From that start deriving a common interface for a skill to follow (Will probably be finalized when I will implement the 3 types of skills)
-// How to manage the shooting rate of a special skill (when player press space bar shoot?)
-// How can the service locator be useful for managing the different skills
-
-export class RocketBulletLevel1
-    extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy';
+export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -39,13 +29,14 @@ export class RocketBulletLevel1
             16,
             x,
             y,
-            6 * CANVA_SCALEX,
-            5 * CANVA_SCALEY,
+            -6 * CANVA_SCALEX,
+            -5 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.Type = 'player';
-        this.BaseSpeed = GetSkillsConstants('Rocket', 1).projectileSpeed;
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        this.BaseSpeed = RocketConstant[0].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -86,18 +77,20 @@ export class RocketBulletLevel1
         ]);
 
         this.CurrentHitbox = defaultHitbox;
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -120,12 +113,12 @@ export class RocketBulletLevel1
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -142,11 +135,11 @@ export class RocketBulletLevel1
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -154,11 +147,9 @@ export class RocketBulletLevel1
     }
 }
 
-export class RocketBulletLevel2
-    extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy' = 'player';
+export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -173,12 +164,14 @@ export class RocketBulletLevel2
             16,
             x,
             y,
-            5 * CANVA_SCALEX,
-            6 * CANVA_SCALEY,
+            -5 * CANVA_SCALEX,
+            -6 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.BaseSpeed = GetSkillsConstants('Rocket', 2).projectileSpeed;
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        this.BaseSpeed = RocketConstant[1].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -219,18 +212,20 @@ export class RocketBulletLevel2
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -253,12 +248,12 @@ export class RocketBulletLevel2
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -275,19 +270,20 @@ export class RocketBulletLevel2
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
         super.Draw(ctx);
     }
 }
-class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite {
-    Type: 'player' | 'enemy' = 'player';
+class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -302,12 +298,14 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
             16,
             x,
             y,
-            6 * CANVA_SCALEX,
-            7 * CANVA_SCALEY,
+            -6 * CANVA_SCALEX,
+            -7 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        const projectileSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        const { projectileSpeed } = RocketConstant[2];
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
@@ -329,18 +327,20 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -354,12 +354,12 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -376,11 +376,11 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -388,11 +388,9 @@ class RocketSubBullet extends Sprite implements IBullet, IMovableSprite, ISprite
     }
 }
 
-export class RocketBulletLevel3
-    extends Sprite
-    implements IBullet, IMovableSprite, ISpriteWithHitboxes, ICollidableSprite
-{
-    Type: 'player' | 'enemy' = 'player';
+export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
     CurrentHitbox: RectangleHitbox[];
@@ -407,12 +405,14 @@ export class RocketBulletLevel3
             16,
             x,
             y,
-            4 * CANVA_SCALEX,
-            5 * CANVA_SCALEY,
+            -4 * CANVA_SCALEX,
+            -5 * CANVA_SCALEY,
             CANVA_SCALEX,
             CANVA_SCALEY,
         );
-        this.BaseSpeed = GetSkillsConstants('Rocket', 3).projectileSpeed;
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        this.BaseSpeed = RocketConstant[2].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
@@ -465,18 +465,20 @@ export class RocketBulletLevel3
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'destroyed',
-            [0, 1, 2, 3, 4, 5],
-            0.03,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [0, 1, 2, 3, 4, 5],
+            framesLengthInTime: 0.03,
+            beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
-            () => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                    this,
+                );
             },
-            new Map([
+            methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
                     () => {
@@ -495,8 +497,12 @@ export class RocketBulletLevel3
                             this.Y + 4 * CANVA_SCALEY,
                             'down',
                         );
-                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(upSubBullet);
-                        ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(downSubBullet);
+                        ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                            upSubBullet,
+                        );
+                        ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                            downSubBullet,
+                        );
                     },
                 ],
                 [
@@ -507,12 +513,12 @@ export class RocketBulletLevel3
                     },
                 ],
             ]),
-        );
-        this.PlayAnimation('idle', false);
+        });
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
 
         this.Collide = new Map();
         this.Collide.set('WithEnemy', () => {
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
     }
 
@@ -528,11 +534,11 @@ export class RocketBulletLevel3
         this.X += this.BaseSpeed;
         this.UpdateHitboxes(dt);
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').RemoveBullet(this);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
         const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
-        collideManager.HandleWhenBulletCollideWithEnemies(this);
+        collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -540,20 +546,18 @@ export class RocketBulletLevel3
     }
 }
 
-type SkillsTypeName = 'special' | 'support' | 'effect';
-
-export class RocketSkill {
+export class RocketSkill implements ISkill {
     readonly Type: SkillsTypeName;
     readonly SkillName: PossibleSkillName;
     constructor() {
         this.Type = 'special';
-        this.SkillName = GetSkillsConstants('Rocket', 1).skillName;
+        this.SkillName = RocketConstant[0].skillName;
     }
 
     public Effect() {
-        let { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
-        const rockets: IBullet[] = [];
+        const rockets: IGeneratedSprite[] = [];
 
         if (skillLevel === 1) {
             rockets.push(new RocketBulletLevel1(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
@@ -568,7 +572,7 @@ export class RocketSkill {
 
         if (rockets) {
             rockets.forEach((rocket) => {
-                ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(rocket);
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(rocket);
             });
         }
     }
