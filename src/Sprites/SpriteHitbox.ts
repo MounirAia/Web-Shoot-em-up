@@ -1,6 +1,9 @@
+export type CollideScenario = 'WithProjectile' | 'WithNonProjectile' | 'WithPlayer' | 'WithEnemy';
+
 export interface ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     UpdateHitboxes?: (dt: number) => void;
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
 }
 
 export class RectangleHitbox {
@@ -44,18 +47,37 @@ export class RectangleHitbox {
     public TestHitboxDrawing(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = 'purple';
         ctx.strokeRect(this.x, this.y, this.width, this.height);
+        ctx.strokeStyle = 'black';
     }
 }
 
 export function CreateHitboxes(
     spriteX: number,
     spriteY: number,
-    additionalHitboxesInfo: { offsetX: number; offsetY: number; width: number; height: number }[],
+    additionalHitboxesInfo: {
+        readonly offsetX: number;
+        readonly offsetY: number;
+        readonly width: number;
+        readonly height: number;
+    }[],
 ): RectangleHitbox[] {
     let hitboxes: RectangleHitbox[] = [];
 
     additionalHitboxesInfo.forEach(({ offsetX, offsetY, width, height }) => {
         hitboxes.push(new RectangleHitbox(spriteX, spriteY, offsetX, offsetY, width, height));
+    });
+
+    return hitboxes;
+}
+
+export function CreateHitboxesWithInfoFile(
+    spriteX: number,
+    spriteY: number,
+    hitboxArray: { X: number; Y: number; Width: number; Height: number }[],
+) {
+    const hitboxes: RectangleHitbox[] = [];
+    hitboxArray.forEach(({ X, Y, Width, Height }) => {
+        hitboxes.push(new RectangleHitbox(spriteX, spriteY, X, Y, Width, Height));
     });
 
     return hitboxes;

@@ -1,6 +1,3 @@
-// Clean the code
-// Continue tickets
-
 enum KeyCode {
     Backspace = 8,
     Tab = 9,

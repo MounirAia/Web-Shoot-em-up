@@ -1,8 +1,9 @@
 import { canvas } from '../ScreenConstant.js';
-import { ICollidableSprite } from '../Sprites/CollideManager.js';
+import { ServiceLocator } from '../ServiceLocator.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
-import { ISpriteWithHitboxes } from '../Sprites/InterfaceBehaviour/ISpriteWithHitboxes.js';
+import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
+import { IServiceUtilManager } from '../UtilManager.js';
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns = 8;
@@ -76,7 +77,15 @@ export class WaveEnemies {
         return this.listEnemies.size === 0 ? true : false;
     }
 
-    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite> {
-        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes & ICollidableSprite>;
+    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
+        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes>;
+    }
+
+    public get RandomEnemy(): IEnemy | undefined {
+        const { GetRandomObjectFromMap } = ServiceLocator.GetService<IServiceUtilManager>('UtilManager');
+
+        const randomEnemy = GetRandomObjectFromMap<IEnemy>({ theMap: this.listEnemies });
+
+        return randomEnemy;
     }
 }

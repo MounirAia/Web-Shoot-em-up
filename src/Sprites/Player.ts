@@ -1,26 +1,27 @@
-import { Sprite } from './Sprite.js';
-import { ServiceLocator } from '../ServiceLocator.js';
+import { IServiceEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
-import { IMovableSprite } from './InterfaceBehaviour/IMovableSprite.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './InterfaceBehaviour/ISpriteWithHitboxes.js';
-import { IServiceBulletManager } from './Bullets/BulletManager.js';
-import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
-import {
-    ISpriteWithAttackSpeedUpgrades,
-    ISpriteWithBaseAttackSpeed,
-    ISpriteWithBaseHealth,
-    ISpriteWithDamageUpgrades,
-    ISpriteWithHealthUpgrades,
-} from './InterfaceBehaviour/ISpriteWithStats.js';
-import { CollideScenario, ICollidableSprite } from './CollideManager.js';
-import { IBullet } from './Bullets/IBullet.js';
 import { IServiceSceneManager } from '../SceneManager.js';
-import { RocketSkill } from './PlayerSkills/RocketSkill.js';
-import { PossibleSkillLevel, PossibleSkillName } from '../StatsJSON/Skills/Constant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
+import { ServiceLocator } from '../ServiceLocator.js';
+import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
+import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
+import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
+import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
+import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
+import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield/MirrorShield.js';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
-
+import { Sprite } from './Sprite.js';
+import {
+    ISpriteWithAttackSpeed,
+    ISpriteWithAttackSpeedUpgrades,
+    ISpriteWithDamage,
+    ISpriteWithDamageUpgrades,
+    ISpriteWithHealth,
+    ISpriteWithHealthUpgrades,
+    ISpriteWithSpeed,
+} from './SpriteAttributes.js';
+import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -30,9 +31,13 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     DamageStats: number;
+    MaxHealth: number;
+    NumberOfBoosts: number;
     NumberOfDamageUpgrade: number;
-    SpecialSkillLevel: PossibleSkillLevel;
+    SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
+    EffectSkillLevel: number;
+    SupportSkillLevel: number;
     CurrentHitbox: RectangleHitbox[];
     InvulnerabilityTimePeriod: number;
 }
@@ -43,19 +48,19 @@ class Player
     extends Sprite
     implements
         IServicePlayer,
-        IMovableSprite,
+        ISpriteWithSpeed,
         ISpriteWithHitboxes,
-        ICollidableSprite,
         ISpriteWithDamageUpgrades,
-        ISpriteWithBaseHealth,
+        ISpriteWithHealth,
         ISpriteWithHealthUpgrades,
-        ISpriteWithBaseAttackSpeed,
+        ISpriteWithAttackSpeed,
         ISpriteWithAttackSpeedUpgrades
 {
     private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
+    private numberOfBoosts: number;
     DamageUpgrades: number[];
     HealthUpgrades: number[];
     BaseHealth: number;
@@ -64,7 +69,9 @@ class Player
     BaseAttackSpeed: number;
 
     private moneyInWallet: number;
-    private specialSkillLevel: PossibleSkillLevel;
+    private specialSkillLevel: number;
+    private effectSkillLevel: number;
+    private supportSkillLevel: number;
 
     // makes player invulnerable, ex:when collide with enemies
     private readonly invulnerabilityTimePeriod: number;
@@ -73,7 +80,7 @@ class Player
     private baseTimeBeforeNextShoot: number;
     private currentTimeBeforeNextShoot: number;
 
-    private currentSkill: Map<PlayerSkill, RocketSkill>;
+    private currentSkill: Map<PlayerSkill, ISkill>;
 
     private cannonConfiguration: CannonConfiguration;
 
@@ -81,18 +88,18 @@ class Player
         image: HTMLImageElement,
         frameWidth: number,
         frameHeight: number,
-        x: number = 0,
-        y: number = 0,
-        spriteXOffset: number = 0,
-        spriteYOffset: number = 0,
-        scaleX: number = 1,
-        scaleY: number = 1,
+        x = 0,
+        y = 0,
+        spriteXOffset = 0,
+        spriteYOffset = 0,
+        scaleX = 1,
+        scaleY = 1,
     ) {
         super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
-
         ServiceLocator.AddService('Player', this);
 
         this.baseSpeed = 5;
+        this.numberOfBoosts = 0;
         this.DamageUpgrades = [];
         this.HealthUpgrades = [];
         this.BaseHealth = 100;
@@ -101,6 +108,8 @@ class Player
         this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
+        this.effectSkillLevel = 0;
+        this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -108,9 +117,20 @@ class Player
         // Skill setup
         this.currentSkill = new Map();
         this.currentSkill.set('special', new RocketSkill());
-
         this.cannonConfiguration =
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+
+        this.currentSkill.set('effect', new BladeExplosionSkill());
+        const actionOnEnemyDestroyed = () => {
+            this.currentSkill.get('effect')?.Effect();
+        };
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'enemy destroyed',
+            actionOnEnemyDestroyed,
+        );
+
+        this.currentSkill.set('support', new MirrorShieldSkill());
+        this.currentSkill.get('support')?.Effect();
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
@@ -165,49 +185,58 @@ class Player
 
         this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
 
-        this.AddAnimation('idle', [0], 1);
-        this.AddAnimation(
-            'damaged',
-            [1],
-            0.1,
-            () => {
+        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'damaged',
+            frames: [1, 0],
+            framesLengthInTime: 0.1,
+            beforePlayingAnimation: () => {
                 this.cannonConfiguration.PlayAnimation('damaged');
             },
-            () => {
-                this.PlayAnimation('idle');
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
             },
-        );
-        this.AddAnimation(
-            'invulnerable',
-            [1, 0, 1, 0, 1],
-            this.invulnerabilityTimePeriod / 5,
-            () => {
+        });
+        this.AnimationsController.AddAnimation({
+            animation: 'invulnerable',
+            frames: [1, 0, 1, 0, 1],
+            framesLengthInTime: this.invulnerabilityTimePeriod / 5,
+            beforePlayingAnimation: () => {
                 this.cannonConfiguration.PlayAnimation('invulnerable');
             },
-            () => {
-                this.PlayAnimation('idle');
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'idle' });
             },
-        );
-        this.AddAnimation('destroyed', [2, 3, 4, 5, 6, 7, 8, 9], 0.1, () => {
-            this.removePlayerFromGameFlow();
+        });
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: [2, 3, 4, 5, 6, 7, 8, 9],
+            framesLengthInTime: 0.1,
+            beforePlayingAnimation: () => {
+                this.removePlayerFromGameFlow();
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'enemy destroyed',
+                    actionOnEnemyDestroyed,
+                );
+            },
         });
 
         this.Collide = new Map();
 
-        this.Collide.set('WithBullet', (bullet: unknown) => {
-            this.PlayAnimation('damaged', false);
+        this.Collide.set('WithProjectile', (bullet: unknown) => {
+            this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
-            const myBullet = bullet as IBullet;
+            const myBullet = bullet as ISpriteWithDamage;
             this.CurrentHealth -= myBullet.Damage;
         });
 
         this.Collide.set('WithEnemy', (enemy: unknown) => {
-            this.PlayAnimation('invulnerable', false);
+            this.AnimationsController.PlayAnimation({ animation: 'invulnerable' });
 
             this.CurrentHealth -= this.MaxHealth * 0.5;
         });
 
-        this.PlayAnimation('idle', false);
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
     }
 
     public UpdateHitboxes(dt: number): void {
@@ -251,10 +280,10 @@ class Player
         this.cannonConfiguration.Update(dt);
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
-            let bulletXOffset = 34 * CANVA_SCALEX;
-            let bulletYOffset = 8 * CANVA_SCALEY;
+            const bulletXOffset = 34 * CANVA_SCALEX;
+            const bulletYOffset = 8 * CANVA_SCALEY;
             const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
-            ServiceLocator.GetService<IServiceBulletManager>('BulletManager').AddBullet(bullet);
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
 
             this.currentSkill.get('special')?.Effect();
         } else {
@@ -286,6 +315,18 @@ class Player
 
     private set BaseSpeed(value: number) {
         this.baseSpeed = value;
+    }
+
+    get NumberOfBoosts(): number {
+        const maxNumberOfBoosts = 25;
+        if (this.numberOfBoosts > maxNumberOfBoosts) return maxNumberOfBoosts;
+        if (this.numberOfBoosts < 0) return 0;
+
+        return this.numberOfBoosts;
+    }
+
+    private set NumberOfBoosts(value: number) {
+        this.numberOfBoosts = value;
     }
 
     get DamageStats(): number {
@@ -323,7 +364,7 @@ class Player
 
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
-            this.PlayAnimation('destroyed');
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('GameOver');
         }
     }
@@ -364,7 +405,7 @@ class Player
         }
     }
 
-    get SpecialSkillLevel(): PossibleSkillLevel {
+    get SpecialSkillLevel(): number {
         return this.specialSkillLevel;
     }
 
@@ -372,8 +413,16 @@ class Player
         return this.currentSkill.get('special')?.SkillName;
     }
 
+    get EffectSkillLevel(): number {
+        return this.effectSkillLevel;
+    }
+
+    get SupportSkillLevel(): number {
+        return this.supportSkillLevel;
+    }
+
     IsInvulnerable(): boolean {
-        return this.CurrentAnimationName === 'invulnerable';
+        return this.AnimationsController.CurrentAnimationName === 'invulnerable';
     }
 
     get InvulnerabilityTimePeriod(): number {
@@ -395,7 +444,17 @@ export function LoadPlayer() {
     const y = 250;
     const scaleX = CANVA_SCALEX;
     const scaleY = CANVA_SCALEY;
-    player = new Player(imgPlayer, frameWidth, frameHeight, x, y, 18 * CANVA_SCALEX, 25 * CANVA_SCALEY, scaleX, scaleY);
+    player = new Player(
+        imgPlayer,
+        frameWidth,
+        frameHeight,
+        x,
+        y,
+        -18 * CANVA_SCALEX,
+        -25 * CANVA_SCALEY,
+        scaleX,
+        scaleY,
+    );
 }
 
 export function UpdatePlayer(dt: number) {
