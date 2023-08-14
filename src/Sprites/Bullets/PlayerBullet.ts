@@ -1,19 +1,27 @@
 import { IServiceImageLoader } from '../../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceCollideManager } from '../CollideManager.js';
-import { ISpriteWithSpeed } from '../SpriteAttributes.js';
-import { ISpriteWithHitboxes, RectangleHitbox, CreateHitboxes, CollideScenario } from '../SpriteHitbox.js';
+import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
 import { Sprite } from '../Sprite.js';
-import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../GeneratedSpriteManager.js';
+import { DamageEffectOptions, ISpriteWithDamage, ISpriteWithSpeed } from '../SpriteAttributes.js';
+import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
 
-export class RegularPlayerBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+export class RegularPlayerBullet
+    extends Sprite
+    implements ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite
+{
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
+    PrimaryEffect: DamageEffectOptions;
+    PrimaryEffectStat: number;
+    SecondaryEffect: DamageEffectOptions;
+    SecondaryEffectStat: number;
 
     constructor(x: number, y: number) {
         super(
@@ -33,6 +41,10 @@ export class RegularPlayerBullet extends Sprite implements ISpriteWithSpeed, ISp
         this.Category = 'projectile';
         this.BaseSpeed = 10;
         this.Damage = 3;
+        this.PrimaryEffect = '';
+        this.PrimaryEffectStat = 0;
+        this.SecondaryEffect = '';
+        this.SecondaryEffectStat = 0;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,

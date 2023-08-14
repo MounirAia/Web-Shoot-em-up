@@ -3,10 +3,20 @@ export interface ISpriteWithUpdateAndDraw {
     Draw: (ctx: CanvasRenderingContext2D) => void;
 }
 
-// generally used for bullets
+export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | '';
 export interface ISpriteWithDamage {
     Damage: number;
+    PrimaryEffect: DamageEffectOptions;
+    SecondaryEffect: DamageEffectOptions;
+    PrimaryEffectStat: number;
+    SecondaryEffectStat: number;
 }
+
+export interface ISpriteWithDamageResistance {
+    EffectDebufName: DamageEffectOptions;
+    EffectDebufStat: number;
+}
+
 // if a sprite has a stat that can influence the damage he does
 export interface ISpriteWithDamageUpgrades {
     DamageUpgrades: number[];

@@ -1,27 +1,27 @@
-import { Sprite } from './Sprite.js';
-import { ServiceLocator } from '../ServiceLocator.js';
+import { IServiceEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { Keyboard } from '../Keyboard.js';
-import { CreateHitboxes, ISpriteWithHitboxes, CollideScenario, RectangleHitbox } from './SpriteHitbox.js';
-import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
+import { IServiceSceneManager } from '../SceneManager.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
+import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
+import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
+import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
+import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
+import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
+import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield/MirrorShield.js';
+import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
+import { Sprite } from './Sprite.js';
 import {
-    ISpriteWithAttackSpeedUpgrades,
     ISpriteWithAttackSpeed,
-    ISpriteWithHealth,
+    ISpriteWithAttackSpeedUpgrades,
+    ISpriteWithDamage,
     ISpriteWithDamageUpgrades,
+    ISpriteWithHealth,
     ISpriteWithHealthUpgrades,
     ISpriteWithSpeed,
-    ISpriteWithDamage,
 } from './SpriteAttributes.js';
-import { IServiceSceneManager } from '../SceneManager.js';
-import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
-import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
-import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
-import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
-import { IServiceEventManager } from '../EventManager';
-import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield/MirrorShield.js';
+import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -31,6 +31,8 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     DamageStats: number;
+    MaxHealth: number;
+    NumberOfBoosts: number;
     NumberOfDamageUpgrade: number;
     SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
@@ -58,6 +60,7 @@ class Player
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
+    private numberOfBoosts: number;
     DamageUpgrades: number[];
     HealthUpgrades: number[];
     BaseHealth: number;
@@ -96,6 +99,7 @@ class Player
         ServiceLocator.AddService('Player', this);
 
         this.baseSpeed = 5;
+        this.numberOfBoosts = 0;
         this.DamageUpgrades = [];
         this.HealthUpgrades = [];
         this.BaseHealth = 100;
@@ -311,6 +315,18 @@ class Player
 
     private set BaseSpeed(value: number) {
         this.baseSpeed = value;
+    }
+
+    get NumberOfBoosts(): number {
+        const maxNumberOfBoosts = 25;
+        if (this.numberOfBoosts > maxNumberOfBoosts) return maxNumberOfBoosts;
+        if (this.numberOfBoosts < 0) return 0;
+
+        return this.numberOfBoosts;
+    }
+
+    private set NumberOfBoosts(value: number) {
+        this.numberOfBoosts = value;
     }
 
     get DamageStats(): number {

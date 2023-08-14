@@ -1,7 +1,9 @@
+import { canvas } from './ScreenConstant.js';
 import { ServiceLocator } from './ServiceLocator.js';
 
 export interface IServiceUtilManager {
     GetRandomObjectFromMap<T>(parameters: { theMap: Map<unknown, unknown> }): T | undefined;
+    GetSpeedItTakesToCoverHalfTheScreenWidth: (parameters: { framesItTakes: number }) => number;
 }
 
 class UtilManager implements IServiceUtilManager {
@@ -22,6 +24,15 @@ class UtilManager implements IServiceUtilManager {
         }
 
         return undefined;
+    }
+
+    GetSpeedItTakesToCoverHalfTheScreenWidth(parameters: { framesItTakes: number }) {
+        const { framesItTakes } = parameters;
+        if (framesItTakes > 0) {
+            console.log(canvas.width);
+            return canvas.width / 2 / framesItTakes;
+        }
+        return 0;
     }
 }
 

@@ -1,21 +1,22 @@
-import { Sprite } from '../../../Sprite.js';
-import { ISkill, PossibleSkillName, SkillsTypeName } from '../../Skills.js';
-import InfoMirrorShield from '../../../../StatsJSON/SpriteInfo/Skills/InfoMirrorShield.js';
-import { ServiceLocator } from '../../../../ServiceLocator.js';
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../../ScreenConstant.js';
-import { ISpriteWithHealth, ISpriteWithDamage } from '../../../SpriteAttributes.js';
+import { ServiceLocator } from '../../../../ServiceLocator.js';
+import { MirrorShieldConstant } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
+import InfoMirrorShield from '../../../../StatsJSON/SpriteInfo/Skills/InfoMirrorShield.js';
+import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../../Player.js';
+import { Sprite } from '../../../Sprite.js';
+import { ISpriteWithDamage, ISpriteWithHealth } from '../../../SpriteAttributes.js';
 import {
     CollideScenario,
     CreateHitboxesWithInfoFile,
     ISpriteWithHitboxes,
     RectangleHitbox,
 } from '../../../SpriteHitbox.js';
-import { IServicePlayer } from '../../../Player.js';
-import { IServiceCollideManager } from '../../../CollideManager.js';
-import { MirrorShieldThunderBeam } from './MirrorShieldThunderBeam.js';
+import { ISkill, PossibleSkillName, SkillsTypeName } from '../../Skills.js';
 import { MirrorShieldPortals } from './MirrorShieldPortal.js';
+import { MirrorShieldThunderBeam } from './MirrorShieldThunderBeam.js';
 
 class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithHealth {
     BaseHealth: number;
@@ -49,7 +50,9 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
         this.Y = playerY;
         this.Generator = 'player';
         this.Category = 'nonProjectile';
-        this.BaseHealth = 100;
+        this.BaseHealth =
+            ServiceLocator.GetService<IServicePlayer>('Player').MaxHealth *
+            MirrorShieldConstant[0]['Mirror Health Player Health Ratio'];
         this.CurrentHealth = this.BaseHealth;
 
         const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.Level1.Hitbox]);
@@ -57,7 +60,7 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         this.offsetXOnPlayer = InfoMirrorShield.Level1.Meta.SpriteShiftPositionOnPlayer.X;
         this.offsetYOnPlayer = InfoMirrorShield.Level1.Meta.SpriteShiftPositionOnPlayer.Y;
-        this.baseTimeToRespawn = 1;
+        this.baseTimeToRespawn = MirrorShieldConstant[0]['Respawn Time (s)'];
         this.currentTimeToRespawn = 0;
 
         const { Destroyed, Spawning, Damaged } = InfoMirrorShield.Level1.Animations;
@@ -168,7 +171,9 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
         this.Y = playerY;
         this.Generator = 'player';
         this.Category = 'nonProjectile';
-        this.BaseHealth = 150;
+        this.BaseHealth = this.BaseHealth =
+            ServiceLocator.GetService<IServicePlayer>('Player').MaxHealth *
+            MirrorShieldConstant[1]['Mirror Health Player Health Ratio'];
         this.CurrentHealth = this.BaseHealth;
 
         const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.Level2.Hitbox]);
@@ -176,7 +181,7 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         this.offsetXOnPlayer = InfoMirrorShield.Level2.Meta.SpriteShiftPositionOnPlayer.X;
         this.offsetYOnPlayer = InfoMirrorShield.Level2.Meta.SpriteShiftPositionOnPlayer.Y;
-        this.baseTimeToRespawn = 1;
+        this.baseTimeToRespawn = MirrorShieldConstant[1]['Respawn Time (s)'];
         this.currentTimeToRespawn = 0;
 
         const { Destroyed, Spawning, Damaged } = InfoMirrorShield.Level2.Animations;
@@ -293,7 +298,9 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
         this.Y = playerY;
         this.Generator = 'player';
         this.Category = 'nonProjectile';
-        this.BaseHealth = 20;
+        this.BaseHealth = this.BaseHealth =
+            ServiceLocator.GetService<IServicePlayer>('Player').MaxHealth *
+            MirrorShieldConstant[2]['Mirror Health Player Health Ratio'];
         this.CurrentHealth = this.BaseHealth;
 
         const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.Level3.Hitbox]);
@@ -302,7 +309,7 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
         this.offsetXOnPlayer = InfoMirrorShield.Level3.Meta.SpriteShiftPositionOnPlayer.X;
         this.offsetYOnPlayer = InfoMirrorShield.Level3.Meta.SpriteShiftPositionOnPlayer.Y;
 
-        this.baseTimeToRespawn = 1;
+        this.baseTimeToRespawn = MirrorShieldConstant[2]['Respawn Time (s)'];
         this.currentTimeToRespawn = 0;
 
         this.portalsContainer = new MirrorShieldPortals();

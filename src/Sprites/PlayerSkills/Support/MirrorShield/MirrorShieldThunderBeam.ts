@@ -1,10 +1,13 @@
+import { FRAME_RATE, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import { ISpriteWithDamage } from '../../../SpriteAttributes.js';
-import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
-import { CollideScenario, RectangleHitbox } from '../../../SpriteHitbox.js';
-import { IServiceCollideManager } from '../../../CollideManager.js';
+import { MirrorShieldThunderBeamConstant } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
+import { MirrorShieldDamage } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldDamage.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
-import { canvas, FRAME_RATE } from '../../../../ScreenConstant.js';
+import { IServiceCollideManager } from '../../../CollideManager.js';
+import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../../Player.js';
+import { DamageEffectOptions, ISpriteWithDamage } from '../../../SpriteAttributes.js';
+import { CollideScenario, RectangleHitbox } from '../../../SpriteHitbox.js';
 
 export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDamage {
     Generator: 'player' | 'enemy';
@@ -12,6 +15,10 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     Damage: number;
+    PrimaryEffect: DamageEffectOptions;
+    SecondaryEffect: DamageEffectOptions;
+    PrimaryEffectStat: number;
+    SecondaryEffectStat: number;
 
     private startingPoint: { x: number; y: number };
     private endPoint: { x: number; y: number };
@@ -31,7 +38,13 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
 
         this.generateKeyPoints();
 
-        this.Damage = 10;
+        const MirrorShieldDamageInfo =
+            MirrorShieldDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = MirrorShieldDamageInfo['Thunder Beam Damage'];
+        this.PrimaryEffect = MirrorShieldThunderBeamConstant[0]['Primary Skill'];
+        this.PrimaryEffectStat = MirrorShieldDamageInfo['Energy Stat'];
+        this.SecondaryEffect = MirrorShieldThunderBeamConstant[0]['Secondary Skill'];
+        this.SecondaryEffectStat = 0;
         this.Generator = 'player';
         this.Category = 'projectile';
         this.CurrentHitbox = [
@@ -42,8 +55,6 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         });
     }
-
-    UpdateHitboxes(dt: number) {}
 
     public Update(dt: number) {
         this.currentDisappearTimer -= dt;

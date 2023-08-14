@@ -1,27 +1,34 @@
-import { Sprite } from '../../../Sprite.js';
-import InfoMirrorShield from '../../../../StatsJSON/SpriteInfo/Skills/InfoMirrorShield.js';
-import { ServiceLocator } from '../../../../ServiceLocator.js';
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
-import { IServicePlayer } from '../../../Player.js';
+import { ServiceLocator } from '../../../../ServiceLocator.js';
 import {
+    MirrorShieldConstant,
+    MirrorShieldExplosiveEntityConstant,
+} from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
+import { MirrorShieldDamage } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldDamage.js';
+import InfoMirrorShield from '../../../../StatsJSON/SpriteInfo/Skills/InfoMirrorShield.js';
+import { IServiceUtilManager } from '../../../../UtilManager.js';
+import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
+import { IServiceCollideManager } from '../../../CollideManager.js';
+import { IEnemy } from '../../../Enemies/IEnemy.js';
+import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../../Player.js';
+import { Sprite } from '../../../Sprite.js';
+import {
+    DamageEffectOptions,
     ISpriteWithDamage,
     ISpriteWithSpeed,
     ISpriteWithTarget,
     ISpriteWithUpdateAndDraw,
 } from '../../../SpriteAttributes.js';
-import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
-import { RectangleHitbox, CollideScenario, CreateHitboxesWithInfoFile } from '../../../SpriteHitbox.js';
-import { IEnemy } from '../../../Enemies/IEnemy.js';
-import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
-import { IServiceCollideManager } from '../../../CollideManager.js';
+import { CollideScenario, CreateHitboxesWithInfoFile, RectangleHitbox } from '../../../SpriteHitbox.js';
 
 class MirrorShieldPortal extends Sprite {
     private offsetXOnPlayer: number;
     private offsetYOnPlayer: number;
     private static potentialMirrorPositions: { X: number; Y: number }[] = [];
-    private baseTimeGenerating;
-    private currentTimeGenerating;
+    private numberOfExplosiveEntitiesToSpawnPerSecond;
+    private remainingNumberOfExplosiveEntitiesToSpawnPerSecond;
 
     constructor(parameters: { spriteShiftPositionOnMirror: { X: number; Y: number } }) {
         super(
@@ -52,9 +59,8 @@ class MirrorShieldPortal extends Sprite {
 
         this.offsetXOnPlayer = mirrorOffsetXOnPlayer + portalOffsetXOnMirror;
         this.offsetYOnPlayer = mirrorOffsetYOnPlayer + portalOffsetYOnMirror;
-
-        this.baseTimeGenerating = 6 / 60;
-        this.currentTimeGenerating = this.baseTimeGenerating;
+        this.numberOfExplosiveEntitiesToSpawnPerSecond = MirrorShieldConstant[2]['Quantity Explosive Entity / Second'];
+        this.remainingNumberOfExplosiveEntitiesToSpawnPerSecond = this.numberOfExplosiveEntitiesToSpawnPerSecond;
 
         const { Idle, Detaching, Attaching, Disappearing, Generating, Spawning } = InfoMirrorShield.Portal.Animations;
 
@@ -127,11 +133,12 @@ class MirrorShieldPortal extends Sprite {
             this.X = playerX + this.offsetXOnPlayer;
             this.Y = playerY + this.offsetYOnPlayer;
         } else if (this.AnimationsController.CurrentAnimationName === 'generating') {
+            this.remainingNumberOfExplosiveEntitiesToSpawnPerSecond -= 1;
             this.generatesExplosiveEntity();
-            this.currentTimeGenerating -= dt;
-            if (this.currentTimeGenerating <= 0) {
+            if (this.remainingNumberOfExplosiveEntitiesToSpawnPerSecond <= 0) {
                 this.AnimationsController.PlayAnimation({ animation: 'disappearing' });
-                this.currentTimeGenerating = this.baseTimeGenerating;
+                this.remainingNumberOfExplosiveEntitiesToSpawnPerSecond =
+                    this.numberOfExplosiveEntitiesToSpawnPerSecond;
             }
         }
     }
@@ -188,6 +195,10 @@ class PortalExplosiveEntity
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
+    PrimaryEffect: DamageEffectOptions;
+    SecondaryEffect: DamageEffectOptions;
+    PrimaryEffectStat: number;
+    SecondaryEffectStat: number;
 
     private target: IEnemy | undefined;
     private targetAngle: number;
@@ -211,7 +222,22 @@ class PortalExplosiveEntity
             InfoMirrorShield.ExplosiveEntity.Meta.RealDimension.Height,
         );
 
-        this.BaseSpeed = 10;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: MirrorShieldExplosiveEntityConstant[0]['Projectile Speed'],
+        });
+
+        this.Generator = 'player';
+        this.Category = 'projectile';
+        const MirrorShieldDamageInfo =
+            MirrorShieldDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = MirrorShieldDamageInfo['Explosive Entity Damage'];
+        this.PrimaryEffect = MirrorShieldExplosiveEntityConstant[0]['Primary Skill'];
+        this.PrimaryEffectStat = MirrorShieldDamageInfo['Explosive Stat (%)'];
+        this.SecondaryEffect = MirrorShieldExplosiveEntityConstant[0]['Secondary Skill'];
+        this.SecondaryEffectStat = 0;
+
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.ExplosiveEntity.Hitbox]);
 
         const { Idle, Destroyed } = InfoMirrorShield.ExplosiveEntity.Animations;
@@ -236,10 +262,6 @@ class PortalExplosiveEntity
         this.Collide.set('WithEnemy', () => {
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
-        this.Generator = 'player';
-        this.Category = 'projectile';
-        this.Damage = 10;
-
         this.target = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetARandomEnemy();
         this.targetAngle = Math.PI;
         const { width: canvasWidth } = canvas;
@@ -319,7 +341,7 @@ export class MirrorShieldPortals implements ISpriteWithUpdateAndDraw {
             this.portals.push(new MirrorShieldPortal({ spriteShiftPositionOnMirror: shift }));
         });
 
-        this.baseTimeMirrorDetaching = 1;
+        this.baseTimeMirrorDetaching = MirrorShieldConstant[2]['Portal Detachment Cooldown (s)'];
         this.currentTimeMirrorDetaching = this.baseTimeMirrorDetaching;
     }
 

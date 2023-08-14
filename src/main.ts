@@ -1,22 +1,22 @@
-import { canvas, FRAME_RATE } from './ScreenConstant.js';
+import { LoadEventManager } from './EventManager.js';
+import { IServiceImageLoader, LoadImageLoader } from './ImageLoader.js';
 import { Keyboard } from './Keyboard.js';
-import {} from './Mouse.js';
-import { LoadImageLoader, IServiceImageLoader } from './ImageLoader.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
+import {} from './Mouse.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
-import { ServiceLocator } from './ServiceLocator.js';
-import { LoadPlayer, UpdatePlayer, DrawPlayer } from './Sprites/Player.js';
-import { LoadWaveManager, UpdateWaveManager, DrawWaveManager } from './WaveManager/WaveManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
+import { FRAME_RATE, canvas } from './ScreenConstant.js';
+import { ServiceLocator } from './ServiceLocator.js';
+import { LoadCollideManager } from './Sprites/CollideManager.js';
 import {
     DrawGeneratedSpritesManager,
     LoadGeneratedSpritesManager,
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
-import { LoadCollideManager } from './Sprites/CollideManager.js';
+import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
-import { LoadEventManager } from './EventManager.js';
 import { LoadUtilManager } from './UtilManager.js';
+import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
 
 const ctx = canvas.getContext('2d')!;
 function load() {

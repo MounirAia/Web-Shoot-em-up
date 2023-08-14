@@ -37,7 +37,7 @@ export class SpriteStatesController {
                 this.currentStateTimer = statesDuration;
                 if (beforePlayingState) beforePlayingState();
             } else {
-                // reset the state to none if there is state to play with the given stateName
+                // reset the state to none if there is no state to play with the given stateName
                 this.playDefaultState();
             }
         }

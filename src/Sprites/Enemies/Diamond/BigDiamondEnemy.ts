@@ -3,21 +3,32 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
-import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { EnemyBullet } from '../../Bullets/EnemyBullet.js';
 import { IServiceCollideManager } from '../../CollideManager.js';
-import { RectangleHitbox, CreateHitboxes, CollideScenario } from '../../SpriteHitbox.js';
-import { ISpriteWithAttackSpeed, ISpriteWithDamage, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
+import {
+    DamageEffectOptions,
+    ISpriteWithAttackSpeed,
+    ISpriteWithDamageResistance,
+    ISpriteWithSpeed,
+} from '../../SpriteAttributes.js';
+import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
-export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
+export class BigDiamondEnemy
+    extends Sprite
+    implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed, ISpriteWithDamageResistance
+{
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
     BaseAttackSpeed: number;
+
+    EffectDebufName: DamageEffectOptions;
+    EffectDebufStat: number;
 
     constructor(x = 0, y = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -32,6 +43,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
         this.BaseAttackSpeed = 2;
+
+        this.EffectDebufName = '';
+        this.EffectDebufStat = 0;
 
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -93,9 +107,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         });
 
         this.Collide = new Map();
-        this.Collide.set('WithProjectile', (bullet: unknown) => {
-            bullet = bullet as ISpriteWithDamage;
-
+        this.Collide.set('WithProjectile', (projectileDamage: unknown) => {
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
 
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
