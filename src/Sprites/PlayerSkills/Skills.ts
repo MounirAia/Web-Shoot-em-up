@@ -1,4 +1,4 @@
-export type PossibleSkillName = 'Rocket' | 'Blade' | 'MirrorShield';
+export type PossibleSkillName = 'Rocket' | 'Blade' | 'MirrorShield' | 'FuelChargeShot';
 export type SkillsTypeName = 'special' | 'support' | 'effect';
 
 export interface ISkill {

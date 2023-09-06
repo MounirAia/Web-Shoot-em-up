@@ -4,6 +4,7 @@ import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { IServiceUtilManager } from '../UtilManager.js';
+
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns = 8;

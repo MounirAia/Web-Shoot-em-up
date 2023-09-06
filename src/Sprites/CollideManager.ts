@@ -159,6 +159,7 @@ class DamageHelperManager {
                 return this.projectile.Damage * (DamageHelperManager.criticalDamageMultiplier - 1);
             }
         } else if (damageEffectName === 'Corrosive') {
+            // Need to play the corrosive state
             // this.target.StatesController.PlayState('')
             return 0;
         }

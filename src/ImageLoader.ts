@@ -57,6 +57,8 @@ export function LoadImageLoader() {
     assets.push('images/Skills/Mirror/MirrorLevel2&3.png');
     assets.push('images/Skills/Mirror/Portal.png');
     assets.push('images/Skills/Mirror/ExplosiveEntity.png');
+    assets.push('images/Skills/FuelChargeShot/FrameLevel1.png');
+    assets.push('images/Skills/FuelChargeShot/LaserLevel1.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }
