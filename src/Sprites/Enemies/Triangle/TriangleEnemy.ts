@@ -2,8 +2,8 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
-import { RectangleHitbox, CreateHitboxes, CollideScenario } from '../../SpriteHitbox.js';
 import { Sprite } from '../../Sprite.js';
+import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
 export class TriangleEnemy extends Sprite implements IEnemy {

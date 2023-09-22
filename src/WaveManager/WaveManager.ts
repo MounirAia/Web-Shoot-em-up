@@ -1,5 +1,9 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
+import {
+    DamageEffectFunctionReturnType,
+    DamageEffectOptions,
+} from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
@@ -10,6 +14,16 @@ export interface IServiceWaveManager {
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
     GetARandomEnemy(): IEnemy | undefined;
     GetIfListHasNoEnemyLeft(): boolean;
+    AddEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }): void;
+    RemoveEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }): void;
 }
 
 class WaveManager implements IServiceWaveManager {
@@ -153,6 +167,22 @@ class WaveManager implements IServiceWaveManager {
         if (this.currentWave) return this.currentWave?.HasNoEnemyLeft;
 
         return true;
+    }
+
+    public AddEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.currentWave?.AddEnemyState(parameters);
+    }
+
+    public RemoveEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.currentWave?.RemoveEnemyState(parameters);
     }
 }
 

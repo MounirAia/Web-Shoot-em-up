@@ -1,7 +1,8 @@
 import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { ISpriteWithAnimationController, ISpriteWithStateController } from './SpriteAttributes.js';
 import { SpriteStatesController } from './SpriteStatesController.js';
 
-export abstract class Sprite {
+export abstract class Sprite implements ISpriteWithAnimationController, ISpriteWithStateController {
     /* Image properties */
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;

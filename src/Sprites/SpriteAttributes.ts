@@ -1,20 +1,30 @@
+import { DamageEffectOptions, IDamageEffect } from './PlayerSkills/DamageEffect/IDamageEffect.js';
+import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { SpriteStatesController } from './SpriteStatesController.js';
+
 export interface ISpriteWithUpdateAndDraw {
     Update: (dt: number) => void;
     Draw: (ctx: CanvasRenderingContext2D) => void;
 }
 
-export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | '';
+export interface ISpriteWithStateController {
+    StatesController: SpriteStatesController;
+}
+
+export interface ISpriteWithAnimationController {
+    AnimationsController: SpriteAnimationsController;
+}
+
 export interface ISpriteWithDamage {
     Damage: number;
-    PrimaryEffect: DamageEffectOptions;
-    SecondaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffectStat: number;
+}
+
+export interface ISpriteWithDamageEffects {
+    DamageEffects: Map<DamageEffectOptions, IDamageEffect>;
 }
 
 export interface ISpriteWithDamageResistance {
-    EffectDebufName: DamageEffectOptions;
-    EffectDebufStat: number;
+    DamageResistances: Map<DamageEffectOptions, number>;
 }
 
 // if a sprite has a stat that can influence the damage he does

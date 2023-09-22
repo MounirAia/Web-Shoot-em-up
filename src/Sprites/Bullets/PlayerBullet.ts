@@ -4,7 +4,7 @@ import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceCollideManager } from '../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
 import { Sprite } from '../Sprite.js';
-import { DamageEffectOptions, ISpriteWithDamage, ISpriteWithSpeed } from '../SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithSpeed } from '../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
 
 export class RegularPlayerBullet
@@ -18,10 +18,6 @@ export class RegularPlayerBullet
 
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
-    PrimaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffect: DamageEffectOptions;
-    SecondaryEffectStat: number;
 
     constructor(x: number, y: number) {
         super(
@@ -41,10 +37,7 @@ export class RegularPlayerBullet
         this.Category = 'projectile';
         this.BaseSpeed = 10;
         this.Damage = 3;
-        this.PrimaryEffect = '';
-        this.PrimaryEffectStat = 0;
-        this.SecondaryEffect = '';
-        this.SecondaryEffectStat = 0;
+
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,

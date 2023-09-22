@@ -5,7 +5,7 @@ import { IServiceCollideManager } from '../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../Player.js';
 import { Sprite } from '../Sprite.js';
-import { DamageEffectOptions, ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithTarget } from '../SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithTarget } from '../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
 
 export class EnemyBullet
@@ -16,10 +16,6 @@ export class EnemyBullet
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
-    PrimaryEffect: DamageEffectOptions;
-    SecondaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffectStat: number;
 
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
@@ -59,10 +55,6 @@ export class EnemyBullet
 
         this.BaseSpeed = 3;
         this.Damage = 3;
-        this.PrimaryEffect = '';
-        this.PrimaryEffectStat = 0;
-        this.SecondaryEffect = '';
-        this.SecondaryEffectStat = 0;
 
         this.XSpeed = Math.cos(this.TargetAngle) * this.BaseSpeed;
         this.YSpeed = Math.sin(this.TargetAngle) * this.BaseSpeed;

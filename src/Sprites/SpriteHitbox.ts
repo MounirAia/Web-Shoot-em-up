@@ -61,7 +61,7 @@ export function CreateHitboxes(
         readonly height: number;
     }[],
 ): RectangleHitbox[] {
-    let hitboxes: RectangleHitbox[] = [];
+    const hitboxes: RectangleHitbox[] = [];
 
     additionalHitboxesInfo.forEach(({ offsetX, offsetY, width, height }) => {
         hitboxes.push(new RectangleHitbox(spriteX, spriteY, offsetX, offsetY, width, height));

@@ -2,18 +2,28 @@ import { canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { BigDiamondEnemy } from '../Sprites/Enemies/Diamond/BigDiamondEnemy.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
+import {
+    DamageEffectFunctionReturnType,
+    DamageEffectOptions,
+} from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
 import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { IServiceUtilManager } from '../UtilManager.js';
+import { WaveEnemiesStateTracker } from './WaveEnemiesStateTracker.js';
 
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns = 8;
     private readonly maxNumberEnemies = 40;
+
+    private waveEnemiesStateTracker: WaveEnemiesStateTracker;
+
     constructor(numberEnemies: number) {
         if (numberEnemies > this.maxNumberEnemies) numberEnemies = this.maxNumberEnemies;
 
         this.listEnemies = new Map<IEnemy, IEnemy>();
         this.createWave(numberEnemies);
+
+        this.waveEnemiesStateTracker = new WaveEnemiesStateTracker();
     }
 
     private createWave(numberEnemies: number) {
@@ -66,6 +76,8 @@ export class WaveEnemies {
         this.listEnemies.forEach((enemy) => {
             enemy.Update(dt);
         });
+
+        this.waveEnemiesStateTracker.Update(dt);
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
@@ -88,5 +100,21 @@ export class WaveEnemies {
         const randomEnemy = GetRandomObjectFromMap<IEnemy>({ theMap: this.listEnemies });
 
         return randomEnemy;
+    }
+
+    public AddEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.waveEnemiesStateTracker.AddState(parameters);
+    }
+
+    public RemoveEnemyState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.waveEnemiesStateTracker.RemoveState(parameters);
     }
 }
