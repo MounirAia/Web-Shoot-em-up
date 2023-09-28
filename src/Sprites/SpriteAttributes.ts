@@ -1,5 +1,6 @@
-import { DamageEffectOptions, IDamageEffect } from './PlayerSkills/DamageEffect/IDamageEffect.js';
+import { PlayerProjectileDamageEffectController } from './PlayerProjectileDamageEffectsController.js';
 import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { SpriteDamageResistancesController } from './SpriteDamageResistancesController.js';
 import { SpriteStatesController } from './SpriteStatesController.js';
 
 export interface ISpriteWithUpdateAndDraw {
@@ -20,11 +21,11 @@ export interface ISpriteWithDamage {
 }
 
 export interface ISpriteWithDamageEffects {
-    DamageEffects: Map<DamageEffectOptions, IDamageEffect>;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 }
 
 export interface ISpriteWithDamageResistance {
-    DamageResistances: Map<DamageEffectOptions, number>;
+    DamageResistancesController: SpriteDamageResistancesController;
 }
 
 // if a sprite has a stat that can influence the damage he does

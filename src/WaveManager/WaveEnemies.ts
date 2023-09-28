@@ -6,16 +6,15 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
-import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { IServiceUtilManager } from '../UtilManager.js';
-import { WaveEnemiesStateTracker } from './WaveEnemiesStateTracker.js';
+import { WaveEnemiesDamageStateTracker } from './WaveEnemiesStateTracker.js';
 
 export class WaveEnemies {
     private listEnemies: Map<IEnemy, IEnemy>;
     private readonly numberSpawns = 8;
     private readonly maxNumberEnemies = 40;
 
-    private waveEnemiesStateTracker: WaveEnemiesStateTracker;
+    private waveEnemiesStateTracker: WaveEnemiesDamageStateTracker;
 
     constructor(numberEnemies: number) {
         if (numberEnemies > this.maxNumberEnemies) numberEnemies = this.maxNumberEnemies;
@@ -23,7 +22,7 @@ export class WaveEnemies {
         this.listEnemies = new Map<IEnemy, IEnemy>();
         this.createWave(numberEnemies);
 
-        this.waveEnemiesStateTracker = new WaveEnemiesStateTracker();
+        this.waveEnemiesStateTracker = new WaveEnemiesDamageStateTracker();
     }
 
     private createWave(numberEnemies: number) {
@@ -90,8 +89,8 @@ export class WaveEnemies {
         return this.listEnemies.size === 0 ? true : false;
     }
 
-    public get ListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
-        return this.listEnemies as Map<IEnemy, ISpriteWithHitboxes>;
+    public get ListEnemies(): Map<IEnemy, IEnemy> {
+        return this.listEnemies as Map<IEnemy, IEnemy>;
     }
 
     public get RandomEnemy(): IEnemy | undefined {
@@ -102,7 +101,7 @@ export class WaveEnemies {
         return randomEnemy;
     }
 
-    public AddEnemyState(parameters: {
+    public AddEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
@@ -110,7 +109,7 @@ export class WaveEnemies {
         this.waveEnemiesStateTracker.AddState(parameters);
     }
 
-    public RemoveEnemyState(parameters: {
+    public RemoveEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;

@@ -6,10 +6,10 @@ import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../../Player.js';
+import { PlayerProjectileDamageEffectController } from '../../../PlayerProjectileDamageEffectsController.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects } from '../../../SpriteAttributes.js';
 import { CollideScenario, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { EnergyDamageEffect } from '../../DamageEffect/EnergyDamageEffect.js';
-import { DamageEffectOptions, IDamageEffect } from '../../DamageEffect/IDamageEffect.js';
 
 export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects {
     Generator: 'player' | 'enemy';
@@ -17,7 +17,7 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     Damage: number;
-    DamageEffects: Map<DamageEffectOptions, IDamageEffect>;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 
     private startingPoint: { x: number; y: number };
     private endPoint: { x: number; y: number };
@@ -40,14 +40,13 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
         const MirrorShieldDamageInfo =
             MirrorShieldDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
         this.Damage = MirrorShieldDamageInfo['Thunder Beam Damage'];
-        this.DamageEffects = new Map();
-        this.DamageEffects.set(
-            MirrorShieldThunderBeamConstant[0]['Primary Skill'],
-            new EnergyDamageEffect({
-                baseDamage: this.Damage,
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: MirrorShieldThunderBeamConstant[0]['Primary Skill'],
+            damageEffectObject: new EnergyDamageEffect({
                 probabilityOfCriticalHit: MirrorShieldDamageInfo['Energy Stat'],
             }),
-        );
+        });
 
         this.Generator = 'player';
         this.Category = 'projectile';

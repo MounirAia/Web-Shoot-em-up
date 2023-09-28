@@ -13,6 +13,7 @@ import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IEnemy } from '../../../Enemies/IEnemy.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../../Player.js';
+import { PlayerProjectileDamageEffectController } from '../../../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../../../Sprite.js';
 import {
     ISpriteWithDamage,
@@ -23,7 +24,6 @@ import {
 } from '../../../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { ExplosiveDamageEffect } from '../../DamageEffect/ExplosiveDamageEffect.js';
-import { DamageEffectOptions, IDamageEffect } from '../../DamageEffect/IDamageEffect.js';
 
 class MirrorShieldPortal extends Sprite {
     private offsetXOnPlayer: number;
@@ -197,7 +197,7 @@ class PortalExplosiveEntity
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
-    DamageEffects: Map<DamageEffectOptions, IDamageEffect>;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 
     private target: IEnemy | undefined;
     private targetAngle: number;
@@ -232,14 +232,13 @@ class PortalExplosiveEntity
         const MirrorShieldDamageInfo =
             MirrorShieldDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
         this.Damage = MirrorShieldDamageInfo['Explosive Entity Damage'];
-        this.DamageEffects = new Map();
-        this.DamageEffects.set(
-            'Explosive',
-            new ExplosiveDamageEffect({
-                baseDamage: this.Damage,
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: MirrorShieldExplosiveEntityConstant[0]['Primary Skill'],
+            damageEffectObject: new ExplosiveDamageEffect({
                 explosiveEffectStat: MirrorShieldDamageInfo['Explosive Stat (%)'],
             }),
-        );
+        });
 
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoMirrorShield.ExplosiveEntity.Hitbox]);
 

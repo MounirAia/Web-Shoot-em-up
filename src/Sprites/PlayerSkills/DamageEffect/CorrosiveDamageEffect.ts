@@ -1,15 +1,13 @@
-import { ISpriteWithAnimationController, ISpriteWithStateController } from '../../SpriteAttributes.js';
-import { ISpriteWithHitboxes } from '../../SpriteHitbox.js';
+import { IEnemy } from '../../Enemies/IEnemy.js';
 import { DamageEffectFunctionReturnType, DamageEffectOptions, IDamageEffect } from './IDamageEffect.js';
 
 export class CorrosiveDamageEffect implements IDamageEffect {
-    private baseDamage: number;
     private corrosiveEffectStat: number;
     private static readonly timeDurationEffect = 1;
 
     constructor(parameters: { baseDamage: number; corrosiveEffectStat: number }) {
-        const { baseDamage, corrosiveEffectStat } = parameters;
-        this.baseDamage = baseDamage;
+        const { corrosiveEffectStat } = parameters;
+
         this.corrosiveEffectStat = corrosiveEffectStat;
     }
 
@@ -18,11 +16,12 @@ export class CorrosiveDamageEffect implements IDamageEffect {
     }
 
     Effect(parameters: {
-        target: ISpriteWithStateController & ISpriteWithAnimationController & ISpriteWithHitboxes;
+        target: IEnemy;
+        baseDamage: number;
         targetResistanceStat?: number;
     }): DamageEffectFunctionReturnType {
         // Create a method that removes HP to the enemy
-        const { target, targetResistanceStat = 0 } = parameters;
+        const { target, baseDamage, targetResistanceStat = 0 } = parameters;
         const maxNumberOfTick = 5;
         let currentTick = maxNumberOfTick;
 
@@ -42,7 +41,7 @@ export class CorrosiveDamageEffect implements IDamageEffect {
                     const targetCollisionMethod = target.Collide.get('WithProjectile');
 
                     if (targetCollisionMethod) {
-                        const damageToApply = this.baseDamage + this.baseDamage * corrosiveStatToApply;
+                        const damageToApply = baseDamage + baseDamage * corrosiveStatToApply;
                         targetCollisionMethod(damageToApply);
                     }
                     currentTick = currentTick - 1;
@@ -57,6 +56,6 @@ export class CorrosiveDamageEffect implements IDamageEffect {
             return { isFinished: true };
         };
 
-        return effectMethod;
+        return { effect: effectMethod };
     }
 }

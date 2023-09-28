@@ -1,14 +1,22 @@
+import { IEnemy } from '../../Enemies/IEnemy.js';
 import { ISpriteWithAnimationController, ISpriteWithStateController } from '../../SpriteAttributes.js';
 import { ISpriteWithHitboxes } from '../../SpriteHitbox.js';
 
-export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | '';
+export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | 'BaseDamage' | 'FuelChargeShotLaserLevel1';
+export type EffectMethodTargetParameters = ISpriteWithStateController &
+    ISpriteWithHitboxes &
+    ISpriteWithAnimationController;
 
-export type DamageEffectFunctionReturnType = (dt: number) => { isFinished: boolean };
+export type DamageEffectFunctionReturnType = {
+    effect: (dt: number) => { isFinished: boolean };
+    clearStateMethod?: () => void;
+};
 
 export interface IDamageEffect {
-    Damage?: (parameters: { target: ISpriteWithStateController; targetResistanceStat?: number }) => number;
+    Damage?: (parameters: { target: IEnemy; baseDamage: number; targetResistanceStat?: number }) => number;
     Effect?: (parameters: {
-        target: ISpriteWithStateController & ISpriteWithHitboxes & ISpriteWithAnimationController;
+        target: IEnemy;
+        baseDamage: number;
         targetResistanceStat?: number;
     }) => DamageEffectFunctionReturnType;
     DamageType: DamageEffectOptions;

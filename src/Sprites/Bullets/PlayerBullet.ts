@@ -3,18 +3,20 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceCollideManager } from '../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
+import { PlayerProjectileDamageEffectController } from '../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../Sprite.js';
-import { ISpriteWithDamage, ISpriteWithSpeed } from '../SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
 
 export class RegularPlayerBullet
     extends Sprite
-    implements ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite
+    implements ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamageEffects
 {
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
@@ -37,6 +39,7 @@ export class RegularPlayerBullet
         this.Category = 'projectile';
         this.BaseSpeed = 10;
         this.Damage = 3;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
 
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {

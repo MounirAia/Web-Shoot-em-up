@@ -4,22 +4,21 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
-import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
+    GetListEnemies(): Map<IEnemy, IEnemy>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
     GetARandomEnemy(): IEnemy | undefined;
     GetIfListHasNoEnemyLeft(): boolean;
-    AddEnemyState(parameters: {
+    AddEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
     }): void;
-    RemoveEnemyState(parameters: {
+    RemoveEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
@@ -140,12 +139,12 @@ class WaveManager implements IServiceWaveManager {
         return waves;
     }
 
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
+    GetListEnemies(): Map<IEnemy, IEnemy> {
         if (this.currentWave) {
             return this.currentWave.ListEnemies;
         }
 
-        return new Map<IEnemy, ISpriteWithHitboxes>();
+        return new Map<IEnemy, IEnemy>();
     }
 
     SetLastEnemyDestroyed(enemy: IEnemy): void {
@@ -169,20 +168,20 @@ class WaveManager implements IServiceWaveManager {
         return true;
     }
 
-    public AddEnemyState(parameters: {
+    public AddEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
     }) {
-        this.currentWave?.AddEnemyState(parameters);
+        this.currentWave?.AddEnemyDamageState(parameters);
     }
 
-    public RemoveEnemyState(parameters: {
+    public RemoveEnemyDamageState(parameters: {
         target: IEnemy;
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
     }) {
-        this.currentWave?.RemoveEnemyState(parameters);
+        this.currentWave?.RemoveEnemyDamageState(parameters);
     }
 }
 

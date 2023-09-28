@@ -1,14 +1,15 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IServiceWaveManager } from '../WaveManager/WaveManager.js';
-import { IEnemy } from './Enemies/IEnemy.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
 import { IServicePlayer } from './Player.js';
-import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithDamageResistance } from './SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects } from './SpriteAttributes.js';
 import { ISpriteWithHitboxes } from './SpriteHitbox.js';
+
+type IProjectile = ISpriteWithHitboxes & ISpriteWithDamage & ISpriteWithDamageEffects;
 
 export interface IServiceCollideManager {
     HandleWhenPlayerNonProjectileCollideWithEnemyProjectiles: (playerNonProjectile: ISpriteWithHitboxes) => void;
-    HandleWhenPlayerProjectileCollideWithEnemies: (playerProjectile: ISpriteWithHitboxes) => void;
+    HandleWhenPlayerProjectileCollideWithEnemies: (playerProjectile: IProjectile) => void;
     HandleWhenEnemyProjectileCollideWithPlayer(enemyProjectile: ISpriteWithHitboxes): void;
     HandleWhenEnemyCollideWithPlayer(enemy: ISpriteWithHitboxes): void;
 }
@@ -39,7 +40,7 @@ export class CollideManager implements IServiceCollideManager {
         }
     }
 
-    HandleWhenPlayerProjectileCollideWithEnemies(playerProjectile: ISpriteWithHitboxes): void {
+    HandleWhenPlayerProjectileCollideWithEnemies(playerProjectile: IProjectile): void {
         const waveManager = ServiceLocator.GetService<IServiceWaveManager>('WaveManager');
         let isColliding = false;
         for (const [key, enemy] of waveManager.GetListEnemies()) {
@@ -50,10 +51,9 @@ export class CollideManager implements IServiceCollideManager {
                     const bulletCollisionMethod = playerProjectile.Collide.get('WithEnemy');
                     if (bulletCollisionMethod) bulletCollisionMethod();
 
-                    const bulletDamage = new this.PlayerProjectileCollideWithEnemiesHelper({
-                        projectile: playerProjectile,
+                    const bulletDamage = playerProjectile.DamageEffectsController.ApplyShortAndLongTermDamageEffect({
                         target: enemy,
-                    }).Damage;
+                    });
 
                     const enemyCollisionMethod = enemy.Collide.get('WithProjectile');
                     if (enemyCollisionMethod) enemyCollisionMethod(bulletDamage);
@@ -95,54 +95,6 @@ export class CollideManager implements IServiceCollideManager {
             }
         }
     }
-
-    private PlayerProjectileCollideWithEnemiesHelper = class {
-        projectile: ISpriteWithDamage & ISpriteWithDamageEffects;
-        target: IEnemy & ISpriteWithDamageResistance;
-        damage: number;
-        constructor(parameters: { projectile: unknown; target: unknown }) {
-            const { projectile, target } = parameters;
-            this.projectile = { ...(projectile as ISpriteWithDamage & ISpriteWithDamageEffects) };
-
-            this.target = target as IEnemy & ISpriteWithDamageResistance;
-
-            this.damage = this.projectile.Damage;
-            if (this.projectile.DamageEffects) {
-                this.applyDamageEffects();
-            }
-        }
-
-        private applyDamageEffects() {
-            this.projectile.DamageEffects.forEach((value, key) => {
-                // Short Term Damage Effect
-                if (value.Damage) {
-                    const effectDamage = value.Damage({
-                        target: this.target,
-                        targetResistanceStat: this.target.DamageResistances?.get(key),
-                    });
-                    this.damage += effectDamage;
-                }
-
-                // Long Term Damage Effect
-                if (value.Effect) {
-                    // need to apply resistance if there are resistances
-                    const effect = value.Effect({
-                        target: this.target,
-                        targetResistanceStat: this.target.DamageResistances?.get(key),
-                    });
-                    ServiceLocator.GetService<IServiceWaveManager>('WaveManager').AddEnemyState({
-                        target: this.target,
-                        effect,
-                        effectType: value.DamageType,
-                    });
-                }
-            });
-        }
-
-        public get Damage(): number {
-            return this.damage;
-        }
-    };
 }
 
 export function LoadCollideManager() {

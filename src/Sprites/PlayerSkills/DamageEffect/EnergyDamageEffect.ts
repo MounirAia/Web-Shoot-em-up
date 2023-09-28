@@ -1,13 +1,12 @@
-import { ISpriteWithStateController } from '../../SpriteAttributes.js';
+import { IEnemy } from '../../Enemies/IEnemy.js';
 import { DamageEffectOptions, IDamageEffect } from './IDamageEffect.js';
 
 export class EnergyDamageEffect implements IDamageEffect {
-    private baseDamage: number;
     private probabilityOfCriticalHit: number;
     private static readonly criticalDamageMultiplier = 3;
-    constructor(parameters: { baseDamage: number; probabilityOfCriticalHit: number }) {
-        const { baseDamage, probabilityOfCriticalHit } = parameters;
-        this.baseDamage = baseDamage;
+    constructor(parameters: { probabilityOfCriticalHit: number }) {
+        const { probabilityOfCriticalHit } = parameters;
+
         this.probabilityOfCriticalHit = probabilityOfCriticalHit;
     }
 
@@ -15,12 +14,12 @@ export class EnergyDamageEffect implements IDamageEffect {
         return 'Energy';
     }
 
-    public Damage(parameters: { target: ISpriteWithStateController; targetResistanceStat?: number }): number {
-        const { target, targetResistanceStat = 0 } = parameters;
+    public Damage(parameters: { target: IEnemy; baseDamage: number; targetResistanceStat?: number }): number {
+        const { target, baseDamage, targetResistanceStat = 0 } = parameters;
         const rndNumber = Math.random();
         target.StatesController.PlayState({ stateName: 'onEnergy' });
         if (Math.max(0, this.probabilityOfCriticalHit - targetResistanceStat) / 100 >= rndNumber) {
-            return this.baseDamage * (EnergyDamageEffect.criticalDamageMultiplier - 1);
+            return baseDamage * (EnergyDamageEffect.criticalDamageMultiplier - 1);
         }
         return 0;
     }

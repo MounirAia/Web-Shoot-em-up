@@ -1,22 +1,26 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../../GeneratedSpriteManager.js';
-import { IServiceCollideManager } from '../../CollideManager.js';
-import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
-import { IServicePlayer } from '../../Player.js';
-import { Sprite } from '../../Sprite.js';
-import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
-import { ISkill, PossibleSkillName } from '../Skills.js';
-import { SkillsTypeName } from '../Skills.js';
 import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
+import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
+import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../Player.js';
+import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDamageEffectsController.js';
+import { Sprite } from '../../Sprite.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { ISkill, PossibleSkillName, SkillsTypeName } from '../Skills.js';
 
-export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+export class RocketBulletLevel1
+    extends Sprite
+    implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -39,6 +43,7 @@ export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpr
         this.BaseSpeed = RocketConstant[0].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -147,11 +152,15 @@ export class RocketBulletLevel1 extends Sprite implements ISpriteWithSpeed, ISpr
     }
 }
 
-export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+export class RocketBulletLevel2
+    extends Sprite
+    implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -174,6 +183,7 @@ export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpr
         this.BaseSpeed = RocketConstant[1].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -281,11 +291,15 @@ export class RocketBulletLevel2 extends Sprite implements ISpriteWithSpeed, ISpr
         super.Draw(ctx);
     }
 }
-class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+class RocketSubBullet
+    extends Sprite
+    implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -309,6 +323,7 @@ class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHit
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -388,11 +403,15 @@ class RocketSubBullet extends Sprite implements ISpriteWithSpeed, ISpriteWithHit
     }
 }
 
-export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite {
+export class RocketBulletLevel3
+    extends Sprite
+    implements ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
@@ -415,6 +434,7 @@ export class RocketBulletLevel3 extends Sprite implements ISpriteWithSpeed, ISpr
         this.BaseSpeed = RocketConstant[2].projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
