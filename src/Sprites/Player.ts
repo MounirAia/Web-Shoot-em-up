@@ -7,7 +7,7 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
-import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
+import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
@@ -132,7 +132,6 @@ class Player
 
         this.currentSkill.set('support', new FuelChargeShotSkill());
         this.currentSkill.get('support')?.Effect();
-
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -287,7 +286,6 @@ class Player
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
 
             this.currentSkill.get('special')?.Effect();
-            this.currentSkill.get('support')?.Effect();
         } else {
             if (this.currentTimeBeforeNextShoot >= 0) {
                 this.currentTimeBeforeNextShoot -= this.AttackSpeed;

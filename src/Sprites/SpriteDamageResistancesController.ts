@@ -17,6 +17,18 @@ export class SpriteDamageResistancesController {
         }
     }
 
+    public RemoveDamageResistance(parameters: { resistanceType: DamageEffectOptions; resistanceStat: number }) {
+        const { resistanceType, resistanceStat } = parameters;
+        const resistances = this.damageResistances.get(resistanceType);
+        if (resistances) {
+            const indexToDelete = resistances.indexOf(resistanceStat);
+
+            if (indexToDelete > -1) {
+                resistances.splice(indexToDelete, 1);
+            }
+        }
+    }
+
     public GetDamageResistance(parameters: { resistanceType: DamageEffectOptions }) {
         const { resistanceType } = parameters;
         const resistances = this.damageResistances.get(resistanceType);

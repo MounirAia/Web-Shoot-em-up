@@ -18,9 +18,10 @@ export class PlayerProjectileDamageEffectController {
         this.damageEffects.set(damageEffectName, damageEffectObject);
     }
 
+    // Apply damage effect and get on hit damage to apply on a target
     public ApplyShortAndLongTermDamageEffect(parameters: { target: IEnemy }): number {
         const { target } = parameters;
-        // First apply baseDamage resistance of the enemies to the projectile baseDamage
+        // First apply baseDamage resistance of the enemies to the projectile baseDamage. (base damage are used to compute other damage effect)
         const baseDamage = this.applyBaseDamageResistance({ target });
 
         // Compute ShortTermDamage
@@ -38,14 +39,14 @@ export class PlayerProjectileDamageEffectController {
         let damage = projectileDamage;
 
         this.damageEffects.forEach((damageEffectObject, damageEffectName) => {
-            const { Damage } = damageEffectObject;
-            // Short Term Damage Effect
+            // get resistance of the enemy if he has resistance for the damage effect
             const targetResistanceStat = target.DamageResistancesController.GetDamageResistance({
                 resistanceType: damageEffectName,
             });
 
-            if (Damage) {
-                const effectDamage = Damage({
+            // Short Term Damage Effect
+            if (damageEffectObject.Damage) {
+                const effectDamage = damageEffectObject.Damage({
                     target: target,
                     targetResistanceStat,
                     baseDamage: projectileDamage,
@@ -60,19 +61,22 @@ export class PlayerProjectileDamageEffectController {
     private applyLongTermDamageEffect(parameters: { target: IEnemy; projectileDamage: number }) {
         const { target, projectileDamage } = parameters;
         this.damageEffects.forEach((damageEffectObject, damageEffectName) => {
-            const { DamageType, Effect } = damageEffectObject;
+            const { DamageType } = damageEffectObject;
 
+            // need to apply resistance if there are resistances
             const targetResistanceStat = target.DamageResistancesController.GetDamageResistance({
                 resistanceType: damageEffectName,
             });
             // Long Term Damage Effect
-            if (Effect) {
-                // need to apply resistance if there are resistances
-                const effect = Effect({
+            if (damageEffectObject.Effect) {
+                // get the long term effect of the damage effect
+                const effect = damageEffectObject.Effect({
                     target: target,
                     targetResistanceStat,
                     baseDamage: projectileDamage,
                 });
+
+                // apply the damage effect to the enemy state
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').AddEnemyDamageState({
                     target: target,
                     effect,

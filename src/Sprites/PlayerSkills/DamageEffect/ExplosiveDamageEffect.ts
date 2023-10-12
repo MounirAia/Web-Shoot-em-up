@@ -17,7 +17,6 @@ export class ExplosiveDamageEffect implements IDamageEffect {
     public Damage(parameters: { target: IEnemy; baseDamage: number; targetResistanceStat?: number }): number {
         const { target, baseDamage, targetResistanceStat = 0 } = parameters;
         target.StatesController.PlayState({ stateName: 'onExplosion' });
-        console.log('Stat: ', this.explosiveEffectStat);
         return baseDamage * (Math.max(0, this.explosiveEffectStat - targetResistanceStat) / 100);
     }
 }

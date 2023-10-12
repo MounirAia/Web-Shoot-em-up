@@ -4,21 +4,23 @@ import { ServiceLocator } from '../../../../ServiceLocator.js';
 import InfoFuelChargeShot from '../../../../StatsJSON/SpriteInfo/Skills/infoFuelChargeShot.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
+import { PlayerProjectileDamageEffectController } from '../../../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../../../Sprite.js';
-import { DamageEffectOptions, ISpriteWithDamage, ISpriteWithSpeed } from '../../../SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, RectangleHitbox } from '../../../SpriteHitbox.js';
+import { FuelChargeShotLaserLevel1DamageEffect } from '../../DamageEffect/FuelChargeShotLaserLevel1DamageEffect.js';
 
-export class FuelChargeShotLaserLevel1 extends Sprite implements ISpriteWithSpeed, IGeneratedSprite, ISpriteWithDamage {
+export class FuelChargeShotLaserLevel1
+    extends Sprite
+    implements ISpriteWithSpeed, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     BaseSpeed: number;
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
-    PrimaryEffect: DamageEffectOptions;
-    SecondaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffectStat: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 
     constructor(parameters: { X: number; Y: number }) {
         const { X, Y } = parameters;
@@ -43,36 +45,26 @@ export class FuelChargeShotLaserLevel1 extends Sprite implements ISpriteWithSpee
         this.Generator = 'player';
         this.Category = 'projectile';
 
-        this.Damage = 1;
-        this.PrimaryEffect = '';
-        this.PrimaryEffectStat = 0;
-        this.SecondaryEffect = '';
-        this.SecondaryEffectStat = 0;
+        this.Damage = 0;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'FuelChargeShotLaserLevel1',
+            damageEffectObject: new FuelChargeShotLaserLevel1DamageEffect({
+                resistanceStatDebuf: -100,
+                moneyValueGained: 100,
+            }),
+        });
 
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoFuelChargeShot.Level1.Laser.Hitbox]);
 
-        const { Idle, Destroyed } = InfoFuelChargeShot.Level1.Laser.Animations;
+        const { Idle } = InfoFuelChargeShot.Level1.Laser.Animations;
         this.AnimationsController.AddAnimation({
             animation: 'idle',
             frames: Idle.Frames,
             framesLengthInTime: Idle.FrameLengthInTime,
         });
 
-        this.AnimationsController.AddAnimation({
-            animation: 'destroyed',
-            frames: Destroyed.Frames,
-            framesLengthInTime: Destroyed.FrameLengthInTime,
-            afterPlayingAnimation: () => {
-                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
-                    this,
-                );
-            },
-        });
-
         this.Collide = new Map();
-        this.Collide.set('WithEnemy', () => {
-            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
-        });
 
         this.AnimationsController.PlayAnimation({ animation: 'idle', loop: true });
     }
@@ -88,11 +80,9 @@ export class FuelChargeShotLaserLevel1 extends Sprite implements ISpriteWithSpee
         super.Update(dt);
         this.X += this.BaseSpeed;
 
-        if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
-            ServiceLocator.GetService<IServiceCollideManager>(
-                'CollideManager',
-            ).HandleWhenPlayerProjectileCollideWithEnemies(this);
-        }
+        ServiceLocator.GetService<IServiceCollideManager>(
+            'CollideManager',
+        ).HandleWhenPlayerProjectileCollideWithEnemies(this);
 
         const { width: canvasWidth, height: canvasHeight } = canvas;
         if (this.X < 0 || this.X > canvasWidth || this.Y < 0 || this.Y > canvasHeight) {

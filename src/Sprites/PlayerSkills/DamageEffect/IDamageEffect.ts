@@ -8,7 +8,7 @@ export type EffectMethodTargetParameters = ISpriteWithStateController &
     ISpriteWithAnimationController;
 
 export type DamageEffectFunctionReturnType = {
-    effect: (dt: number) => { isFinished: boolean };
+    effect?: (dt: number) => { isFinished: boolean };
     clearStateMethod?: () => void;
 };
 

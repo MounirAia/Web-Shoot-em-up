@@ -1,7 +1,8 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
-import { CANVA_SCALEX, CANVA_SCALEY } from '../../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
 import InfoFuelChargeShot from '../../../../StatsJSON/SpriteInfo/Skills/infoFuelChargeShot.js';
+import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
@@ -31,10 +32,10 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
             InfoFuelChargeShot.Level1.Frame.Meta.RealDimension.Width,
             InfoFuelChargeShot.Level1.Frame.Meta.RealDimension.Height,
         );
-        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
 
-        this.X = playerX + 300;
-        this.Y = playerY;
+        const { X, Y } = this.frameSpawn();
+        this.X = X;
+        this.Y = Y;
 
         this.Generator = 'player';
         this.Category = 'nonProjectile';
@@ -73,9 +74,11 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
                 );
             },
             afterPlayingAnimation: () => {
-                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
-                    this,
-                );
+                const { X, Y } = this.frameSpawn();
+                this.X = X;
+                this.Y = Y;
+
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
             },
         });
 
@@ -84,6 +87,14 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     UpdateHitboxes(dt: number) {}
+
+    private frameSpawn(): { X: number; Y: number } {
+        const screenWidthProportion = 50 / 100;
+        const X = Math.random() * (canvas.width * screenWidthProportion);
+        const Y =
+            ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetARandomEnemy()?.Y || canvas.height / 2;
+        return { X, Y };
+    }
 }
 
 export class FuelChargeShotSkill implements ISkill {

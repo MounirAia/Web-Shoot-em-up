@@ -9,15 +9,20 @@ import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
 import { ISpriteWithAttackSpeed, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { SpriteDamageResistancesController } from '../../SpriteDamageResistancesController.js';
 import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
 export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
+    private moneyValue: number;
+
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
     BaseAttackSpeed: number;
+
+    DamageResistancesController: SpriteDamageResistancesController;
 
     constructor(x = 0, y = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -29,9 +34,13 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         const scaleY = CANVA_SCALEY;
         super(imgDiamond, frameWidth, frameHeight, x, y, -8 * CANVA_SCALEX, -9 * CANVA_SCALEY, scaleX, scaleY);
 
+        this.moneyValue = 5;
+
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
         this.BaseAttackSpeed = 2;
+
+        this.DamageResistancesController = new SpriteDamageResistancesController();
 
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -96,6 +105,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (projectileDamage: unknown) => {
             const damage = projectileDamage as number;
+
             this.StatesController.PlayState({ stateName: 'onHit' });
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
@@ -148,6 +158,10 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
     }
 
     get MoneyValue(): number {
-        return 5;
+        return this.moneyValue;
+    }
+
+    set MoneyValue(value: number) {
+        this.moneyValue = value;
     }
 }

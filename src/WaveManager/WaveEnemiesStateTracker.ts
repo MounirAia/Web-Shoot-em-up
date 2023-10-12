@@ -8,6 +8,7 @@ export class WaveEnemiesDamageStateTracker {
     private listEnemiesState: Map<IEnemy, Map<DamageEffectOptions, DamageEffectFunctionReturnType[]>>;
     private static readonly damageEffectsMaximumStack: ReadonlyMap<DamageEffectOptions, number> = new Map([
         ['Corrosive', 2],
+        ['FuelChargeShotLaserLevel1', 3],
     ]);
 
     constructor() {
@@ -18,13 +19,10 @@ export class WaveEnemiesDamageStateTracker {
         this.listEnemiesState.forEach((effectFunctionsMap, enemy) => {
             effectFunctionsMap.forEach((effectFunctionsList, effectType) => {
                 effectFunctionsList.forEach((effectObject) => {
-                    const { effect: effectMethod, clearStateMethod } = effectObject;
-                    const { isFinished } = effectMethod(dt);
-                    if (isFinished) {
-                        this.RemoveState({ target: enemy, effect: effectObject, effectType });
-
-                        if (clearStateMethod) {
-                            clearStateMethod();
+                    if (effectObject.effect) {
+                        const { isFinished } = effectObject.effect(dt);
+                        if (isFinished) {
+                            this.RemoveState({ target: enemy, effect: effectObject, effectType });
                         }
                     }
                 });
@@ -44,7 +42,7 @@ export class WaveEnemiesDamageStateTracker {
             const currentEffectArray = currentEffectsMap.get(effectType);
             if (currentEffectArray) {
                 const maximumStack = WaveEnemiesDamageStateTracker.damageEffectsMaximumStack.get(effectType);
-                currentEffectArray.push(effect);
+                if (effect.effect) currentEffectArray.push(effect);
                 if (maximumStack && currentEffectArray.length > maximumStack) {
                     this.RemoveState({ target, effect: currentEffectArray[0], effectType });
                 }
@@ -69,12 +67,16 @@ export class WaveEnemiesDamageStateTracker {
             if (indexToRemove !== undefined && indexToRemove > -1) {
                 const effectObject = currentEffectsList.get(effectType)?.splice(indexToRemove, 1);
                 if (effectObject) {
-                    const { clearStateMethod } = effectObject[0];
-                    if (clearStateMethod) {
-                        clearStateMethod();
+                    if (effectObject[0].clearStateMethod) {
+                        effectObject[0].clearStateMethod();
                     }
                 }
             }
         }
+    }
+
+    public RemoveEnemyStateTracker(parameters: { enemy: IEnemy }) {
+        const { enemy } = parameters;
+        this.listEnemiesState.delete(enemy);
     }
 }

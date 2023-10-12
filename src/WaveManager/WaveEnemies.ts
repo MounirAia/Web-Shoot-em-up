@@ -69,6 +69,7 @@ export class WaveEnemies {
 
     public RemoveEnemy(enemy: IEnemy) {
         this.listEnemies.delete(enemy);
+        this.waveEnemiesStateTracker.RemoveEnemyStateTracker({ enemy });
     }
 
     public Update(dt: number) {
@@ -117,3 +118,39 @@ export class WaveEnemies {
         this.waveEnemiesStateTracker.RemoveState(parameters);
     }
 }
+
+// ****************************** Spawn Enemy Manager IDEA ******************************
+// class SpawnEnemiesManager {
+//     // The enemies spawn takes 40% of the screen width
+//     // Refactor how the wave system works and use a 2d matrix 8*8 where each cell represent a spawn for a 15pixels entities
+//     // 120px * 120px grid (on base dimension)
+//     // padding top to the grid = 20px
+//     // padding bottom to the grid = 30px
+//     // padding of 1 px between each enemies (up,right,bottom)
+//     // Can return the readonly map of enemies spawn through service locator
+//     private readonly screenWidthProportion: number;
+//     private readonly spawns: number[][];
+//     private readonly sizeOfASpawnCell: number;
+//     private readonly paddingTop: number;
+//     private readonly paddingBottom: number;
+//     constructor() {
+//         this.screenWidthProportion = (40 / 100) * canvas.width;
+//         // Grid: 128px*128px -> base dimension
+//         this.spawns = [
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//             [1, 1, 1, 1, 1, 1, 1, 1],
+//         ];
+
+//         this.sizeOfASpawnCell = this.screenWidthProportion / this.spawns[0].length;
+//         this.paddingTop = 20 * CANVA_SCALEY;
+//         this.paddingBottom = 30 * CANVA_SCALEY;
+//     }
+//     // Create method to allocate spawn that are free
+//     // Create method to restore spawn on explosion of a
+// }

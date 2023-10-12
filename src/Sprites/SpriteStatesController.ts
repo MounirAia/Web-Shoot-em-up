@@ -1,4 +1,4 @@
-type AvailableState = 'default' | 'onHit' | 'onExplosion' | 'onEnergy' | 'onCorrosion';
+type AvailableState = 'default' | 'onHit' | 'onExplosion' | 'onEnergy' | 'onCorrosion' | 'onFuelChargeShot';
 type StatePriority = 'high' | 'medium' | 'low';
 interface IStateObject {
     statesDuration: number;
@@ -18,6 +18,7 @@ export class SpriteStatesController {
         ['onHit', { color: 'rgba(255,0,0,0.2)', priority: 'medium', defaultDuration: 6 / 60 }],
         ['onExplosion', { color: '	rgba(255, 211, 0,0.4)', priority: 'high', defaultDuration: 6 / 60 }],
         ['onEnergy', { color: 'rgba(39, 144, 197,0.4)', priority: 'high', defaultDuration: 6 / 60 }],
+        ['onFuelChargeShot', { color: 'rgba(255,215,0,0.5)', priority: 'high', defaultDuration: 6 / 60 }],
         ['onCorrosion', { color: 'rgba(0,255,0,0.2)', priority: 'low' }],
     ]);
 

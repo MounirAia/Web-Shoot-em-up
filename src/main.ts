@@ -27,10 +27,10 @@ function load() {
     LoadImageLoader();
     LoadSceneManager();
     LoadGalaxyMap();
-    LoadPlayer();
     LoadMainMenu();
     LoadCollideManager();
     LoadWaveManager();
+    LoadPlayer();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
 }
 
