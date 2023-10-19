@@ -2,7 +2,13 @@ import { IEnemy } from '../../Enemies/IEnemy.js';
 import { ISpriteWithAnimationController, ISpriteWithStateController } from '../../SpriteAttributes.js';
 import { ISpriteWithHitboxes } from '../../SpriteHitbox.js';
 
-export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | 'BaseDamage' | 'FuelChargeShotLaserLevel1';
+export type DamageEffectOptions =
+    | 'Explosive'
+    | 'Energy'
+    | 'Corrosive'
+    | 'BaseDamage'
+    | 'FuelChargeShotLaserLevel1'
+    | 'FuelChargeShotLaserLevel2';
 export type EffectMethodTargetParameters = ISpriteWithStateController &
     ISpriteWithHitboxes &
     ISpriteWithAnimationController;

@@ -6,6 +6,7 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
+import { AvailableAnimation } from '../Sprites/SpriteAnimationsController.js';
 import { IServiceUtilManager } from '../UtilManager.js';
 import { WaveEnemiesDamageStateTracker } from './WaveEnemiesStateTracker.js';
 
@@ -116,6 +117,16 @@ export class WaveEnemies {
         effectType: DamageEffectOptions;
     }) {
         this.waveEnemiesStateTracker.RemoveState(parameters);
+    }
+
+    public GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined {
+        const { target } = parameters;
+        return this.listEnemies.get(target)?.AnimationsController.CurrentAnimationName;
+    }
+
+    public PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }) {
+        const { target, animationName } = parameters;
+        this.listEnemies.get(target)?.AnimationsController.PlayAnimation({ animation: animationName });
     }
 }
 

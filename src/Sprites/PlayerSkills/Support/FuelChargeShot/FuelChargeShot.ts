@@ -8,7 +8,7 @@ import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 import { CollideScenario, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { ISkill, PossibleSkillName, SkillsTypeName } from '../../Skills.js';
-import { FuelChargeShotLaserLevel1 } from './FuelChargeShotLaser.js';
+import { FuelChargeShotLaserLevel1, FuelChargeShotLaserLevel2 } from './FuelChargeShotLaser.js';
 
 class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
     Generator: 'player' | 'enemy';
@@ -33,7 +33,7 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
             InfoFuelChargeShot.Level1.Frame.Meta.RealDimension.Height,
         );
 
-        const { X, Y } = this.frameSpawn();
+        const { X, Y } = frameSpawn();
         this.X = X;
         this.Y = Y;
 
@@ -74,7 +74,7 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
                 );
             },
             afterPlayingAnimation: () => {
-                const { X, Y } = this.frameSpawn();
+                const { X, Y } = frameSpawn();
                 this.X = X;
                 this.Y = Y;
 
@@ -87,14 +87,85 @@ class FuelChargeShotLevel1 extends Sprite implements IGeneratedSprite {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     UpdateHitboxes(dt: number) {}
+}
 
-    private frameSpawn(): { X: number; Y: number } {
-        const screenWidthProportion = 50 / 100;
-        const X = Math.random() * (canvas.width * screenWidthProportion);
-        const Y =
-            ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetARandomEnemy()?.Y || canvas.height / 2;
-        return { X, Y };
+class FuelChargeShotLevel2 extends Sprite implements IGeneratedSprite {
+    Generator: 'player' | 'enemy';
+    Category: 'projectile' | 'nonProjectile';
+    CurrentHitbox: RectangleHitbox[];
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
+    constructor() {
+        super(
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
+                'images/Skills/FuelChargeShot/FrameLevel2.png',
+            ),
+            InfoFuelChargeShot.Level2.Frame.Meta.TileDimensions.Width,
+            InfoFuelChargeShot.Level2.Frame.Meta.TileDimensions.Height,
+            0,
+            0,
+            InfoFuelChargeShot.Level2.Frame.Meta.SpriteShiftPosition.X,
+            InfoFuelChargeShot.Level2.Frame.Meta.SpriteShiftPosition.Y,
+            CANVA_SCALEX,
+            CANVA_SCALEY,
+            InfoFuelChargeShot.Level2.Frame.Meta.RealDimension.Width,
+            InfoFuelChargeShot.Level2.Frame.Meta.RealDimension.Height,
+        );
+
+        const { X, Y } = frameSpawn();
+        this.X = X;
+        this.Y = Y;
+
+        this.Generator = 'player';
+        this.Category = 'nonProjectile';
+        this.CurrentHitbox = RectangleHitbox.NoHitbox;
+        this.Collide = new Map();
+
+        const { Destroyed, Spawning, Generating } = InfoFuelChargeShot.Level2.Frame.Animations;
+
+        this.AnimationsController.AddAnimation({
+            animation: 'spawning',
+            frames: Spawning.Frames,
+            framesLengthInTime: Spawning.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'generating' });
+            },
+        });
+
+        this.AnimationsController.AddAnimation({
+            animation: 'generating',
+            frames: Generating.Frames,
+            framesLengthInTime: Generating.FrameLengthInTime,
+            afterPlayingAnimation: () => {
+                this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            },
+        });
+
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                const { X: offsetXOnFrame, Y: offsetYOnFrame } =
+                    InfoFuelChargeShot.Level2.Laser.Meta.SpriteShiftPositionOnFrame;
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                    new FuelChargeShotLaserLevel2({ X: this.X + offsetXOnFrame, Y: this.Y + offsetYOnFrame }),
+                );
+            },
+            afterPlayingAnimation: () => {
+                const { X, Y } = frameSpawn();
+                this.X = X;
+                this.Y = Y;
+
+                this.AnimationsController.PlayAnimation({ animation: 'spawning' });
+            },
+        });
+
+        this.AnimationsController.PlayAnimation({ animation: 'spawning' });
     }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    UpdateHitboxes(dt: number) {}
 }
 
 export class FuelChargeShotSkill implements ISkill {
@@ -109,7 +180,7 @@ export class FuelChargeShotSkill implements ISkill {
     Effect() {
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SupportSkillLevel;
 
-        const cannon: IGeneratedSprite | undefined = new FuelChargeShotLevel1();
+        const cannon: IGeneratedSprite | undefined = new FuelChargeShotLevel2();
 
         if (skillLevel === 1) {
         } else if (skillLevel === 2) {
@@ -120,4 +191,11 @@ export class FuelChargeShotSkill implements ISkill {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(cannon);
         }
     }
+}
+
+function frameSpawn(): { X: number; Y: number } {
+    const screenWidthProportion = 50 / 100;
+    const X = Math.random() * (canvas.width * screenWidthProportion);
+    const Y = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetARandomEnemy()?.Y || canvas.height / 2;
+    return { X, Y };
 }

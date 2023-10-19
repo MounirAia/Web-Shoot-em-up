@@ -4,6 +4,7 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
+import { AvailableAnimation } from '../Sprites/SpriteAnimationsController.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
@@ -23,6 +24,9 @@ export interface IServiceWaveManager {
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
     }): void;
+
+    PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }): void;
+    GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined;
 }
 
 class WaveManager implements IServiceWaveManager {
@@ -182,6 +186,14 @@ class WaveManager implements IServiceWaveManager {
         effectType: DamageEffectOptions;
     }) {
         this.currentWave?.RemoveEnemyDamageState(parameters);
+    }
+
+    public GetEnemyAnimation(parameters: { target: IEnemy }) {
+        return this.currentWave?.GetEnemyAnimation(parameters);
+    }
+
+    public PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }) {
+        this.currentWave?.PlayEnemyAnimation(parameters);
     }
 }
 
