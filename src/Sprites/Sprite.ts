@@ -74,6 +74,14 @@ export abstract class Sprite implements ISpriteWithAnimationController, ISpriteW
         this.StatesController.Draw(ctx, X, Y, this.Width, this.Height);
     }
 
+    private drawRectangleAroundSprite(ctx: CanvasRenderingContext2D) {
+        // Draw the purple outline rectangle
+        ctx.strokeStyle = 'purple'; // Set the stroke color to purple
+        ctx.lineWidth = 1; // Set the line width
+
+        ctx.strokeRect(this.X, this.Y, this.Width, this.Height); // Draw the outline rectangle
+    }
+
     public get ImagePath(): string {
         return new URL(this.image.src).pathname.slice(1);
     }

@@ -4,6 +4,7 @@ import { IEnemy } from './Enemies/IEnemy.js';
 import { DamageEffectOptions, IDamageEffect } from './PlayerSkills/DamageEffect/IDamageEffect.js';
 
 // Manage the damage effect of the player projectile
+// used in the collide manager and is present in all the projectile of the player
 export class PlayerProjectileDamageEffectController {
     private damageEffects: Map<DamageEffectOptions, IDamageEffect>;
     private baseDamage: number;

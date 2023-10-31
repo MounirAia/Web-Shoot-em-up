@@ -8,7 +8,8 @@ export type DamageEffectOptions =
     | 'Corrosive'
     | 'BaseDamage'
     | 'FuelChargeShotLaserLevel1'
-    | 'FuelChargeShotLaserLevel2';
+    | 'FuelChargeShotLaserLevel2'
+    | 'FuelChargeShotLaserLevel3';
 export type EffectMethodTargetParameters = ISpriteWithStateController &
     ISpriteWithHitboxes &
     ISpriteWithAnimationController;

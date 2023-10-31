@@ -61,6 +61,8 @@ export function LoadImageLoader() {
     assets.push('images/Skills/FuelChargeShot/LaserLevel1.png');
     assets.push('images/Skills/FuelChargeShot/FrameLevel2.png');
     assets.push('images/Skills/FuelChargeShot/LaserLevel2.png');
+    assets.push('images/Skills/FuelChargeShot/FrameLevel3.png');
+    assets.push('images/Skills/FuelChargeShot/LaserLevel3.png');
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }

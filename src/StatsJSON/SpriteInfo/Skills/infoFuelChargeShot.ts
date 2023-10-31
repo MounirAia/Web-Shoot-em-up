@@ -151,8 +151,8 @@ const Info = {
                     Height: 24 * CANVA_SCALEY,
                 },
                 SpriteShiftPosition: {
-                    X: -12 * CANVA_SCALEX,
-                    Y: -12 * CANVA_SCALEY,
+                    X: -6 * CANVA_SCALEX,
+                    Y: -4 * CANVA_SCALEY,
                 },
             },
             Hitbox: [{}],
@@ -178,24 +178,24 @@ const Info = {
                     Height: 32,
                 },
                 RealDimension: {
-                    Width: 13 * CANVA_SCALEX,
-                    Height: 18 * CANVA_SCALEY,
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 15 * CANVA_SCALEY,
                 },
                 SpriteShiftPosition: {
                     X: -10 * CANVA_SCALEX,
-                    Y: -14 * CANVA_SCALEY,
+                    Y: -9 * CANVA_SCALEY,
                 },
                 SpriteShiftPositionOnFrame: {
-                    X: 17 * CANVA_SCALEX,
-                    Y: 2 * CANVA_SCALEY,
+                    X: 18 * CANVA_SCALEX,
+                    Y: 4 * CANVA_SCALEY,
                 },
             },
             Hitbox: [
                 {
                     X: 0,
                     Y: 0,
-                    Width: 15 * CANVA_SCALEX,
-                    Height: 18 * CANVA_SCALEY,
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 15 * CANVA_SCALEY,
                 },
             ],
             Animations: {

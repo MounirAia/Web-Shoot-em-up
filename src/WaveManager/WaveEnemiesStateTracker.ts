@@ -9,6 +9,8 @@ export class WaveEnemiesDamageStateTracker {
     private static readonly damageEffectsMaximumStack: ReadonlyMap<DamageEffectOptions, number> = new Map([
         ['Corrosive', 2],
         ['FuelChargeShotLaserLevel1', 3],
+        ['FuelChargeShotLaserLevel2', 3],
+        ['FuelChargeShotLaserLevel3', 3],
     ]);
 
     constructor() {
