@@ -107,7 +107,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
             const damage = projectileDamage as number;
 
             this.StatesController.PlayState({ stateName: 'onHit' });
-            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            // this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
 
         this.Collide.set('WithPlayer', () => {
@@ -128,12 +128,13 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
 
     public Update(dt: number): void {
         super.Update(dt);
-        this.UpdateHitboxes(dt);
 
         if (this.X >= this.HorizontalShootingPosition) {
             this.X -= this.BaseSpeed * dt;
             return;
         }
+
+        this.UpdateHitboxes(dt);
 
         if (this.X < -this.Width) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);

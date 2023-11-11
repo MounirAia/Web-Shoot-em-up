@@ -5,7 +5,7 @@ export class CorrosiveDamageEffect implements IDamageEffect {
     private corrosiveEffectStat: number;
     private static readonly timeDurationEffect = 1;
 
-    constructor(parameters: { baseDamage: number; corrosiveEffectStat: number }) {
+    constructor(parameters: { corrosiveEffectStat: number }) {
         const { corrosiveEffectStat } = parameters;
 
         this.corrosiveEffectStat = corrosiveEffectStat;

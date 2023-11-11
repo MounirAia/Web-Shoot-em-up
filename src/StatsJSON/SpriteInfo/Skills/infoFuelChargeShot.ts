@@ -195,7 +195,7 @@ const Info = {
                     X: 0,
                     Y: 0,
                     Width: 14 * CANVA_SCALEX,
-                    Height: 15 * CANVA_SCALEY,
+                    Height: 16 * CANVA_SCALEY,
                 },
             ],
             Animations: {

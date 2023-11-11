@@ -132,6 +132,7 @@ class Player
 
         this.currentSkill.set('support', new FuelChargeShotSkill());
         this.currentSkill.get('support')?.Effect();
+
         this.hitboxes = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,

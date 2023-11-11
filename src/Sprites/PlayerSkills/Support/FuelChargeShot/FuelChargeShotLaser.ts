@@ -167,6 +167,7 @@ export class FuelChargeShotLaserLevel2
     Update(dt: number) {
         super.Update(dt);
         this.X += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         ServiceLocator.GetService<IServiceCollideManager>(
             'CollideManager',
@@ -176,8 +177,6 @@ export class FuelChargeShotLaserLevel2
         if (this.X < 0 || this.X > canvasWidth || this.Y < 0 || this.Y > canvasHeight) {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
-
-        this.UpdateHitboxes(dt);
     }
 }
 
@@ -194,7 +193,6 @@ export class FuelChargeShotLaserLevel3
     private readonly baseTimeBeforeLaserCanHit: number;
     private timeLeftBeforeLaserCanHit: number;
     DamageEffectsController: PlayerProjectileDamageEffectController;
-
     constructor(parameters: { X: number; Y: number }) {
         const { X, Y } = parameters;
         super(
@@ -239,7 +237,6 @@ export class FuelChargeShotLaserLevel3
         this.DamageEffectsController.AddDamageEffects({
             damageEffectName: 'Corrosive',
             damageEffectObject: new CorrosiveDamageEffect({
-                baseDamage: this.Damage,
                 corrosiveEffectStat: 100,
             }),
         });
@@ -272,6 +269,7 @@ export class FuelChargeShotLaserLevel3
     Update(dt: number) {
         super.Update(dt);
         this.X += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.timeLeftBeforeLaserCanHit <= 0) {
             ServiceLocator.GetService<IServiceCollideManager>(
@@ -285,7 +283,5 @@ export class FuelChargeShotLaserLevel3
         if (this.X < 0 || this.X > canvasWidth || this.Y < 0 || this.Y > canvasHeight) {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
-
-        this.UpdateHitboxes(dt);
     }
 }

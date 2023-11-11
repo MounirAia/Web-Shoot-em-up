@@ -78,9 +78,9 @@ export class RegularPlayerBullet
 
     public Update(dt: number) {
         super.Update(dt);
-        this.UpdateHitboxes(dt);
 
         this.X += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
