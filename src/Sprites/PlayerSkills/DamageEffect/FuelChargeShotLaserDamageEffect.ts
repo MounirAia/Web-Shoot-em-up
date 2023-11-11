@@ -70,8 +70,10 @@ export class FuelChargeShotLaserLevel1DamageEffect implements IDamageEffect {
 
 export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
     private static readonly timeDurationEffect = 1;
+    private static readonly probabilityOfParalyze = 0.4;
     private readonly enemyTouched: IEnemy[];
     private readonly fuelChargeShotLaserLevel1DamageEffect: FuelChargeShotLaserLevel1DamageEffect;
+
     constructor(parameters: { resistanceStatDebuf: number; moneyValueGained: number }) {
         const { resistanceStatDebuf, moneyValueGained } = parameters;
         this.fuelChargeShotLaserLevel1DamageEffect = new FuelChargeShotLaserLevel1DamageEffect({
@@ -103,33 +105,35 @@ export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
 
             let remainingEffectTime = FuelChargeShotLaserLevel2DamageEffect.timeDurationEffect;
 
-            // Play the idle animation of the monster to paralyze the enemy
-            ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
-                target,
-                animationName: 'idle',
-            });
+            const applyParalyze = Math.random() <= FuelChargeShotLaserLevel2DamageEffect.probabilityOfParalyze;
 
-            let effectIsApplied = false;
+            // Play the idle animation of the monster to paralyze the enemy
+            if (applyParalyze) {
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
+                    target,
+                    animationName: 'idle',
+                });
+            }
 
             // make the laser can tag an enemy only once
             this.enemyTouched.push(target);
 
             const effectMethod = (dt: number): { isFinished: boolean } => {
-                if (!effectIsApplied) {
-                    // get the effect of the level1 damage effect
-                    level1Effect.effect?.(dt);
-                    effectIsApplied = true;
-                }
+                // apply the effect of the level1 damage effect
+                level1Effect.effect?.(dt);
 
-                const currentTargetAnimation = ServiceLocator.GetService<IServiceWaveManager>(
-                    'WaveManager',
-                ).GetEnemyAnimation({ target });
-                if (currentTargetAnimation && currentTargetAnimation !== 'idle') {
-                    // Play the idle animation of the monster to paralyze the enemy
-                    ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
-                        target,
-                        animationName: 'idle',
-                    });
+                if (applyParalyze) {
+                    const currentTargetAnimation = ServiceLocator.GetService<IServiceWaveManager>(
+                        'WaveManager',
+                    ).GetEnemyAnimation({ target });
+
+                    if (currentTargetAnimation && currentTargetAnimation !== 'idle') {
+                        // Play the idle animation of the monster to paralyze the enemy
+                        ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
+                            target,
+                            animationName: 'idle',
+                        });
+                    }
                 }
 
                 remainingEffectTime -= dt;
@@ -142,11 +146,13 @@ export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
             const clearStateMethod = () => {
                 level1Effect.clearStateMethod?.();
 
-                // play the shooting animation of the enemy
-                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
-                    target,
-                    animationName: 'shooting',
-                });
+                if (applyParalyze) {
+                    // play the shooting animation of the enemy
+                    ServiceLocator.GetService<IServiceWaveManager>('WaveManager').PlayEnemyAnimation({
+                        target,
+                        animationName: 'shooting',
+                    });
+                }
             };
 
             return { effect: effectMethod, clearStateMethod };
@@ -208,35 +214,29 @@ export class FuelChargeShotLaserLevel3DamageEffect implements IDamageEffect {
                 targetResistanceStat,
             });
 
-            let remainingEffectTime = FuelChargeShotLaserLevel3DamageEffect.timeDurationEffect;
+            target.DamageResistancesController.AddDamageResistance({
+                resistanceType: 'Explosive',
+                resistanceStat: this.explosiveResistanceDebuf,
+            });
 
-            let effectIsApplied = false;
+            target.DamageResistancesController.AddDamageResistance({
+                resistanceType: 'Energy',
+                resistanceStat: this.energyResistanceDebuf,
+            });
+
+            target.DamageResistancesController.AddDamageResistance({
+                resistanceType: 'Corrosive',
+                resistanceStat: this.corrosiveResistanceDebuf,
+            });
+
+            let remainingEffectTime = FuelChargeShotLaserLevel3DamageEffect.timeDurationEffect;
 
             // make the laser can tag an enemy only once
             this.enemyTouched.push(target);
 
             const effectMethod = (dt: number): { isFinished: boolean } => {
-                if (!effectIsApplied) {
-                    // get the effect of the level1 damage effect
-                    level2Effect.effect?.(dt);
-
-                    target.DamageResistancesController.AddDamageResistance({
-                        resistanceType: 'Explosive',
-                        resistanceStat: this.explosiveResistanceDebuf,
-                    });
-
-                    target.DamageResistancesController.AddDamageResistance({
-                        resistanceType: 'Energy',
-                        resistanceStat: this.energyResistanceDebuf,
-                    });
-
-                    target.DamageResistancesController.AddDamageResistance({
-                        resistanceType: 'Corrosive',
-                        resistanceStat: this.corrosiveResistanceDebuf,
-                    });
-
-                    effectIsApplied = true;
-                }
+                // get the effect of the level1 damage effect
+                level2Effect.effect?.(dt);
 
                 remainingEffectTime -= dt;
 
