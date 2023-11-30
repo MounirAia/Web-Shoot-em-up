@@ -128,6 +128,18 @@ export class WaveEnemies {
         const { target, animationName } = parameters;
         this.listEnemies.get(target)?.AnimationsController.PlayAnimation({ animation: animationName });
     }
+
+    public ParalyzeEnemy(parameters: { target: IEnemy }) {
+        const { target } = parameters;
+
+        target.AnimationsController.PlayParalyzedAnimation();
+    }
+
+    public RemoveParalyzeEnemy(parameters: { target: IEnemy }) {
+        const { target } = parameters;
+
+        target.AnimationsController.StopParalyzedAnimation();
+    }
 }
 
 // ****************************** Spawn Enemy Manager IDEA ******************************

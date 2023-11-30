@@ -1,9 +1,13 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
+import { FuelChargeShotLaserConstant } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
+import { FuelChargeShotDamage } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotDamage.js';
 import InfoFuelChargeShot from '../../../../StatsJSON/SpriteInfo/Skills/infoFuelChargeShot.js';
+import { IServiceUtilManager } from '../../../../UtilManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../../Player.js';
 import { PlayerProjectileDamageEffectController } from '../../../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../../../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../../SpriteAttributes.js';
@@ -45,18 +49,26 @@ export class FuelChargeShotLaserLevel1
             InfoFuelChargeShot.Level1.Laser.Meta.RealDimension.Height,
         );
 
-        this.BaseSpeed = 10;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: FuelChargeShotLaserConstant[0]['Projectile Speed'],
+        });
 
         this.Generator = 'player';
         this.Category = 'projectile';
 
-        this.Damage = 0;
+        const damageInfo = FuelChargeShotDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+
+        this.Damage = damageInfo['Laser Level 1 Base Damage Debuf (%)'];
+
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+
         this.DamageEffectsController.AddDamageEffects({
-            damageEffectName: 'FuelChargeShotLaserLevel1',
+            damageEffectName: FuelChargeShotLaserConstant[0]['Primary Skill'],
             damageEffectObject: new FuelChargeShotLaserLevel1DamageEffect({
-                resistanceStatDebuf: -100,
-                moneyValueGained: 100,
+                resistanceStatDebuf: -damageInfo['Laser Level 1 Base Damage Debuf (%)'],
+                moneyValueGainedStat: damageInfo['Laser Level 1 Money Boost (%)'],
             }),
         });
 
@@ -128,18 +140,24 @@ export class FuelChargeShotLaserLevel2
             InfoFuelChargeShot.Level2.Laser.Meta.RealDimension.Height,
         );
 
-        this.BaseSpeed = 10;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: FuelChargeShotLaserConstant[1]['Projectile Speed'],
+        });
 
         this.Generator = 'player';
         this.Category = 'projectile';
 
-        this.Damage = 0;
+        const damageInfo = FuelChargeShotDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+
+        this.Damage = damageInfo['Laser Level 2 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         this.DamageEffectsController.AddDamageEffects({
             damageEffectName: 'FuelChargeShotLaserLevel2',
             damageEffectObject: new FuelChargeShotLaserLevel2DamageEffect({
-                resistanceStatDebuf: -100,
-                moneyValueGained: 100,
+                resistanceStatDebuf: -damageInfo['Laser Level 2 Base Damage Debuf (%)'],
+                moneyValueGainedStat: damageInfo['Laser Level 2 Money Boost (%)'],
             }),
         });
 
@@ -190,8 +208,7 @@ export class FuelChargeShotLaserLevel3
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
-    private readonly baseTimeBeforeLaserCanHit: number;
-    private timeLeftBeforeLaserCanHit: number;
+
     DamageEffectsController: PlayerProjectileDamageEffectController;
     constructor(parameters: { X: number; Y: number }) {
         const { X, Y } = parameters;
@@ -211,43 +228,41 @@ export class FuelChargeShotLaserLevel3
             InfoFuelChargeShot.Level3.Laser.Meta.RealDimension.Height,
         );
 
-        this.BaseSpeed = 10;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: FuelChargeShotLaserConstant[2]['Projectile Speed'],
+        });
 
         this.Generator = 'player';
         this.Category = 'projectile';
 
-        this.Damage = 10;
-        // the laser can hit 6 times per second
-        this.baseTimeBeforeLaserCanHit = 1 / 6;
-        this.timeLeftBeforeLaserCanHit = 0;
+        const damageInfo = FuelChargeShotDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+
+        this.Damage = damageInfo['Laser Level 3 Damage'];
 
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
 
         this.DamageEffectsController.AddDamageEffects({
-            damageEffectName: 'FuelChargeShotLaserLevel3',
+            damageEffectName: FuelChargeShotLaserConstant[2]['Primary Skill'],
             damageEffectObject: new FuelChargeShotLaserLevel3DamageEffect({
-                resistanceStatDebuf: -100,
-                moneyValueGained: 100,
-                explosiveResistanceDebuf: -40,
-                energyResistanceDebuf: -30,
-                corrosiveResistanceDebuf: -20,
+                resistanceStatDebuf: -damageInfo['Laser Level 3 Base Damage Debuf (%)'],
+                moneyValueGainedStat: damageInfo['Laser Level 3 Money Boost (%)'],
+                explosiveResistanceDebuf: -damageInfo['Laser Level 3 Explosive Resistance Debuf (%)'],
+                energyResistanceDebuf: -damageInfo['Laser Level 3 Energy Resistance Debuf (%)'],
             }),
         });
 
         this.DamageEffectsController.AddDamageEffects({
-            damageEffectName: 'Corrosive',
+            damageEffectName: FuelChargeShotLaserConstant[2]['Secondary Skill'],
             damageEffectObject: new CorrosiveDamageEffect({
-                corrosiveEffectStat: 100,
+                damageToApplyForWholeEffect: damageInfo['Laser Level 3 Corrosive Damage'],
             }),
         });
 
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoFuelChargeShot.Level3.Laser.Hitbox]);
 
         this.Collide = new Map();
-
-        this.Collide.set('WithEnemy', () => {
-            this.timeLeftBeforeLaserCanHit = this.baseTimeBeforeLaserCanHit;
-        });
 
         const { Idle } = InfoFuelChargeShot.Level3.Laser.Animations;
         this.AnimationsController.AddAnimation({
@@ -271,13 +286,9 @@ export class FuelChargeShotLaserLevel3
         this.X += this.BaseSpeed;
         this.UpdateHitboxes(dt);
 
-        if (this.timeLeftBeforeLaserCanHit <= 0) {
-            ServiceLocator.GetService<IServiceCollideManager>(
-                'CollideManager',
-            ).HandleWhenPlayerProjectileCollideWithEnemies(this);
-        } else {
-            this.timeLeftBeforeLaserCanHit -= dt;
-        }
+        ServiceLocator.GetService<IServiceCollideManager>(
+            'CollideManager',
+        ).HandleWhenPlayerProjectileCollideWithEnemies(this);
 
         const { width: canvasWidth, height: canvasHeight } = canvas;
         if (this.X < 0 || this.X > canvasWidth || this.Y < 0 || this.Y > canvasHeight) {

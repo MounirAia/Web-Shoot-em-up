@@ -3,14 +3,15 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
+import { FuelChargeShotLaserConstant } from '../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
 
 export class WaveEnemiesDamageStateTracker {
     private listEnemiesState: Map<IEnemy, Map<DamageEffectOptions, DamageEffectFunctionReturnType[]>>;
     private static readonly damageEffectsMaximumStack: ReadonlyMap<DamageEffectOptions, number> = new Map([
         ['Corrosive', 2],
-        ['FuelChargeShotLaserLevel1', 3],
-        ['FuelChargeShotLaserLevel2', 3],
-        ['FuelChargeShotLaserLevel3', 3],
+        ['FuelChargeShotLaserLevel1', FuelChargeShotLaserConstant[0]['Maximum Number of Stack Effect']],
+        ['FuelChargeShotLaserLevel2', FuelChargeShotLaserConstant[1]['Maximum Number of Stack Effect']],
+        ['FuelChargeShotLaserLevel3', FuelChargeShotLaserConstant[2]['Maximum Number of Stack Effect']],
     ]);
 
     constructor() {
@@ -41,17 +42,22 @@ export class WaveEnemiesDamageStateTracker {
         const currentEffectsMap = this.listEnemiesState.get(target);
 
         if (currentEffectsMap) {
+            // The target has already a state tracker bind to it
             const currentEffectArray = currentEffectsMap.get(effectType);
             if (currentEffectArray) {
+                // the target has already effects with the given effect type bind to it
                 const maximumStack = WaveEnemiesDamageStateTracker.damageEffectsMaximumStack.get(effectType);
+                // only push an effect if there is an effect to push -> no effect method means empty {} return from the Effect damage effect method
                 if (effect.effect) currentEffectArray.push(effect);
                 if (maximumStack && currentEffectArray.length > maximumStack) {
                     this.RemoveState({ target, effect: currentEffectArray[0], effectType });
                 }
             } else {
+                // the target has no effect of the given type bind to it
                 currentEffectsMap.set(effectType, [effect]);
             }
         } else {
+            // the target has no state tracker bind to, create one first
             this.listEnemiesState.set(target, new Map([[effectType, [effect]]]));
         }
     }

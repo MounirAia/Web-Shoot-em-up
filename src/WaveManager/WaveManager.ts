@@ -27,6 +27,8 @@ export interface IServiceWaveManager {
 
     PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }): void;
     GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined;
+    ParalyzeEnemy(parameters: { target: IEnemy }): void;
+    StopParalyzeEnemy(parameters: { target: IEnemy }): void;
 }
 
 class WaveManager implements IServiceWaveManager {
@@ -194,6 +196,14 @@ class WaveManager implements IServiceWaveManager {
 
     public PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }) {
         this.currentWave?.PlayEnemyAnimation(parameters);
+    }
+
+    public ParalyzeEnemy(parameters: { target: IEnemy }) {
+        this.currentWave?.ParalyzeEnemy(parameters);
+    }
+
+    public StopParalyzeEnemy(parameters: { target: IEnemy }) {
+        this.currentWave?.RemoveParalyzeEnemy(parameters);
     }
 }
 

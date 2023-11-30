@@ -20,6 +20,7 @@ interface IAnimationObject {
     afterPlayingAnimation?: () => void;
     methodToPlayOnSpecificFrames?: Map<number, () => void>;
 }
+
 export class SpriteAnimationsController {
     private animationList: Map<AvailableAnimation, IAnimationObject>;
     private currentAnimationName: AvailableAnimation;
@@ -27,12 +28,19 @@ export class SpriteAnimationsController {
     private currentFrameTimer;
     private doesAnimationLoop;
 
+    // For Paralyzed animation
+    private timeLeftFrameTimerBeforeParalyzed;
+    private isParalyzed;
+
     constructor() {
         this.animationList = new Map();
         this.currentAnimationName = '';
         this.currentFrame = 0;
         this.currentFrameTimer = 1;
         this.doesAnimationLoop = false;
+
+        this.timeLeftFrameTimerBeforeParalyzed = 0;
+        this.isParalyzed = false;
     }
 
     public AddAnimation(parameters: { animation: AvailableAnimation } & IAnimationObject) {
@@ -86,6 +94,25 @@ export class SpriteAnimationsController {
             }
         }
     }
+
+    public PlayParalyzedAnimation() {
+        if (!this.isParalyzed) {
+            this.timeLeftFrameTimerBeforeParalyzed = this.currentFrameTimer;
+
+            this.currentFrameTimer = Infinity;
+
+            this.isParalyzed = true;
+        }
+    }
+
+    public StopParalyzedAnimation() {
+        if (this.isParalyzed) {
+            this.currentFrameTimer = this.timeLeftFrameTimerBeforeParalyzed;
+
+            this.isParalyzed = false;
+        }
+    }
+
     public Update(dt: number) {
         if (this.CurrentAnimationName) {
             if (this.currentAnimationObject) {
