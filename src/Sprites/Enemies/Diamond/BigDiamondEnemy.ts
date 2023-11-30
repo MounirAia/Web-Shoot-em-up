@@ -34,7 +34,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         const scaleY = CANVA_SCALEY;
         super(imgDiamond, frameWidth, frameHeight, x, y, -8 * CANVA_SCALEX, -9 * CANVA_SCALEY, scaleX, scaleY);
 
-        this.moneyValue = 5;
+        this.moneyValue = 20;
 
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
@@ -107,7 +107,8 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
             const damage = projectileDamage as number;
 
             this.StatesController.PlayState({ stateName: 'onHit' });
-            // this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
 
         this.Collide.set('WithPlayer', () => {

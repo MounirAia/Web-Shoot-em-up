@@ -5,7 +5,7 @@ import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
-import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
+import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
@@ -110,7 +110,7 @@ class Player
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
-        this.supportSkillLevel = 1;
+        this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;

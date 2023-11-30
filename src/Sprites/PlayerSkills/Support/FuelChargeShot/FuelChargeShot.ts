@@ -1,6 +1,7 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
+import { FuelChargeShotFrameConstant } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
 import InfoFuelChargeShot from '../../../../StatsJSON/SpriteInfo/Skills/infoFuelChargeShot.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
@@ -262,16 +263,25 @@ export class FuelChargeShotSkill implements ISkill {
 
     Effect() {
         const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SupportSkillLevel;
+        const cannons: IGeneratedSprite[] = [];
 
-        const cannon: IGeneratedSprite | undefined = new FuelChargeShotLevel3();
+        if (skillLevel > 0 && skillLevel < 4) {
+            const cannonTypeToSpawn:
+                | typeof FuelChargeShotLevel1
+                | typeof FuelChargeShotLevel2
+                | typeof FuelChargeShotLevel3 = eval(`FuelChargeShotLevel${skillLevel}`);
 
-        if (skillLevel === 1) {
-        } else if (skillLevel === 2) {
-        } else if (skillLevel === 3) {
-        }
+            for (let i = 0; i < FuelChargeShotFrameConstant[skillLevel - 1]['Number of Frame To Spawn']; i++) {
+                cannons.push(new cannonTypeToSpawn());
+            }
 
-        if (cannon) {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(cannon);
+            if (cannons.length > 0) {
+                cannons.forEach((cannon) =>
+                    ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
+                        cannon,
+                    ),
+                );
+            }
         }
     }
 }
