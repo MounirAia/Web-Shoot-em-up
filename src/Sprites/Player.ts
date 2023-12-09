@@ -5,11 +5,11 @@ import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
-import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager.js';
+import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
-import { ISkill, PossibleSkillName } from './PlayerSkills/Skills';
+import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
-import { MirrorShieldSkill } from './PlayerSkills/Support/MirrorShield/MirrorShield.js';
+import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
 import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
 import { Sprite } from './Sprite.js';
 import {
@@ -22,6 +22,7 @@ import {
     ISpriteWithSpeed,
 } from './SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
+
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
     AddDamageUpgrade(upgrade: number): void;
@@ -129,7 +130,7 @@ class Player
             actionOnEnemyDestroyed,
         );
 
-        this.currentSkill.set('support', new MirrorShieldSkill());
+        this.currentSkill.set('support', new FuelChargeShotSkill());
         this.currentSkill.get('support')?.Effect();
 
         this.hitboxes = CreateHitboxes(this.X, this.Y, [

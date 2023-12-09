@@ -8,27 +8,21 @@ import { IServiceCollideManager } from '../../CollideManager.js';
 import { IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../Player.js';
 import { Sprite } from '../../Sprite.js';
-import {
-    DamageEffectOptions,
-    ISpriteWithAttackSpeed,
-    ISpriteWithDamageResistance,
-    ISpriteWithSpeed,
-} from '../../SpriteAttributes.js';
+import { ISpriteWithAttackSpeed, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { SpriteDamageResistancesController } from '../../SpriteDamageResistancesController.js';
 import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
-export class BigDiamondEnemy
-    extends Sprite
-    implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed, ISpriteWithDamageResistance
-{
+export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
+    private moneyValue: number;
+
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     readonly HorizontalShootingPosition: number;
     BaseSpeed: number;
     BaseAttackSpeed: number;
 
-    EffectDebufName: DamageEffectOptions;
-    EffectDebufStat: number;
+    DamageResistancesController: SpriteDamageResistancesController;
 
     constructor(x = 0, y = 0, horizontalShootingPosition: number) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
@@ -40,12 +34,13 @@ export class BigDiamondEnemy
         const scaleY = CANVA_SCALEY;
         super(imgDiamond, frameWidth, frameHeight, x, y, -8 * CANVA_SCALEX, -9 * CANVA_SCALEY, scaleX, scaleY);
 
+        this.moneyValue = 20;
+
         this.HorizontalShootingPosition = horizontalShootingPosition;
         this.BaseSpeed = 350;
         this.BaseAttackSpeed = 2;
 
-        this.EffectDebufName = '';
-        this.EffectDebufStat = 0;
+        this.DamageResistancesController = new SpriteDamageResistancesController();
 
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -100,6 +95,7 @@ export class BigDiamondEnemy
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
                     ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
                 });
+                ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
             },
             afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
@@ -108,9 +104,11 @@ export class BigDiamondEnemy
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (projectileDamage: unknown) => {
-            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+            const damage = projectileDamage as number;
 
-            ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
+            this.StatesController.PlayState({ stateName: 'onHit' });
+
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         });
 
         this.Collide.set('WithPlayer', () => {
@@ -131,12 +129,13 @@ export class BigDiamondEnemy
 
     public Update(dt: number): void {
         super.Update(dt);
-        this.UpdateHitboxes(dt);
 
         if (this.X >= this.HorizontalShootingPosition) {
             this.X -= this.BaseSpeed * dt;
             return;
         }
+
+        this.UpdateHitboxes(dt);
 
         if (this.X < -this.Width) {
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
@@ -161,6 +160,10 @@ export class BigDiamondEnemy
     }
 
     get MoneyValue(): number {
-        return 5;
+        return this.moneyValue;
+    }
+
+    set MoneyValue(value: number) {
+        this.moneyValue = value;
     }
 }

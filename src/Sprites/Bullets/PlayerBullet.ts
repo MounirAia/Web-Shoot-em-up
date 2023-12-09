@@ -3,25 +3,23 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { IServiceCollideManager } from '../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
+import { PlayerProjectileDamageEffectController } from '../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../Sprite.js';
-import { DamageEffectOptions, ISpriteWithDamage, ISpriteWithSpeed } from '../SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
 
 export class RegularPlayerBullet
     extends Sprite
-    implements ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite
+    implements ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithDamageEffects
 {
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     BaseSpeed: number;
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
-    PrimaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffect: DamageEffectOptions;
-    SecondaryEffectStat: number;
 
     constructor(x: number, y: number) {
         super(
@@ -41,10 +39,8 @@ export class RegularPlayerBullet
         this.Category = 'projectile';
         this.BaseSpeed = 10;
         this.Damage = 3;
-        this.PrimaryEffect = '';
-        this.PrimaryEffectStat = 0;
-        this.SecondaryEffect = '';
-        this.SecondaryEffectStat = 0;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0,
@@ -82,9 +78,9 @@ export class RegularPlayerBullet
 
     public Update(dt: number) {
         super.Update(dt);
-        this.UpdateHitboxes(dt);
 
         this.X += this.BaseSpeed;
+        this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);

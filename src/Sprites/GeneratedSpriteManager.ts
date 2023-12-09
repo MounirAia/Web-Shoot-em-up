@@ -95,7 +95,7 @@ class GeneratedSpritesManager implements IServiceGeneratedSpritesManager {
     private testQuantity() {
         // for testing purpose
         const playerProjectilesSize = this.generatedSpritesList.player.projectiles.size;
-        const playerNonProjectilesSize = this.generatedSpritesList.player.nonProjectiles;
+        const playerNonProjectilesSize = this.generatedSpritesList.player.nonProjectiles.size;
         const enemyProjectilesSize = this.generatedSpritesList.enemy.projectiles.size;
         const enemyNonProjectilesSize = this.generatedSpritesList.enemy.nonProjectiles.size;
 

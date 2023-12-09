@@ -1,7 +1,8 @@
 import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { ISpriteWithAnimationController, ISpriteWithStateController } from './SpriteAttributes.js';
 import { SpriteStatesController } from './SpriteStatesController.js';
 
-export abstract class Sprite {
+export abstract class Sprite implements ISpriteWithAnimationController, ISpriteWithStateController {
     /* Image properties */
     private readonly image: HTMLImageElement;
     private readonly frameWidth: number;
@@ -71,6 +72,14 @@ export abstract class Sprite {
         });
 
         this.StatesController.Draw(ctx, X, Y, this.Width, this.Height);
+    }
+
+    private drawRectangleAroundSprite(ctx: CanvasRenderingContext2D) {
+        // Draw the purple outline rectangle
+        ctx.strokeStyle = 'purple'; // Set the stroke color to purple
+        ctx.lineWidth = 1; // Set the line width
+
+        ctx.strokeRect(this.X, this.Y, this.Width, this.Height); // Draw the outline rectangle
     }
 
     public get ImagePath(): string {
