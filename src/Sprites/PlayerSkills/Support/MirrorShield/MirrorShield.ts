@@ -93,8 +93,6 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
         });
         this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
-        this.StatesController.AddState('onHit', { statesDuration: 0.1 });
-
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
             const projectile = param as ISpriteWithDamage;
@@ -110,7 +108,7 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState('onHit');
+            this.StatesController.PlayState({ stateName: 'onHit' });
         });
     }
 
@@ -214,8 +212,6 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
         });
         this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
-        this.StatesController.AddState('onHit', { statesDuration: 0.1 });
-
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
             const projectile = param as ISpriteWithDamage;
@@ -231,7 +227,7 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState('onHit');
+            this.StatesController.PlayState({ stateName: 'onHit' });
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new MirrorShieldThunderBeam({
                     startingPoint: { x: this.FrameXCenter, y: this.FrameYCenter },
@@ -344,8 +340,6 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
         });
         this.AnimationsController.PlayAnimation({ animation: 'damaged' });
 
-        this.StatesController.AddState('onHit', { statesDuration: 0.1 });
-
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
             const projectile = param as ISpriteWithDamage;
@@ -361,7 +355,7 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState('onHit');
+            this.StatesController.PlayState({ stateName: 'onHit' });
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new MirrorShieldThunderBeam({
                     startingPoint: { x: this.FrameXCenter, y: this.FrameYCenter },

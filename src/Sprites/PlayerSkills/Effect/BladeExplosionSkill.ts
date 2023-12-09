@@ -1,25 +1,29 @@
-import { IServiceImageLoader } from '../../../ImageLoader.js';
-import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
-import { ServiceLocator } from '../../../ServiceLocator.js';
-import { IServiceGeneratedSpritesManager, IGeneratedSprite } from '../../GeneratedSpriteManager.js';
-import { IServiceCollideManager } from '../../CollideManager.js';
-import { CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox, CollideScenario } from '../../SpriteHitbox.js';
-import { Sprite } from '../../Sprite.js';
-import { ISkill, SkillsTypeName } from '../Skills.js';
-import { ISpriteWithSpeed } from '../../SpriteAttributes.js';
-import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceEventManager } from '../../../EventManager.js';
-import { PossibleSkillName } from '../Skills';
-import { IServicePlayer } from '../../Player.js';
-import { FRAME_RATE } from '../../../ScreenConstant.js';
+import { IServiceImageLoader } from '../../../ImageLoader.js';
+import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE, canvas } from '../../../ScreenConstant.js';
+import { ServiceLocator } from '../../../ServiceLocator.js';
 import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
 import { BladeDamage } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
+import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
+import { IServiceCollideManager } from '../../CollideManager.js';
+import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
+import { IServicePlayer } from '../../Player.js';
+import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDamageEffectsController.js';
+import { Sprite } from '../../Sprite.js';
+import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
+import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { PossibleSkillName } from '../Skills';
+import { ISkill, SkillsTypeName } from '../Skills.js';
 
-class BladeLevel1 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
+class BladeLevel1
+    extends Sprite
+    implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     CurrentHitbox: RectangleHitbox[];
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
@@ -44,6 +48,7 @@ class BladeLevel1 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
         this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL1;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         this.BaseSpeed = BladeConstant[0].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
         this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[0].hitRatePerSecond);
@@ -108,11 +113,15 @@ class BladeLevel1 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
     }
 }
 
-class BladeLevel2 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
+class BladeLevel2
+    extends Sprite
+    implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     CurrentHitbox: RectangleHitbox[];
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
@@ -137,6 +146,7 @@ class BladeLevel2 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
         this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL2;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         this.BaseSpeed = BladeConstant[1].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
         this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[1].hitRatePerSecond);
@@ -200,11 +210,15 @@ class BladeLevel2 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
     }
 }
 
-class BladeLevel3 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite {
+class BladeLevel3
+    extends Sprite
+    implements ISpriteWithHitboxes, ISpriteWithSpeed, IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects
+{
     CurrentHitbox: RectangleHitbox[];
     Generator: 'player' | 'enemy';
     Category: 'projectile' | 'nonProjectile';
     Damage: number;
+    DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     baseSpeed: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
@@ -231,6 +245,7 @@ class BladeLevel3 extends Sprite implements ISpriteWithHitboxes, ISpriteWithSpee
         this.Category = 'projectile';
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
         this.Damage = BladeDamage[playersDamageUpgrade].bladeL3;
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
         this.baseSpeed = BladeConstant[2].projectileSpeed / Math.sqrt(2);
         this.direction = direction;
         this.isSpeedReverted = false;

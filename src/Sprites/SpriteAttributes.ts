@@ -1,20 +1,31 @@
+import { PlayerProjectileDamageEffectController } from './PlayerProjectileDamageEffectsController.js';
+import { SpriteAnimationsController } from './SpriteAnimationsController.js';
+import { SpriteDamageResistancesController } from './SpriteDamageResistancesController.js';
+import { SpriteStatesController } from './SpriteStatesController.js';
+
 export interface ISpriteWithUpdateAndDraw {
     Update: (dt: number) => void;
     Draw: (ctx: CanvasRenderingContext2D) => void;
 }
 
-export type DamageEffectOptions = 'Explosive' | 'Energy' | 'Corrosive' | '';
+export interface ISpriteWithStateController {
+    StatesController: SpriteStatesController;
+}
+
+export interface ISpriteWithAnimationController {
+    AnimationsController: SpriteAnimationsController;
+}
+
 export interface ISpriteWithDamage {
     Damage: number;
-    PrimaryEffect: DamageEffectOptions;
-    SecondaryEffect: DamageEffectOptions;
-    PrimaryEffectStat: number;
-    SecondaryEffectStat: number;
+}
+
+export interface ISpriteWithDamageEffects {
+    DamageEffectsController: PlayerProjectileDamageEffectController;
 }
 
 export interface ISpriteWithDamageResistance {
-    EffectDebufName: DamageEffectOptions;
-    EffectDebufStat: number;
+    DamageResistancesController: SpriteDamageResistancesController;
 }
 
 // if a sprite has a stat that can influence the damage he does

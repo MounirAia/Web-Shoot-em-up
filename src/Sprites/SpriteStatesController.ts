@@ -1,5 +1,5 @@
-type AvailableState = 'default' | 'onHit';
-
+type AvailableState = 'default' | 'onHit' | 'onExplosion' | 'onEnergy' | 'onCorrosion' | 'onFuelChargeShot';
+type StatePriority = 'high' | 'medium' | 'low';
 interface IStateObject {
     statesDuration: number;
     beforePlayingState?: () => void;
@@ -9,49 +9,61 @@ interface IStateObject {
 export class SpriteStatesController {
     private statesList: Map<AvailableState, IStateObject>;
     private currentStateName: AvailableState;
-    private currentStateTimer: number;
-    private static colorScheme = new Map<AvailableState, string>([['onHit', 'rgba(255,0,0,0.5)']]);
+    private currentStates: Map<StatePriority, Map<AvailableState, { currentStateTimer: number }>>;
+
+    private static statesDefaultInfo = new Map<
+        AvailableState,
+        { color: string; priority: StatePriority; defaultDuration?: number }
+    >([
+        ['onHit', { color: 'rgba(255,0,0,0.2)', priority: 'medium', defaultDuration: 6 / 60 }],
+        ['onExplosion', { color: '	rgba(255, 211, 0,0.4)', priority: 'high', defaultDuration: 6 / 60 }],
+        ['onEnergy', { color: 'rgba(39, 144, 197,0.4)', priority: 'high', defaultDuration: 6 / 60 }],
+        ['onFuelChargeShot', { color: 'rgba(255,215,0,0.5)', priority: 'high', defaultDuration: 6 / 60 }],
+        ['onCorrosion', { color: 'rgba(0,255,0,0.2)', priority: 'low' }],
+    ]);
+
     constructor() {
         this.statesList = new Map();
-        this.currentStateName = 'default';
-        this.currentStateTimer = 0;
-    }
+        this.currentStates = new Map();
+        const statePriorities: StatePriority[] = ['high', 'medium', 'low'];
+        // initialize each state map in order to keep
+        // the applying order of the state in the good order (high,medium,low)
+        statePriorities.forEach((state) => {
+            this.currentStates.set(state, new Map());
+        });
 
-    public AddState(
-        stateName: AvailableState,
-        { statesDuration, beforePlayingState, afterPlayingState }: IStateObject,
-    ) {
-        this.statesList.set(stateName, { statesDuration, beforePlayingState, afterPlayingState });
-    }
-
-    private playDefaultState() {
         this.currentStateName = 'default';
     }
 
-    public PlayState(stateName: AvailableState) {
-        if (this.CurrentStateName !== stateName) {
-            this.currentStateName = stateName;
-            const stateObject = this.currentStateObject;
-            if (stateObject) {
-                const { statesDuration, beforePlayingState } = stateObject;
-                this.currentStateTimer = statesDuration;
-                if (beforePlayingState) beforePlayingState();
-            } else {
-                // reset the state to none if there is no state to play with the given stateName
-                this.playDefaultState();
-            }
+    public PlayState(parameters: { stateName: AvailableState; duration?: number }) {
+        const { stateName, duration } = parameters;
+        const stateDefaultInfo = SpriteStatesController.statesDefaultInfo.get(stateName);
+        if (stateDefaultInfo) {
+            const { priority, defaultDuration } = stateDefaultInfo;
+            let durationToApply = duration ? duration : defaultDuration;
+            durationToApply = durationToApply ? durationToApply : 1;
+
+            this.currentStates.get(priority)?.set(stateName, { currentStateTimer: durationToApply });
         }
     }
 
     public Update(dt: number) {
-        if (this.CurrentStateName !== 'default' && this.currentStateObject) {
-            this.currentStateTimer -= dt;
-            if (this.currentStateTimer <= 0) {
-                const { afterPlayingState } = this.currentStateObject;
-                if (afterPlayingState) afterPlayingState();
-                this.playDefaultState();
-            }
-        }
+        let stateToPlay: AvailableState = 'default';
+        // reduce the timer for each states that are applied to the sprite
+        this.currentStates.forEach((states) => {
+            states.forEach((stateStatus, stateName) => {
+                if (stateToPlay === 'default') {
+                    // play the first state that is available
+                    stateToPlay = stateName;
+                }
+                stateStatus.currentStateTimer -= dt;
+                if (stateStatus.currentStateTimer < 0) {
+                    states.delete(stateName);
+                }
+            });
+        });
+
+        this.currentStateName = stateToPlay;
     }
 
     public Draw(
@@ -61,8 +73,9 @@ export class SpriteStatesController {
         rectangleWidth: number,
         rectangleHeight: number,
     ) {
-        const color = SpriteStatesController.colorScheme.get(this.currentStateName);
-        if (color) {
+        const stateInfo = SpriteStatesController.statesDefaultInfo.get(this.currentStateName);
+        if (stateInfo) {
+            const { color } = stateInfo;
             ctx.globalCompositeOperation = 'source-atop';
             ctx.fillStyle = color;
             ctx.fillRect(rectangleHorizontalPosition, rectangleVerticalPosition, rectangleWidth, rectangleHeight);
@@ -72,10 +85,5 @@ export class SpriteStatesController {
 
     public get CurrentStateName(): AvailableState {
         return this.currentStateName;
-    }
-
-    private get currentStateObject(): IStateObject | undefined {
-        const stateObject = this.statesList.get(this.CurrentStateName);
-        return stateObject;
     }
 }

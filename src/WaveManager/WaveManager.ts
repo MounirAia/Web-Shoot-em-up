@@ -1,15 +1,34 @@
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
-import { ISpriteWithHitboxes } from '../Sprites/SpriteHitbox.js';
+import {
+    DamageEffectFunctionReturnType,
+    DamageEffectOptions,
+} from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
+import { AvailableAnimation } from '../Sprites/SpriteAnimationsController.js';
 import { WaveEnemies } from './WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes>;
+    GetListEnemies(): Map<IEnemy, IEnemy>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
     GetARandomEnemy(): IEnemy | undefined;
     GetIfListHasNoEnemyLeft(): boolean;
+    AddEnemyDamageState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }): void;
+    RemoveEnemyDamageState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }): void;
+
+    PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }): void;
+    GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined;
+    ParalyzeEnemy(parameters: { target: IEnemy }): void;
+    StopParalyzeEnemy(parameters: { target: IEnemy }): void;
 }
 
 class WaveManager implements IServiceWaveManager {
@@ -126,12 +145,12 @@ class WaveManager implements IServiceWaveManager {
         return waves;
     }
 
-    GetListEnemies(): Map<IEnemy, ISpriteWithHitboxes> {
+    GetListEnemies(): Map<IEnemy, IEnemy> {
         if (this.currentWave) {
             return this.currentWave.ListEnemies;
         }
 
-        return new Map<IEnemy, ISpriteWithHitboxes>();
+        return new Map<IEnemy, IEnemy>();
     }
 
     SetLastEnemyDestroyed(enemy: IEnemy): void {
@@ -153,6 +172,38 @@ class WaveManager implements IServiceWaveManager {
         if (this.currentWave) return this.currentWave?.HasNoEnemyLeft;
 
         return true;
+    }
+
+    public AddEnemyDamageState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.currentWave?.AddEnemyDamageState(parameters);
+    }
+
+    public RemoveEnemyDamageState(parameters: {
+        target: IEnemy;
+        effect: DamageEffectFunctionReturnType;
+        effectType: DamageEffectOptions;
+    }) {
+        this.currentWave?.RemoveEnemyDamageState(parameters);
+    }
+
+    public GetEnemyAnimation(parameters: { target: IEnemy }) {
+        return this.currentWave?.GetEnemyAnimation(parameters);
+    }
+
+    public PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }) {
+        this.currentWave?.PlayEnemyAnimation(parameters);
+    }
+
+    public ParalyzeEnemy(parameters: { target: IEnemy }) {
+        this.currentWave?.ParalyzeEnemy(parameters);
+    }
+
+    public StopParalyzeEnemy(parameters: { target: IEnemy }) {
+        this.currentWave?.RemoveParalyzeEnemy(parameters);
     }
 }
 
