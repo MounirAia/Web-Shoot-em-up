@@ -177,3 +177,5 @@ export class WaveEnemies {
 //     // Create method to allocate spawn that are free
 //     // Create method to restore spawn on explosion of a
 // }
+// Must have some sort of queues of enemies that is built before the first enemy of the wave spawns
+// Can have some sort of priority queue to balance how many enemies of different tier the player will face
