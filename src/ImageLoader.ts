@@ -50,7 +50,10 @@ export function LoadImageLoader() {
     assets.push('images/Skills/Rocket/RocketProjectileLevel2.png');
     assets.push('images/Skills/Rocket/RocketProjectileLevel3.png');
     assets.push('images/Skills/Rocket/RocketSubProjectileLevel3.png');
-    assets.push('images/Player/Cannon.png');
+    assets.push('images/Player/Cannon.png'); // To remove after setup
+    assets.push('images/Skills/Upgrade/Rocket/Level1.png');
+    assets.push('images/Skills/Upgrade/Rocket/Level2.png');
+    assets.push('images/Skills/Upgrade/Rocket/Level3.png');
     assets.push('images/Skills/Blade/BladeLevel1.png');
     assets.push('images/Skills/Blade/BladeLevel2&3.png');
     assets.push('images/Skills/Mirror/MirrorLevel1.png');

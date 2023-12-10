@@ -1,8 +1,8 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
+import InfoFuelChargeShot from '../../../../SpriteInfoJSON/Skills/infoFuelChargeShot.js';
 import { FuelChargeShotFrameConstant } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
-import InfoFuelChargeShot from '../../../../StatsJSON/SpriteInfo/Skills/infoFuelChargeShot.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../../Player.js';

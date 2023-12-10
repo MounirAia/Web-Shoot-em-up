@@ -1,12 +1,12 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
+import InfoMirrorShield from '../../../../SpriteInfoJSON/Skills/InfoMirrorShield.js';
 import {
     MirrorShieldConstant,
     MirrorShieldExplosiveEntityConstant,
 } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
 import { MirrorShieldDamage } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldDamage.js';
-import InfoMirrorShield from '../../../../StatsJSON/SpriteInfo/Skills/InfoMirrorShield.js';
 import { IServiceUtilManager } from '../../../../UtilManager.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
