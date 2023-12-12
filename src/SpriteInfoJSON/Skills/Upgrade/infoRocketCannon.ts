@@ -1,4 +1,4 @@
-import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant';
+import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
 
 const Info = {
     Level1: {
@@ -21,15 +21,15 @@ const Info = {
         },
         Hitbox: [
             {
-                X: 0,
-                Y: 0,
+                X: 19 * CANVA_SCALEX,
+                Y: -5 * CANVA_SCALEY,
                 Width: 3 * CANVA_SCALEX,
                 Height: 5 * CANVA_SCALEY,
             },
         ],
         Animations: {
             Idle: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: Infinity,
                 Frames: [0],
             },
             Destroyed: {
@@ -67,7 +67,7 @@ const Info = {
         ],
         Animations: {
             Idle: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: Infinity,
                 Frames: [0],
             },
             Destroyed: {
@@ -105,7 +105,7 @@ const Info = {
         ],
         Animations: {
             Idle: {
-                FrameLengthInTime: 1,
+                FrameLengthInTime: Infinity,
                 Frames: [0],
             },
             Destroyed: {
@@ -114,6 +114,6 @@ const Info = {
             },
         },
     },
-} as const;
+};
 
 export default Info;

@@ -14,7 +14,7 @@ import {
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
-import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/RegularCannon.js';
+import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
 import { LoadUtilManager } from './UtilManager.js';
 import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
 
