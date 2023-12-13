@@ -1,5 +1,6 @@
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
-
+// The hitbox offset is computed based on the player sprite not the sprite of the cannon.
+// Thus it is equal to the spriteshift position of the cannon.
 const Info = {
     Level1: {
         Meta: {
@@ -57,14 +58,24 @@ const Info = {
                 Cannon2: { X: 14 * CANVA_SCALEX, Y: 12 * CANVA_SCALEY },
             },
         },
-        Hitbox: [
-            {
-                X: 0,
-                Y: 0,
-                Width: 8 * CANVA_SCALEX,
-                Height: 6 * CANVA_SCALEY,
-            },
-        ],
+        Hitbox: {
+            Cannon1: [
+                {
+                    X: 14 * CANVA_SCALEX,
+                    Y: -6 * CANVA_SCALEY,
+                    Width: 8 * CANVA_SCALEX,
+                    Height: 6 * CANVA_SCALEY,
+                },
+            ],
+            Cannon2: [
+                {
+                    X: 14 * CANVA_SCALEX,
+                    Y: 12 * CANVA_SCALEY,
+                    Width: 8 * CANVA_SCALEX,
+                    Height: 6 * CANVA_SCALEY,
+                },
+            ],
+        },
         Animations: {
             Idle: {
                 FrameLengthInTime: Infinity,

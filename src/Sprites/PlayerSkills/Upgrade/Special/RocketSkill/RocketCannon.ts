@@ -84,3 +84,91 @@ export class RocketCannonLevel1 extends Sprite implements ISpriteWithHitboxes {
         super.Draw(ctx);
     }
 }
+
+export class RocketCannonLevel2 extends Sprite implements ISpriteWithHitboxes {
+    CurrentHitbox: RectangleHitbox[];
+    private offsetXOnSprite: number;
+    private offsetYOnSprite: number;
+
+    Collide: Map<CollideScenario, (param?: unknown) => void>;
+
+    constructor(parameters: {
+        X: number;
+        Y: number;
+        offsetXOnPlayer: number;
+        offsetYOnPlayer: number;
+        direction: 'up' | 'down';
+    }) {
+        const { X, Y, offsetXOnPlayer, offsetYOnPlayer, direction } = parameters;
+        super(
+            ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
+                'images/Skills/Upgrade/Rocket/Level2.png',
+            ),
+            InfoRocketCannon.Level2.Meta.TileDimensions.Width,
+            InfoRocketCannon.Level2.Meta.TileDimensions.Height,
+            X,
+            Y,
+            InfoRocketCannon.Level2.Meta.SpriteShiftPosition.X,
+            InfoRocketCannon.Level2.Meta.SpriteShiftPosition.Y,
+            CANVA_SCALEX,
+            CANVA_SCALEY,
+            InfoRocketCannon.Level2.Meta.RealDimension.Width,
+            InfoRocketCannon.Level2.Meta.RealDimension.Height,
+        );
+
+        this.offsetXOnSprite = offsetXOnPlayer;
+        this.offsetYOnSprite = offsetYOnPlayer;
+
+        if (direction === 'up') {
+            this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+                ...InfoRocketCannon.Level2.Hitbox.Cannon1,
+            ]);
+        } else {
+            this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+                ...InfoRocketCannon.Level2.Hitbox.Cannon2,
+            ]);
+        }
+
+        const { Idle, Destroyed } = InfoRocketCannon.Level2.Animations;
+
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: Idle.Frames,
+            framesLengthInTime: Idle.FrameLengthInTime,
+        });
+
+        this.AnimationsController.AddAnimation({
+            animation: 'destroyed',
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
+        });
+
+        this.Collide = new Map();
+        this.Collide.set('WithProjectile', () => {
+            this.StatesController.PlayState({ stateName: 'onHit' });
+        });
+
+        this.Collide.set('WithEnemy', () => {
+            const playerInvulnerabilityTimePeriod =
+                ServiceLocator.GetService<IServicePlayer>('Player').InvulnerabilityTimePeriod;
+            this.StatesController.PlayState({ stateName: 'onInvulnerable', duration: playerInvulnerabilityTimePeriod });
+        });
+
+        this.AnimationsController.PlayAnimation({ animation: 'idle' });
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    UpdateHitboxes(dt: number) {}
+
+    Update(dt: number) {
+        super.Update(dt);
+
+        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        this.X = playerX + this.offsetXOnSprite;
+        this.Y = playerY + this.offsetYOnSprite;
+    }
+
+    Draw(ctx: CanvasRenderingContext2D): void {
+        super.Draw(ctx);
+    }
+}
