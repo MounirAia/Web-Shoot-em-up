@@ -53,7 +53,7 @@ There will be only one map, and it will be infinitely scrolling horizontally.
 ## Around the Game
 
 ### Target Audience
-This game target all the people who want to play a quick game. I would say the people in the queue in another game (like League Of Legends or Valorant). During this waiting time, they can play my game
+This game target all the people who want to play a quick game.
 
 ### Target Device
 Computer (any decent computer that can run chrome without issue)
