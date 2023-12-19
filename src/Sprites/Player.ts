@@ -10,7 +10,10 @@ import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.j
 import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
-import { CannonConfiguration, IServiceCannonConfigurationGenerator } from './PlayerSkills/Upgrade/RegularCannon.js';
+import {
+    CannonConfiguration,
+    IServiceCannonConfigurationGenerator,
+} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator';
 import { Sprite } from './Sprite.js';
 import {
     ISpriteWithAttackSpeed,
@@ -184,6 +187,7 @@ class Player
             },
         ]);
 
+        // the hitboxe of the player consist of his hitbox and the hitbox of the cannons attached to it
         this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
 
         this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
@@ -191,24 +195,11 @@ class Player
             animation: 'damaged',
             frames: [1, 0],
             framesLengthInTime: 0.1,
-            beforePlayingAnimation: () => {
-                this.cannonConfiguration.PlayAnimation('damaged');
-            },
             afterPlayingAnimation: () => {
                 this.AnimationsController.PlayAnimation({ animation: 'idle' });
             },
         });
-        this.AnimationsController.AddAnimation({
-            animation: 'invulnerable',
-            frames: [1, 0, 1, 0, 1],
-            framesLengthInTime: this.invulnerabilityTimePeriod / 5,
-            beforePlayingAnimation: () => {
-                this.cannonConfiguration.PlayAnimation('invulnerable');
-            },
-            afterPlayingAnimation: () => {
-                this.AnimationsController.PlayAnimation({ animation: 'idle' });
-            },
-        });
+
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: [2, 3, 4, 5, 6, 7, 8, 9],
@@ -225,14 +216,16 @@ class Player
         this.Collide = new Map();
 
         this.Collide.set('WithProjectile', (bullet: unknown) => {
-            this.AnimationsController.PlayAnimation({ animation: 'damaged' });
+            this.StatesController.PlayState({ stateName: 'onHit' });
+            this.cannonConfiguration.PlayCollisionMethod({ collisionScenario: 'WithProjectile' });
 
             const myBullet = bullet as ISpriteWithDamage;
             this.CurrentHealth -= myBullet.Damage;
         });
 
         this.Collide.set('WithEnemy', (enemy: unknown) => {
-            this.AnimationsController.PlayAnimation({ animation: 'invulnerable' });
+            this.StatesController.PlayState({ stateName: 'onInvulnerable', duration: this.invulnerabilityTimePeriod });
+            this.cannonConfiguration.PlayCollisionMethod({ collisionScenario: 'WithEnemy' });
 
             this.CurrentHealth -= this.MaxHealth * 0.5;
         });
@@ -277,8 +270,10 @@ class Player
         if (Keyboard.s.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
-        this.UpdateHitboxes(dt);
+
         this.cannonConfiguration.Update(dt);
+
+        this.UpdateHitboxes(dt);
 
         if (Keyboard.Space.IsDown && this.CanShoot) {
             const bulletXOffset = 34 * CANVA_SCALEX;
@@ -423,7 +418,7 @@ class Player
     }
 
     IsInvulnerable(): boolean {
-        return this.AnimationsController.CurrentAnimationName === 'invulnerable';
+        return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
     }
 
     get InvulnerabilityTimePeriod(): number {

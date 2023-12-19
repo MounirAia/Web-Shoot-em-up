@@ -1,4 +1,4 @@
-import { CANVA_SCALEX, CANVA_SCALEY } from '../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant.js';
 
 const Info = {
     Level1: {

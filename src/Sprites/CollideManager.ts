@@ -68,7 +68,6 @@ export class CollideManager implements IServiceCollideManager {
         const player = ServiceLocator.GetService<IServicePlayer>('Player');
 
         if (player.IsInvulnerable()) return;
-
         for (const hitbox of player.CurrentHitbox) {
             if (hitbox.CheckCollision(enemyProjectile)) {
                 const bulletCollisionMethod = enemyProjectile.Collide.get('WithPlayer');

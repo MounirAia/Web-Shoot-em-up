@@ -1,13 +1,14 @@
-type AvailableState = 'default' | 'onHit' | 'onExplosion' | 'onEnergy' | 'onCorrosion' | 'onFuelChargeShot';
+type AvailableState =
+    | 'default'
+    | 'onHit'
+    | 'onExplosion'
+    | 'onEnergy'
+    | 'onCorrosion'
+    | 'onFuelChargeShot'
+    | 'onInvulnerable';
 type StatePriority = 'high' | 'medium' | 'low';
-interface IStateObject {
-    statesDuration: number;
-    beforePlayingState?: () => void;
-    afterPlayingState?: () => void;
-}
 
 export class SpriteStatesController {
-    private statesList: Map<AvailableState, IStateObject>;
     private currentStateName: AvailableState;
     private currentStates: Map<StatePriority, Map<AvailableState, { currentStateTimer: number }>>;
 
@@ -20,10 +21,10 @@ export class SpriteStatesController {
         ['onEnergy', { color: 'rgba(39, 144, 197,0.4)', priority: 'high', defaultDuration: 6 / 60 }],
         ['onFuelChargeShot', { color: 'rgba(255,215,0,0.5)', priority: 'high', defaultDuration: 6 / 60 }],
         ['onCorrosion', { color: 'rgba(0,255,0,0.2)', priority: 'low' }],
+        ['onInvulnerable', { color: 'rgba(220,220,220,0.5)', priority: 'high' }],
     ]);
 
     constructor() {
-        this.statesList = new Map();
         this.currentStates = new Map();
         const statePriorities: StatePriority[] = ['high', 'medium', 'low'];
         // initialize each state map in order to keep
@@ -45,6 +46,14 @@ export class SpriteStatesController {
 
             this.currentStates.get(priority)?.set(stateName, { currentStateTimer: durationToApply });
         }
+    }
+
+    public GetIfInTheStateOf(parameters: { stateName: AvailableState }): boolean {
+        const { stateName } = parameters;
+        const { priority } = SpriteStatesController.statesDefaultInfo.get(stateName)!;
+
+        // Check if the sprite is currently in state of given "stateName"
+        return this.currentStates.get(priority)?.get(stateName) ? true : false;
     }
 
     public Update(dt: number) {
