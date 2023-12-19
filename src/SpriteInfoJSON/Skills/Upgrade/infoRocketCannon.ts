@@ -106,14 +106,24 @@ const Info = {
                 Cannon2: { X: 14 * CANVA_SCALEX, Y: 12 * CANVA_SCALEX },
             },
         },
-        Hitbox: [
-            {
-                X: 0,
-                Y: 0,
-                Width: 7 * CANVA_SCALEX,
-                Height: 7 * CANVA_SCALEY,
-            },
-        ],
+        Hitbox: {
+            Cannon1: [
+                {
+                    X: 14 * CANVA_SCALEX,
+                    Y: -7 * CANVA_SCALEY,
+                    Width: 7 * CANVA_SCALEX,
+                    Height: 7 * CANVA_SCALEY,
+                },
+            ],
+            Cannon2: [
+                {
+                    X: 14 * CANVA_SCALEX,
+                    Y: 12 * CANVA_SCALEX,
+                    Width: 7 * CANVA_SCALEX,
+                    Height: 7 * CANVA_SCALEY,
+                },
+            ],
+        },
         Animations: {
             Idle: {
                 FrameLengthInTime: Infinity,

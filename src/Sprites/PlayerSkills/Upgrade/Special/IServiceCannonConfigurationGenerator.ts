@@ -4,7 +4,7 @@ import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 import { AvailableAnimation } from '../../../SpriteAnimationsController.js';
 import { CollideScenario, ISpriteWithHitboxes, RectangleHitbox } from '../../../SpriteHitbox.js';
-import { RocketCannonLevel1, RocketCannonLevel2 } from './RocketSkill/RocketCannon.js';
+import { RocketCannonLevel1, RocketCannonLevel2, RocketCannonLevel3 } from './RocketSkill/RocketCannon.js';
 
 // Cannons are attached to the player sprite as an extension, thus the hitbox of the cannons are part of the hitbox of the player
 // It is the responsability of the player sprite to call the animation of the cannon
@@ -91,7 +91,7 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
             });
             cannonConfig.push(cannon1);
             return cannonConfig;
-        } else if (skillLevel == 2 || skillLevel == 3) {
+        } else if (skillLevel == 2) {
             const cannon1 = new RocketCannonLevel2({
                 X: playerX,
                 Y: playerY,
@@ -104,6 +104,23 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
                 Y: playerY,
                 offsetXOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
                 offsetYOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
+                direction: 'down',
+            });
+            cannonConfig.push(cannon1, cannon2);
+            return cannonConfig;
+        } else if (skillLevel == 3) {
+            const cannon1 = new RocketCannonLevel3({
+                X: playerX,
+                Y: playerY,
+                offsetXOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
+                offsetYOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
+                direction: 'up',
+            });
+            const cannon2 = new RocketCannonLevel3({
+                X: playerX,
+                Y: playerY,
+                offsetXOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
+                offsetYOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
                 direction: 'down',
             });
             cannonConfig.push(cannon1, cannon2);
