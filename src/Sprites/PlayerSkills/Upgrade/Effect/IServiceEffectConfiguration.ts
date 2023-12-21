@@ -54,7 +54,6 @@ class EffectConfigurationGenerator implements IServiceEffectConfigurationGenerat
 
         spriteShiftPositionArray.forEach((spriteShiftPosition) => {
             const { X, Y } = spriteShiftPosition;
-            console.log(X, Y);
             effectConfig.push(new EffectCosmetic({ X: playerX, Y: playerY, offsetXOnPlayer: X, offsetYOnPlayer: Y }));
         });
 

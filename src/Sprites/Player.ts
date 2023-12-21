@@ -19,6 +19,10 @@ import {
     CannonConfiguration,
     IServiceCannonConfigurationGenerator,
 } from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
+import {
+    IServiceSupportConfigurationGenerator,
+    SupportConfiguration,
+} from './PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
 import { Sprite } from './Sprite.js';
 import {
     ISpriteWithAttackSpeed,
@@ -93,6 +97,7 @@ class Player
 
     private cannonConfiguration: CannonConfiguration;
     private effectConfiguration: EffectConfiguration;
+    private supportConfiguration: SupportConfiguration;
 
     constructor(
         image: HTMLImageElement,
@@ -126,7 +131,7 @@ class Player
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
-        this.supportSkillLevel = 0;
+        this.supportSkillLevel = 3;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
@@ -138,6 +143,9 @@ class Player
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
         this.effectConfiguration =
             ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
+        this.supportConfiguration = ServiceLocator.GetService<IServiceSupportConfigurationGenerator>(
+            'SupportConfigurationGenerator',
+        ).GetConfig();
 
         this.currentSkill.set('effect', new BladeExplosionSkill());
         const actionOnEnemyDestroyed = () => {
@@ -236,6 +244,7 @@ class Player
 
         this.cannonConfiguration.Update(dt);
         this.effectConfiguration.Update(dt);
+        this.supportConfiguration.Update(dt);
 
         this.UpdateHitboxes(dt);
 
@@ -261,6 +270,7 @@ class Player
         super.Draw(ctx);
         this.cannonConfiguration.Draw(ctx);
         this.effectConfiguration.Draw(ctx);
+        this.supportConfiguration.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {

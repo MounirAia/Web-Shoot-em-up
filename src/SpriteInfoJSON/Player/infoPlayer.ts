@@ -104,39 +104,31 @@ const Info = {
         },
     },
     SupportCosmetic: {
-        Level1: {
-            Meta: {
-                TileDimensions: {
-                    Width: 4,
-                    Height: 4,
-                },
-                SpriteShiftPositionOnPlayer: [{ X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY }],
+        Meta: {
+            TileDimensions: {
+                Width: 4,
+                Height: 4,
             },
+            SpriteShiftPosition: {
+                X: 0 * CANVA_SCALEX,
+                Y: 0 * CANVA_SCALEY,
+            },
+        },
+        Level1: {
+            SpriteShiftPositionOnPlayer: [{ X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY }],
         },
         Level2: {
-            Meta: {
-                TileDimensions: {
-                    Width: 4,
-                    Height: 4,
-                },
-                SpriteShiftPositionOnPlayer: [
-                    { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
-                    { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
-                ],
-            },
+            SpriteShiftPositionOnPlayer: [
+                { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
+            ],
         },
         Level3: {
-            Meta: {
-                TileDimensions: {
-                    Width: 4,
-                    Height: 4,
-                },
-                SpriteShiftPositionOnPlayer: [
-                    { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
-                    { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
-                    { X: 24 * CANVA_SCALEX, Y: 6 * CANVA_SCALEY },
-                ],
-            },
+            SpriteShiftPositionOnPlayer: [
+                { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
+                { X: 24 * CANVA_SCALEX, Y: 6 * CANVA_SCALEY },
+            ],
         },
     },
 };

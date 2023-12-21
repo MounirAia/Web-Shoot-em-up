@@ -8,7 +8,8 @@ type AvailableServices =
     | 'CannonConfigurationGenerator'
     | 'EventManager'
     | 'UtilManager'
-    | 'EffectConfigurationGenerator';
+    | 'EffectConfigurationGenerator'
+    | 'SupportConfigurationGenerator';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 
