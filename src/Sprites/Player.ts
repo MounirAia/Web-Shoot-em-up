@@ -12,9 +12,13 @@ import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
 import {
+    EffectConfiguration,
+    IServiceEffectConfigurationGenerator,
+} from './PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
+import {
     CannonConfiguration,
     IServiceCannonConfigurationGenerator,
-} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator';
+} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
 import { Sprite } from './Sprite.js';
 import {
     ISpriteWithAttackSpeed,
@@ -88,6 +92,7 @@ class Player
     private currentSkill: Map<PlayerSkill, ISkill>;
 
     private cannonConfiguration: CannonConfiguration;
+    private effectConfiguration: EffectConfiguration;
 
     constructor(
         image: HTMLImageElement,
@@ -131,6 +136,8 @@ class Player
         this.currentSkill.set('special', new RocketSkill());
         this.cannonConfiguration =
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+        this.effectConfiguration =
+            ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
 
         this.currentSkill.set('effect', new BladeExplosionSkill());
         const actionOnEnemyDestroyed = () => {
@@ -228,6 +235,7 @@ class Player
         }
 
         this.cannonConfiguration.Update(dt);
+        this.effectConfiguration.Update(dt);
 
         this.UpdateHitboxes(dt);
 
@@ -245,13 +253,49 @@ class Player
         }
     }
 
+    private removePlayerFromGameFlow() {
+        this.hitboxes = [];
+    }
+
     Draw(ctx: CanvasRenderingContext2D) {
         super.Draw(ctx);
         this.cannonConfiguration.Draw(ctx);
+        this.effectConfiguration.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
+    }
+
+    AddDamageUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
+    }
+
+    AddHealthUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
+    }
+
+    AddAttackSpeedStats(upgrade: number): void {
+        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
+    }
+
+    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
+        const collideMethod = this.Collide.get(collideScenario);
+        if (collideMethod) {
+            collideMethod(param);
+        }
+    }
+
+    MakeTransactionOnWallet(value: number): void {
+        this.moneyInWallet += value;
+
+        if (this.moneyInWallet < 0) {
+            this.moneyInWallet = 0;
+        }
+    }
+
+    IsInvulnerable(): boolean {
+        return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
     }
 
     get CurrentHitbox(): RectangleHitbox[] {
@@ -286,21 +330,17 @@ class Player
             return total + damage;
         }, 1);
     }
-    AddDamageUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
-    }
+
     get NumberOfDamageUpgrade(): number {
         return this.DamageUpgrades.length;
     }
 
-    AddHealthUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
-    }
     private get healthStats(): number {
         return this.HealthUpgrades.reduce((total, health) => {
             return total + health;
         }, 1);
     }
+
     get MaxHealth(): number {
         return this.BaseHealth * this.healthStats;
     }
@@ -329,9 +369,6 @@ class Player
     get AttackSpeed(): number {
         return this.BaseAttackSpeed * this.AttackSpeedStats;
     }
-    AddAttackSpeedStats(upgrade: number): void {
-        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
-    }
 
     public get CanShoot(): boolean {
         if (this.currentTimeBeforeNextShoot <= 0) {
@@ -340,21 +377,6 @@ class Player
         }
 
         return false;
-    }
-
-    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
-        const collideMethod = this.Collide.get(collideScenario);
-        if (collideMethod) {
-            collideMethod(param);
-        }
-    }
-
-    MakeTransactionOnWallet(value: number): void {
-        this.moneyInWallet += value;
-
-        if (this.moneyInWallet < 0) {
-            this.moneyInWallet = 0;
-        }
     }
 
     get SpecialSkillLevel(): number {
@@ -373,16 +395,8 @@ class Player
         return this.supportSkillLevel;
     }
 
-    IsInvulnerable(): boolean {
-        return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
-    }
-
     get InvulnerabilityTimePeriod(): number {
         return this.invulnerabilityTimePeriod;
-    }
-
-    private removePlayerFromGameFlow() {
-        this.hitboxes = [];
     }
 }
 

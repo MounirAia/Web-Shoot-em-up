@@ -7,7 +7,8 @@ type AvailableServices =
     | 'CollideManager'
     | 'CannonConfigurationGenerator'
     | 'EventManager'
-    | 'UtilManager';
+    | 'UtilManager'
+    | 'EffectConfigurationGenerator';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 

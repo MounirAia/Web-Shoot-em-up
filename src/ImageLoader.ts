@@ -54,6 +54,8 @@ export function LoadImageLoader() {
     assets.push('images/Skills/Upgrade/Rocket/Level1.png');
     assets.push('images/Skills/Upgrade/Rocket/Level2.png');
     assets.push('images/Skills/Upgrade/Rocket/Level3.png');
+    assets.push('images/Skills/Upgrade/EffectEvolution.png');
+    assets.push('images/Skills/Upgrade/SupportEvolution.png');
     assets.push('images/Skills/Blade/BladeLevel1.png');
     assets.push('images/Skills/Blade/BladeLevel2&3.png');
     assets.push('images/Skills/Mirror/MirrorLevel1.png');

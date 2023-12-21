@@ -75,6 +75,70 @@ const Info = {
             Frames: [2, 3, 4, 5, 6, 7, 8, 9],
         },
     },
+    EffectCosmetic: {
+        Meta: {
+            TileDimensions: {
+                Width: 4,
+                Height: 4,
+            },
+            SpriteShiftPosition: {
+                X: 0 * CANVA_SCALEX,
+                Y: 0 * CANVA_SCALEY,
+            },
+        },
+        Level1: {
+            SpriteShiftPositionOnPlayer: [{ X: 5 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY }],
+        },
+        Level2: {
+            SpriteShiftPositionOnPlayer: [
+                { X: 5 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                { X: 10 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+            ],
+        },
+        Level3: {
+            SpriteShiftPositionOnPlayer: [
+                { X: 5 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                { X: 10 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                { X: 15 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+            ],
+        },
+    },
+    SupportCosmetic: {
+        Level1: {
+            Meta: {
+                TileDimensions: {
+                    Width: 4,
+                    Height: 4,
+                },
+                SpriteShiftPositionOnPlayer: [{ X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY }],
+            },
+        },
+        Level2: {
+            Meta: {
+                TileDimensions: {
+                    Width: 4,
+                    Height: 4,
+                },
+                SpriteShiftPositionOnPlayer: [
+                    { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                    { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
+                ],
+            },
+        },
+        Level3: {
+            Meta: {
+                TileDimensions: {
+                    Width: 4,
+                    Height: 4,
+                },
+                SpriteShiftPositionOnPlayer: [
+                    { X: 20 * CANVA_SCALEX, Y: 2 * CANVA_SCALEY },
+                    { X: 22 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
+                    { X: 24 * CANVA_SCALEX, Y: 6 * CANVA_SCALEY },
+                ],
+            },
+        },
+    },
 };
 
 export default Info;
