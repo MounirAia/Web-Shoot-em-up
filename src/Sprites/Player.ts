@@ -131,7 +131,7 @@ class Player
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
-        this.supportSkillLevel = 3;
+        this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
         this.currentTimeBeforeNextShoot = 0;
