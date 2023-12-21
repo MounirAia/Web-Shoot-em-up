@@ -4,6 +4,7 @@ import { Keyboard } from '../Keyboard.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
+import InfoPlayer from '../SpriteInfoJSON/Player/infoPlayer.js';
 import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
@@ -11,9 +12,17 @@ import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
 import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
 import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
 import {
+    EffectConfiguration,
+    IServiceEffectConfigurationGenerator,
+} from './PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
+import {
     CannonConfiguration,
     IServiceCannonConfigurationGenerator,
-} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator';
+} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
+import {
+    IServiceSupportConfigurationGenerator,
+    SupportConfiguration,
+} from './PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
 import { Sprite } from './Sprite.js';
 import {
     ISpriteWithAttackSpeed,
@@ -24,7 +33,7 @@ import {
     ISpriteWithHealthUpgrades,
     ISpriteWithSpeed,
 } from './SpriteAttributes.js';
-import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
+import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -87,19 +96,28 @@ class Player
     private currentSkill: Map<PlayerSkill, ISkill>;
 
     private cannonConfiguration: CannonConfiguration;
+    private effectConfiguration: EffectConfiguration;
+    private supportConfiguration: SupportConfiguration;
 
     constructor(
         image: HTMLImageElement,
-        frameWidth: number,
-        frameHeight: number,
+
         x = 0,
         y = 0,
-        spriteXOffset = 0,
-        spriteYOffset = 0,
-        scaleX = 1,
-        scaleY = 1,
     ) {
-        super(image, frameWidth, frameHeight, x, y, spriteXOffset, spriteYOffset, scaleX, scaleY);
+        super(
+            image,
+            InfoPlayer.Meta.TileDimensions.Width,
+            InfoPlayer.Meta.TileDimensions.Height,
+            x,
+            y,
+            InfoPlayer.Meta.SpriteShiftPosition.X,
+            InfoPlayer.Meta.SpriteShiftPosition.Y,
+            CANVA_SCALEX,
+            CANVA_SCALEY,
+            InfoPlayer.Meta.RealDimension.Width,
+            InfoPlayer.Meta.RealDimension.Height,
+        );
         ServiceLocator.AddService('Player', this);
 
         this.baseSpeed = 5;
@@ -123,6 +141,11 @@ class Player
         this.currentSkill.set('special', new RocketSkill());
         this.cannonConfiguration =
             ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+        this.effectConfiguration =
+            ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
+        this.supportConfiguration = ServiceLocator.GetService<IServiceSupportConfigurationGenerator>(
+            'SupportConfigurationGenerator',
+        ).GetConfig();
 
         this.currentSkill.set('effect', new BladeExplosionSkill());
         const actionOnEnemyDestroyed = () => {
@@ -136,74 +159,22 @@ class Player
         this.currentSkill.set('support', new FuelChargeShotSkill());
         this.currentSkill.get('support')?.Effect();
 
-        this.hitboxes = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0,
-                offsetY: 0,
-                width: 22 * CANVA_SCALEX,
-                height: 12 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 22 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 11 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 23 * CANVA_SCALEX,
-                offsetY: 2 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 10 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 24 * CANVA_SCALEX,
-                offsetY: 3 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 9 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 25 * CANVA_SCALEX,
-                offsetY: 4 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 8 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 26 * CANVA_SCALEX,
-                offsetY: 5 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 7 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 27 * CANVA_SCALEX,
-                offsetY: 6 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 6 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 28 * CANVA_SCALEX,
-                offsetY: 7 * CANVA_SCALEY,
-                width: 6 * CANVA_SCALEX,
-                height: 4 * CANVA_SCALEY,
-            },
-        ]);
+        this.hitboxes = CreateHitboxesWithInfoFile(this.X, this.Y, InfoPlayer.Hitbox);
 
         // the hitboxe of the player consist of his hitbox and the hitbox of the cannons attached to it
         this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
 
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        const { Idle, Destroyed } = InfoPlayer.Animations;
         this.AnimationsController.AddAnimation({
-            animation: 'damaged',
-            frames: [1, 0],
-            framesLengthInTime: 0.1,
-            afterPlayingAnimation: () => {
-                this.AnimationsController.PlayAnimation({ animation: 'idle' });
-            },
+            animation: 'idle',
+            frames: Idle.Frames,
+            framesLengthInTime: Idle.FrameLengthInTime,
         });
 
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [2, 3, 4, 5, 6, 7, 8, 9],
-            framesLengthInTime: 0.1,
+            frames: Destroyed.Frames,
+            framesLengthInTime: Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.removePlayerFromGameFlow();
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
@@ -272,6 +243,8 @@ class Player
         }
 
         this.cannonConfiguration.Update(dt);
+        this.effectConfiguration.Update(dt);
+        this.supportConfiguration.Update(dt);
 
         this.UpdateHitboxes(dt);
 
@@ -289,13 +262,50 @@ class Player
         }
     }
 
+    private removePlayerFromGameFlow() {
+        this.hitboxes = [];
+    }
+
     Draw(ctx: CanvasRenderingContext2D) {
         super.Draw(ctx);
         this.cannonConfiguration.Draw(ctx);
+        this.effectConfiguration.Draw(ctx);
+        this.supportConfiguration.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
+    }
+
+    AddDamageUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
+    }
+
+    AddHealthUpgrade(upgrade: number): void {
+        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
+    }
+
+    AddAttackSpeedStats(upgrade: number): void {
+        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
+    }
+
+    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
+        const collideMethod = this.Collide.get(collideScenario);
+        if (collideMethod) {
+            collideMethod(param);
+        }
+    }
+
+    MakeTransactionOnWallet(value: number): void {
+        this.moneyInWallet += value;
+
+        if (this.moneyInWallet < 0) {
+            this.moneyInWallet = 0;
+        }
+    }
+
+    IsInvulnerable(): boolean {
+        return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
     }
 
     get CurrentHitbox(): RectangleHitbox[] {
@@ -330,21 +340,17 @@ class Player
             return total + damage;
         }, 1);
     }
-    AddDamageUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
-    }
+
     get NumberOfDamageUpgrade(): number {
         return this.DamageUpgrades.length;
     }
 
-    AddHealthUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
-    }
     private get healthStats(): number {
         return this.HealthUpgrades.reduce((total, health) => {
             return total + health;
         }, 1);
     }
+
     get MaxHealth(): number {
         return this.BaseHealth * this.healthStats;
     }
@@ -373,9 +379,6 @@ class Player
     get AttackSpeed(): number {
         return this.BaseAttackSpeed * this.AttackSpeedStats;
     }
-    AddAttackSpeedStats(upgrade: number): void {
-        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
-    }
 
     public get CanShoot(): boolean {
         if (this.currentTimeBeforeNextShoot <= 0) {
@@ -384,21 +387,6 @@ class Player
         }
 
         return false;
-    }
-
-    PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
-        const collideMethod = this.Collide.get(collideScenario);
-        if (collideMethod) {
-            collideMethod(param);
-        }
-    }
-
-    MakeTransactionOnWallet(value: number): void {
-        this.moneyInWallet += value;
-
-        if (this.moneyInWallet < 0) {
-            this.moneyInWallet = 0;
-        }
     }
 
     get SpecialSkillLevel(): number {
@@ -417,16 +405,8 @@ class Player
         return this.supportSkillLevel;
     }
 
-    IsInvulnerable(): boolean {
-        return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
-    }
-
     get InvulnerabilityTimePeriod(): number {
         return this.invulnerabilityTimePeriod;
-    }
-
-    private removePlayerFromGameFlow() {
-        this.hitboxes = [];
     }
 }
 
@@ -434,23 +414,11 @@ let player: Player;
 export function LoadPlayer() {
     const imgPlayer =
         ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/player.png');
-    const frameWidth = 64;
-    const frameHeight = 64;
+
     const x = 250;
     const y = 250;
-    const scaleX = CANVA_SCALEX;
-    const scaleY = CANVA_SCALEY;
-    player = new Player(
-        imgPlayer,
-        frameWidth,
-        frameHeight,
-        x,
-        y,
-        -18 * CANVA_SCALEX,
-        -25 * CANVA_SCALEY,
-        scaleX,
-        scaleY,
-    );
+
+    player = new Player(imgPlayer, x, y);
 }
 
 export function UpdatePlayer(dt: number) {

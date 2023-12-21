@@ -14,7 +14,9 @@ import {
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
+import { LoadEffectConfiguration } from './Sprites/PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
+import { LoadSupportConfiguration } from './Sprites/PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
 import { LoadUtilManager } from './UtilManager.js';
 import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
 
@@ -24,6 +26,8 @@ function load() {
     LoadEventManager();
     LoadGeneratedSpritesManager();
     LoadCannonConfiguration();
+    LoadEffectConfiguration();
+    LoadSupportConfiguration();
     LoadImageLoader();
     LoadSceneManager();
     LoadGalaxyMap();

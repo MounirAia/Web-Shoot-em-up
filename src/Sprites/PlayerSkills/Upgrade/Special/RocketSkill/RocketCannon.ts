@@ -11,6 +11,8 @@ import {
     RectangleHitbox,
 } from '../../../../SpriteHitbox.js';
 
+import InfoPlayer from '../../../../../SpriteInfoJSON/Player/infoPlayer.js';
+
 export class RocketCannonLevel1 extends Sprite implements ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     private offsetXOnSprite: number;
@@ -42,6 +44,7 @@ export class RocketCannonLevel1 extends Sprite implements ISpriteWithHitboxes {
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoRocketCannon.Level1.Hitbox]);
 
         const { Idle, Destroyed } = InfoRocketCannon.Level1.Animations;
+        const { Destroyed: PlayerDestroyed } = InfoPlayer.Animations;
 
         this.AnimationsController.AddAnimation({
             animation: 'idle',
@@ -52,7 +55,7 @@ export class RocketCannonLevel1 extends Sprite implements ISpriteWithHitboxes {
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: Destroyed.Frames,
-            framesLengthInTime: Destroyed.FrameLengthInTime,
+            framesLengthInTime: PlayerDestroyed.FrameLengthInTime,
         });
 
         this.Collide = new Map();
@@ -130,6 +133,7 @@ export class RocketCannonLevel2 extends Sprite implements ISpriteWithHitboxes {
         }
 
         const { Idle, Destroyed } = InfoRocketCannon.Level2.Animations;
+        const { Destroyed: PlayerDestroyed } = InfoPlayer.Animations;
 
         this.AnimationsController.AddAnimation({
             animation: 'idle',
@@ -140,7 +144,7 @@ export class RocketCannonLevel2 extends Sprite implements ISpriteWithHitboxes {
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: Destroyed.Frames,
-            framesLengthInTime: Destroyed.FrameLengthInTime,
+            framesLengthInTime: PlayerDestroyed.FrameLengthInTime,
         });
 
         this.Collide = new Map();
@@ -222,6 +226,7 @@ export class RocketCannonLevel3 extends Sprite implements ISpriteWithHitboxes {
         }
 
         const { Idle, Destroyed } = InfoRocketCannon.Level3.Animations;
+        const { Destroyed: PlayerDestroyed } = InfoPlayer.Animations;
 
         this.AnimationsController.AddAnimation({
             animation: 'idle',
@@ -232,7 +237,7 @@ export class RocketCannonLevel3 extends Sprite implements ISpriteWithHitboxes {
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: Destroyed.Frames,
-            framesLengthInTime: Destroyed.FrameLengthInTime,
+            framesLengthInTime: PlayerDestroyed.FrameLengthInTime,
         });
 
         this.Collide = new Map();
