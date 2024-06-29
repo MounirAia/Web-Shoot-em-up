@@ -1,8 +1,9 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
-import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
+import { IServiceUtilManager } from '../../../UtilManager.js';
 import { IServiceCollideManager } from '../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../Player.js';
@@ -10,6 +11,7 @@ import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDa
 import { Sprite } from '../../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { ExplosiveDamageEffect } from '../DamageEffect/ExplosiveDamageEffect.js';
 import { ISkill, PossibleSkillName, SkillsTypeName } from '../Skills.js';
 
 export class RocketBulletLevel1
@@ -40,10 +42,23 @@ export class RocketBulletLevel1
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        this.BaseSpeed = RocketConstant[0].projectileSpeed;
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL1;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: RocketConstant[0]['Projectile Speed'],
+        });
+
+        const damageInfo = RocketDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+
+        this.Damage = damageInfo['Rocket L1 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Explosive',
+            damageEffectObject: new ExplosiveDamageEffect({
+                explosiveEffectStat: damageInfo['Explosive Stat (%)'],
+            }),
+        });
+
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -86,7 +101,7 @@ export class RocketBulletLevel1
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 0.03,
+            framesLengthInTime: 1 / FRAME_RATE,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -100,14 +115,20 @@ export class RocketBulletLevel1
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L1;
+                        this.Damage = damageInfo['Radius 1 L1 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L1;
+                        this.Damage = damageInfo['Radius 2 L1 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                     },
                 ],
                 [
@@ -180,10 +201,21 @@ export class RocketBulletLevel2
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        this.BaseSpeed = RocketConstant[1].projectileSpeed;
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL2;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: RocketConstant[1]['Projectile Speed'],
+        });
+
+        const damageInfo = RocketDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = damageInfo['Rocket L2 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Explosive',
+            damageEffectObject: new ExplosiveDamageEffect({
+                explosiveEffectStat: damageInfo['Explosive Stat (%)'],
+            }),
+        });
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -226,7 +258,7 @@ export class RocketBulletLevel2
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 0.03,
+            framesLengthInTime: 1 / FRAME_RATE,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -240,14 +272,20 @@ export class RocketBulletLevel2
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L2;
+                        this.Damage = damageInfo['Radius 1 L2 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L2;
+                        this.Damage = damageInfo['Radius 2 L2 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                     },
                 ],
                 [
@@ -319,11 +357,17 @@ class RocketSubBullet
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        const { projectileSpeed } = RocketConstant[2];
+        const projectileSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: RocketConstant[2]['Projectile Speed'],
+        });
+
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
         const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = RocketDamageStats[playersDamageUpgrade].subProjectileL3;
-        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.Damage = RocketDamageStats[playersDamageUpgrade]['Sub Projectile L3 Damage'];
+        this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage }); // do not add damage for sub bullet
+
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -346,7 +390,7 @@ class RocketSubBullet
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: [0, 1, 2, 3, 4],
-            framesLengthInTime: 0.03,
+            framesLengthInTime: 1 / FRAME_RATE,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -358,12 +402,6 @@ class RocketSubBullet
             methodToPlayOnSpecificFrames: new Map([
                 [
                     1,
-                    () => {
-                        this.CurrentHitbox = frame1Hitbox;
-                    },
-                ],
-                [
-                    2,
                     () => {
                         this.CurrentHitbox = RectangleHitbox.NoHitbox;
                     },
@@ -431,10 +469,21 @@ export class RocketBulletLevel3
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        this.BaseSpeed = RocketConstant[2].projectileSpeed;
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = RocketDamageStats[playersDamageUpgrade].rocketL3;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: RocketConstant[2]['Projectile Speed'],
+        });
+        const damageInfo = RocketDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = damageInfo['Rocket L3 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Explosive',
+            damageEffectObject: new ExplosiveDamageEffect({
+                explosiveEffectStat: damageInfo['Explosive Stat (%)'],
+            }),
+        });
+
         const defaultHitbox = CreateHitboxes(this.X, this.Y, [
             {
                 offsetX: 0 * CANVA_SCALEX,
@@ -489,7 +538,7 @@ export class RocketBulletLevel3
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
             frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 0.03,
+            framesLengthInTime: 1 / FRAME_RATE,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -503,14 +552,20 @@ export class RocketBulletLevel3
                     1,
                     () => {
                         this.CurrentHitbox = frame1Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius1L3;
+                        this.Damage = damageInfo['Radius 1 L3 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                     },
                 ],
                 [
                     2,
                     () => {
                         this.CurrentHitbox = frame2Hitbox;
-                        this.Damage = RocketDamageStats[playersDamageUpgrade].radius2L3;
+                        this.Damage = damageInfo['Radius 2 L3 Damage'];
+                        this.DamageEffectsController = new PlayerProjectileDamageEffectController({
+                            baseDamage: this.Damage,
+                        });
                         const upSubBullet = new RocketSubBullet(this.X + 3 * CANVA_SCALEX, this.Y, 'up');
                         const downSubBullet = new RocketSubBullet(
                             this.X + 3 * CANVA_SCALEX,
@@ -571,7 +626,7 @@ export class RocketSkill implements ISkill {
     readonly SkillName: PossibleSkillName;
     constructor() {
         this.Type = 'special';
-        this.SkillName = RocketConstant[0].skillName;
+        this.SkillName = RocketConstant[0]['Skill Name'];
     }
 
     public Effect() {
