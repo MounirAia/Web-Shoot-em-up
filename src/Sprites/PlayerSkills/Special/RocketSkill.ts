@@ -1,5 +1,5 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
-import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE, canvas } from '../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
 import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
@@ -10,9 +10,15 @@ import { IServicePlayer } from '../../Player.js';
 import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
-import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import {
+    CollideScenario,
+    CreateHitboxesWithInfoFile,
+    ISpriteWithHitboxes,
+    RectangleHitbox,
+} from '../../SpriteHitbox.js';
 import { ExplosiveDamageEffect } from '../DamageEffect/ExplosiveDamageEffect.js';
 import { ISkill, PossibleSkillName, SkillsTypeName } from '../Skills.js';
+import InfoRocketSkillSprite from '../../../SpriteInfoJSON/Skills/infoRocketSkill.js';
 
 export class RocketBulletLevel1
     extends Sprite
@@ -31,14 +37,16 @@ export class RocketBulletLevel1
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Rocket/RocketProjectileLevel1.png',
             ),
-            16,
-            16,
+            InfoRocketSkillSprite.Level1.Meta.TileDimensions.Width,
+            InfoRocketSkillSprite.Level1.Meta.TileDimensions.Height,
             x,
             y,
-            -6 * CANVA_SCALEX,
-            -5 * CANVA_SCALEY,
+            InfoRocketSkillSprite.Level1.Meta.SpriteShiftPosition.X,
+            InfoRocketSkillSprite.Level1.Meta.SpriteShiftPosition.X,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoRocketSkillSprite.Level1.Meta.RealDimension.Width,
+            InfoRocketSkillSprite.Level1.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -59,49 +67,26 @@ export class RocketBulletLevel1
             }),
         });
 
-        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 1 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 1 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 2 * CANVA_SCALEX,
-                height: 3 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 4 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 1 * CANVA_SCALEY,
-            },
+        const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level1.Hitbox.Frame0,
         ]);
-        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -2 * CANVA_SCALEX,
-                offsetY: -2 * CANVA_SCALEY,
-                width: 7 * CANVA_SCALEX,
-                height: 9 * CANVA_SCALEY,
-            },
+        const frame1Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level1.Hitbox.Frame1,
         ]);
-        const frame2Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -3 * CANVA_SCALEX,
-                offsetY: -3 * CANVA_SCALEY,
-                width: 9 * CANVA_SCALEX,
-                height: 11 * CANVA_SCALEY,
-            },
+        const frame2Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level1.Hitbox.Frame2,
         ]);
 
         this.CurrentHitbox = defaultHitbox;
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: InfoRocketSkillSprite.Level1.Animations.Idle.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level1.Animations.Idle.FrameLengthInTime,
+        });
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 1 / FRAME_RATE,
+            frames: InfoRocketSkillSprite.Level1.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level1.Animations.Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -190,14 +175,16 @@ export class RocketBulletLevel2
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Rocket/RocketProjectileLevel2.png',
             ),
-            16,
-            16,
+            InfoRocketSkillSprite.Level2.Meta.TileDimensions.Width,
+            InfoRocketSkillSprite.Level2.Meta.TileDimensions.Height,
             x,
             y,
-            -5 * CANVA_SCALEX,
-            -6 * CANVA_SCALEY,
+            InfoRocketSkillSprite.Level1.Meta.SpriteShiftPosition.X,
+            InfoRocketSkillSprite.Level1.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoRocketSkillSprite.Level2.Meta.RealDimension.Width,
+            InfoRocketSkillSprite.Level2.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -216,49 +203,28 @@ export class RocketBulletLevel2
                 explosiveEffectStat: damageInfo['Explosive Stat (%)'],
             }),
         });
-        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 1 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 1 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 4 * CANVA_SCALEX,
-                height: 3 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 5 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 1 * CANVA_SCALEY,
-            },
+        const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level2.Hitbox.Frame0,
         ]);
-        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -3 * CANVA_SCALEX,
-                offsetY: -5 * CANVA_SCALEY,
-                width: 12 * CANVA_SCALEX,
-                height: 13 * CANVA_SCALEY,
-            },
+        const frame1Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level2.Hitbox.Frame1,
         ]);
-        const frame2Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -4 * CANVA_SCALEX,
-                offsetY: -6 * CANVA_SCALEY,
-                width: 14 * CANVA_SCALEX,
-                height: 15 * CANVA_SCALEY,
-            },
+        const frame2Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level2.Hitbox.Frame2,
         ]);
+
         this.CurrentHitbox = defaultHitbox;
 
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: InfoRocketSkillSprite.Level2.Animations.Idle.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level2.Animations.Idle.FrameLengthInTime,
+        });
+
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 1 / FRAME_RATE,
+            frames: InfoRocketSkillSprite.Level2.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level2.Animations.Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -346,14 +312,16 @@ class RocketSubBullet
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Rocket/RocketSubProjectileLevel3.png',
             ),
-            16,
-            16,
+            InfoRocketSkillSprite.SubProjectile.Meta.TileDimensions.Width,
+            InfoRocketSkillSprite.SubProjectile.Meta.TileDimensions.Height,
             x,
             y,
-            -6 * CANVA_SCALEX,
-            -7 * CANVA_SCALEY,
+            InfoRocketSkillSprite.SubProjectile.Meta.SpriteShiftPosition.X,
+            InfoRocketSkillSprite.SubProjectile.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoRocketSkillSprite.SubProjectile.Meta.RealDimension.Width,
+            InfoRocketSkillSprite.SubProjectile.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -368,29 +336,20 @@ class RocketSubBullet
         this.Damage = RocketDamageStats[playersDamageUpgrade]['Sub Projectile L3 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage }); // do not add damage for sub bullet
 
-        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 3 * CANVA_SCALEX,
-                height: 2 * CANVA_SCALEY,
-            },
-        ]);
-        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -2 * CANVA_SCALEX,
-                offsetY: -2 * CANVA_SCALEY,
-                width: 7 * CANVA_SCALEX,
-                height: 7 * CANVA_SCALEY,
-            },
+        const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.SubProjectile.Hitbox.Frame0,
         ]);
         this.CurrentHitbox = defaultHitbox;
 
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: InfoRocketSkillSprite.SubProjectile.Animations.Idle.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.SubProjectile.Animations.Idle.FrameLengthInTime,
+        });
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [0, 1, 2, 3, 4],
-            framesLengthInTime: 1 / FRAME_RATE,
+            frames: InfoRocketSkillSprite.SubProjectile.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.SubProjectile.Animations.Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -426,6 +385,7 @@ class RocketSubBullet
     public Update(dt: number) {
         super.Update(dt);
         this.Y += this.BaseSpeed;
+        this.X += Math.abs(this.BaseSpeed) / 2;
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -458,14 +418,16 @@ export class RocketBulletLevel3
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Rocket/RocketProjectileLevel3.png',
             ),
-            16,
-            16,
+            InfoRocketSkillSprite.Level3.Meta.TileDimensions.Width,
+            InfoRocketSkillSprite.Level3.Meta.TileDimensions.Height,
             x,
             y,
-            -4 * CANVA_SCALEX,
-            -5 * CANVA_SCALEY,
+            InfoRocketSkillSprite.Level3.Meta.SpriteShiftPosition.X,
+            InfoRocketSkillSprite.Level3.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoRocketSkillSprite.Level3.Meta.RealDimension.Width,
+            InfoRocketSkillSprite.Level3.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -484,61 +446,27 @@ export class RocketBulletLevel3
             }),
         });
 
-        const defaultHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 2 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 2 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 1 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 4 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 2 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 5 * CANVA_SCALEX,
-                height: 6 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 7 * CANVA_SCALEX,
-                offsetY: 1 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 4 * CANVA_SCALEY,
-            },
-            {
-                offsetX: 8 * CANVA_SCALEX,
-                offsetY: 2 * CANVA_SCALEY,
-                width: 1 * CANVA_SCALEX,
-                height: 2 * CANVA_SCALEY,
-            },
+        const defaultHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level3.Hitbox.Frame0,
         ]);
-        const frame1Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -3 * CANVA_SCALEX,
-                offsetY: -2 * CANVA_SCALEY,
-                width: 15 * CANVA_SCALEX,
-                height: 13 * CANVA_SCALEY,
-            },
+        const frame1Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level3.Hitbox.Frame1,
         ]);
-        const frame2Hitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: -4 * CANVA_SCALEX,
-                offsetY: -5 * CANVA_SCALEY,
-                width: 16 * CANVA_SCALEX,
-                height: 16 * CANVA_SCALEY,
-            },
+        const frame2Hitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoRocketSkillSprite.Level3.Hitbox.Frame2,
         ]);
+
         this.CurrentHitbox = defaultHitbox;
 
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: InfoRocketSkillSprite.Level3.Animations.Idle.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level3.Animations.Idle.FrameLengthInTime,
+        });
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [0, 1, 2, 3, 4, 5],
-            framesLengthInTime: 1 / FRAME_RATE,
+            frames: InfoRocketSkillSprite.Level3.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoRocketSkillSprite.Level3.Animations.Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.BaseSpeed /= 2;
             },
@@ -566,12 +494,12 @@ export class RocketBulletLevel3
                         this.DamageEffectsController = new PlayerProjectileDamageEffectController({
                             baseDamage: this.Damage,
                         });
-                        const upSubBullet = new RocketSubBullet(this.X + 3 * CANVA_SCALEX, this.Y, 'up');
-                        const downSubBullet = new RocketSubBullet(
-                            this.X + 3 * CANVA_SCALEX,
-                            this.Y + 4 * CANVA_SCALEY,
-                            'down',
-                        );
+                        const { X: upX, Y: upY } =
+                            InfoRocketSkillSprite.SubProjectile.Meta.SpriteSpawnPosition.Projectile1;
+                        const { X: downX, Y: downY } =
+                            InfoRocketSkillSprite.SubProjectile.Meta.SpriteSpawnPosition.Projectile2;
+                        const upSubBullet = new RocketSubBullet(this.X + upX, this.Y + upY, 'up');
+                        const downSubBullet = new RocketSubBullet(this.X + downX, this.Y + downY, 'down');
                         ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                             upSubBullet,
                         );
@@ -635,13 +563,18 @@ export class RocketSkill implements ISkill {
         const rockets: IGeneratedSprite[] = [];
 
         if (skillLevel === 1) {
-            rockets.push(new RocketBulletLevel1(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
+            const { X: upX, Y: upY } = InfoRocketSkillSprite.Level1.Meta.SpriteShiftPositionOnPlayer.Up;
+            rockets.push(new RocketBulletLevel1(playerX + upX, playerY + upY));
         } else if (skillLevel === 2) {
-            rockets.push(new RocketBulletLevel2(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY));
-            rockets.push(new RocketBulletLevel2(playerX + 19 * CANVA_SCALEX, playerY + 12 * CANVA_SCALEY));
+            const { X: upX, Y: upY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Up;
+            const { X: downX, Y: downY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Down;
+            rockets.push(new RocketBulletLevel2(playerX + upX, playerY + upY));
+            rockets.push(new RocketBulletLevel2(playerX + downX, playerY + downY));
         } else if (skillLevel === 3) {
-            const rocket1 = new RocketBulletLevel3(playerX + 19 * CANVA_SCALEX, playerY - 5 * CANVA_SCALEY);
-            const rocket2 = new RocketBulletLevel3(playerX + 19 * CANVA_SCALEX, playerY + 12 * CANVA_SCALEY);
+            const { X: upX, Y: upY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Up;
+            const { X: downX, Y: downY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Down;
+            const rocket1 = new RocketBulletLevel3(playerX + upX, playerY + upY);
+            const rocket2 = new RocketBulletLevel3(playerX + downX, playerY + downY);
             rockets.push(rocket1, rocket2);
         }
 
