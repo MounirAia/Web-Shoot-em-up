@@ -91,7 +91,8 @@ class Player
 
     // Manage shooting rate of the player
     private baseTimeBeforeNextShoot: number;
-    private currentTimeBeforeNextShoot: number;
+    private currentTimeBeforeNextRegularShoot: number;
+    private currentTimeBeforeNextSpecialShoot: number;
 
     private currentSkill: Map<PlayerSkill, ISkill>;
 
@@ -134,7 +135,8 @@ class Player
         this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = 1;
         this.baseTimeBeforeNextShoot = 30;
-        this.currentTimeBeforeNextShoot = 0;
+        this.currentTimeBeforeNextRegularShoot = 0;
+        this.currentTimeBeforeNextSpecialShoot = 0;
 
         // Skill setup
         this.currentSkill = new Map();
@@ -248,16 +250,23 @@ class Player
 
         this.UpdateHitboxes(dt);
 
-        if (Keyboard.Space.IsDown && this.CanShoot) {
+        if (Keyboard.Space.IsDown && this.CanShootRegular) {
             const bulletXOffset = 34 * CANVA_SCALEX;
             const bulletYOffset = 8 * CANVA_SCALEY;
             const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
-
-            this.currentSkill.get('special')?.Effect();
         } else {
-            if (this.currentTimeBeforeNextShoot >= 0) {
-                this.currentTimeBeforeNextShoot -= this.AttackSpeed;
+            if (this.currentTimeBeforeNextRegularShoot >= 0) {
+                this.currentTimeBeforeNextRegularShoot -= this.AttackSpeed;
+            }
+        }
+
+        if (Keyboard.Space.IsDown && this.CanShootSpecial) {
+            this.currentSkill.get('special')?.Effect();
+        } else if (this.currentSkill.get('special')) {
+            const specialSkillAS = this.currentSkill.get('special')?.AttackSpeed?.();
+            if (this.currentTimeBeforeNextSpecialShoot >= 0 && specialSkillAS) {
+                this.currentTimeBeforeNextSpecialShoot -= specialSkillAS;
             }
         }
     }
@@ -380,9 +389,18 @@ class Player
         return this.BaseAttackSpeed * this.AttackSpeedStats;
     }
 
-    public get CanShoot(): boolean {
-        if (this.currentTimeBeforeNextShoot <= 0) {
-            this.currentTimeBeforeNextShoot = this.baseTimeBeforeNextShoot;
+    public get CanShootRegular(): boolean {
+        if (this.currentTimeBeforeNextRegularShoot <= 0) {
+            this.currentTimeBeforeNextRegularShoot = this.baseTimeBeforeNextShoot;
+            return true;
+        }
+
+        return false;
+    }
+
+    public get CanShootSpecial(): boolean {
+        if (this.currentTimeBeforeNextSpecialShoot <= 0) {
+            this.currentTimeBeforeNextSpecialShoot = this.baseTimeBeforeNextShoot;
             return true;
         }
 

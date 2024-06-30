@@ -584,4 +584,12 @@ export class RocketSkill implements ISkill {
             });
         }
     }
+
+    public AttackSpeed() {
+        const damageInfo = RocketDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        const skillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+        if (skillLevel === 1) return damageInfo['Rocket L1 Attack Speed'];
+        if (skillLevel === 2) return damageInfo['Rocket L2 Attack Speed'];
+        if (skillLevel === 3) return damageInfo['Rocket L3 Attack Speed'];
+    }
 }

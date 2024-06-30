@@ -45,7 +45,7 @@ export interface ISpriteWithHealthUpgrades {
 export interface ISpriteWithAttackSpeed {
     BaseAttackSpeed: number;
     AttackSpeed: number;
-    CanShoot?: boolean;
+    CanShootRegular?: boolean;
 }
 export interface ISpriteWithAttackSpeedUpgrades {
     AttackSpeedUpgrades: number[];
