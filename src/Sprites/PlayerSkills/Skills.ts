@@ -5,4 +5,5 @@ export interface ISkill {
     Type: SkillsTypeName;
     SkillName: PossibleSkillName;
     Effect: () => void;
+    AttackSpeed?: () => void;
 }
