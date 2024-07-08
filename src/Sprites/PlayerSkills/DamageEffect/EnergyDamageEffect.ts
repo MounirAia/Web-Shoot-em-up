@@ -17,8 +17,8 @@ export class EnergyDamageEffect implements IDamageEffect {
     public Damage(parameters: { target: IEnemy; baseDamage: number; targetResistanceStat?: number }): number {
         const { target, baseDamage, targetResistanceStat = 0 } = parameters;
         const rndNumber = Math.random();
-        target.StatesController.PlayState({ stateName: 'onEnergy' });
         if (Math.max(0, this.probabilityOfCriticalHit - targetResistanceStat) / 100 >= rndNumber) {
+            target.StatesController.PlayState({ stateName: 'onEnergy' });
             return baseDamage * (EnergyDamageEffect.criticalDamageMultiplier - 1);
         }
         return 0;

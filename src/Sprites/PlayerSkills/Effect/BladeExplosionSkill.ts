@@ -3,7 +3,8 @@ import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
-import { BladeDamage } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
+import { BladeDamageStats } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
+import { IServiceUtilManager } from '../../../UtilManager.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
@@ -12,6 +13,7 @@ import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDa
 import { Sprite } from '../../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import { EnergyDamageEffect } from '../DamageEffect/EnergyDamageEffect.js';
 import { PossibleSkillName } from '../Skills';
 import { ISkill, SkillsTypeName } from '../Skills.js';
 
@@ -46,12 +48,26 @@ class BladeLevel1
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = BladeDamage[playersDamageUpgrade].bladeL1;
+
+        const damageInfo = BladeDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = damageInfo['Blade L1 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
-        this.BaseSpeed = BladeConstant[0].projectileSpeed / Math.sqrt(2);
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Energy',
+            damageEffectObject: new EnergyDamageEffect({
+                probabilityOfCriticalHit: damageInfo['Energy Stat (%)'],
+            }),
+        });
+
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: BladeConstant[0]['Projectile Speed'],
+        });
+        this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
+
         this.direction = direction;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[0].hitRatePerSecond);
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[0]['Hit Rate Per Second']);
         this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -144,12 +160,26 @@ class BladeLevel2
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = BladeDamage[playersDamageUpgrade].bladeL2;
+
+        const damageInfo = BladeDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = damageInfo['Blade L2 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
-        this.BaseSpeed = BladeConstant[1].projectileSpeed / Math.sqrt(2);
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Energy',
+            damageEffectObject: new EnergyDamageEffect({
+                probabilityOfCriticalHit: damageInfo['Energy Stat (%)'],
+            }),
+        });
+
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: BladeConstant[1]['Projectile Speed'],
+        });
+        this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
+
         this.direction = direction;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[1].hitRatePerSecond);
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[1]['Hit Rate Per Second']);
         this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
             {
@@ -243,18 +273,32 @@ class BladeLevel3
         );
         this.Generator = 'player';
         this.Category = 'projectile';
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
-        this.Damage = BladeDamage[playersDamageUpgrade].bladeL3;
+
+        const damageInfo = BladeDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+        this.Damage = damageInfo['Blade L3 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
-        this.baseSpeed = BladeConstant[2].projectileSpeed / Math.sqrt(2);
+        this.DamageEffectsController.AddDamageEffects({
+            damageEffectName: 'Energy',
+            damageEffectObject: new EnergyDamageEffect({
+                probabilityOfCriticalHit: damageInfo['Energy Stat (%)'],
+            }),
+        });
+
+        this.baseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: BladeConstant[2]['Projectile Speed'],
+        });
+        this.baseSpeed = this.baseSpeed / Math.sqrt(2);
+
         this.direction = direction;
         this.isSpeedReverted = false;
         this.spawnXPosition = this.X;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[2].hitRatePerSecond);
+        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[2]['Hit Rate Per Second']);
         this.timeLeftBeforeBladeCanHit = 0;
 
         const actionOnEnemyDestroyed = () => {
-            this.Damage = this.Damage * BladeConstant[2].damageIncrease;
+            this.Damage = this.Damage * BladeConstant[2]['Damage Increase'];
         };
         ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
             'enemy destroyed',
