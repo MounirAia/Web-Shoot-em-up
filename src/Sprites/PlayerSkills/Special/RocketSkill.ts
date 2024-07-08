@@ -332,7 +332,7 @@ class RocketSubBullet
         });
 
         this.BaseSpeed = direction === 'up' ? -projectileSpeed : projectileSpeed;
-        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfDamageUpgrade;
+        const playersDamageUpgrade = ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts;
         this.Damage = RocketDamageStats[playersDamageUpgrade]['Sub Projectile L3 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage }); // do not add damage for sub bullet
 
