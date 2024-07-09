@@ -6,7 +6,11 @@ import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedS
 import { PlayerProjectileDamageEffectController } from '../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../SpriteAttributes.js';
-import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
+import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
+import { PlayerBulletDamageStats } from '../../StatsJSON/Skills/PlayerBulletDamage.js';
+import { IServicePlayer } from '../Player.js';
+import { IServiceUtilManager } from '../../UtilManager.js';
+import InfoPlayerBulletSprite from '../../SpriteInfoJSON/Skills/infoPlayerBullet.js';
 
 export class RegularPlayerBullet
     extends Sprite
@@ -26,36 +30,45 @@ export class RegularPlayerBullet
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Player/RegularPlayerBullet.png',
             ),
-            8,
-            8,
+            InfoPlayerBulletSprite.Meta.TileDimensions.Width,
+            InfoPlayerBulletSprite.Meta.TileDimensions.Height,
             x,
             y,
-            -3 * CANVA_SCALEX,
-            -3 * CANVA_SCALEY,
+            InfoPlayerBulletSprite.Meta.SpriteShiftPosition.X,
+            InfoPlayerBulletSprite.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoPlayerBulletSprite.Meta.RealDimension.Width,
+            InfoPlayerBulletSprite.Meta.RealDimension.Height,
         );
+
+        const damageInfo = PlayerBulletDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
+
         this.Generator = 'player';
         this.Category = 'projectile';
-        this.BaseSpeed = 10;
-        this.Damage = 3;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: damageInfo['Projectile Speed'],
+        });
+
+        this.Damage = damageInfo['Player Bullet Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
 
-        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0,
-                offsetY: 0,
-                width: 2 * CANVA_SCALEX,
-                height: 2 * CANVA_SCALEY,
-            },
-        ]);
+        this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [...InfoPlayerBulletSprite.Hitbox]);
 
-        this.AnimationsController.AddAnimation({ animation: 'idle', frames: [0], framesLengthInTime: 1 });
+        this.AnimationsController.AddAnimation({
+            animation: 'idle',
+            frames: InfoPlayerBulletSprite.Animations.Idle.Frames,
+            framesLengthInTime: InfoPlayerBulletSprite.Animations.Idle.FrameLengthInTime,
+        });
+
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [0, 1, 2, 3, 4],
-            framesLengthInTime: 0.03,
+            frames: InfoPlayerBulletSprite.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoPlayerBulletSprite.Animations.Destroyed.FrameLengthInTime,
             afterPlayingAnimation: () => {
+                console.log("I'm destroyed!");
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );
@@ -90,5 +103,11 @@ export class RegularPlayerBullet
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
         }
+    }
+
+    public AttackSpeed() {
+        return PlayerBulletDamageStats[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts][
+            'Player Bullet Attack Speed'
+        ];
     }
 }
