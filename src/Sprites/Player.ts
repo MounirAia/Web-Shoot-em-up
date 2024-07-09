@@ -5,7 +5,7 @@ import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import InfoPlayer from '../SpriteInfoJSON/Player/infoPlayer.js';
-import { RegularPlayerBullet } from './Bullets/PlayerBullet.js';
+import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
 import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
 import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
