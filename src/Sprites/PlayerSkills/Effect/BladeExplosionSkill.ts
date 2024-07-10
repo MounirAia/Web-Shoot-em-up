@@ -1,6 +1,6 @@
 import { IServiceEventManager } from '../../../EventManager.js';
 import { IServiceImageLoader } from '../../../ImageLoader.js';
-import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE, canvas } from '../../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
 import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
 import { BladeDamageStats } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
@@ -12,10 +12,16 @@ import { IServicePlayer } from '../../Player.js';
 import { PlayerProjectileDamageEffectController } from '../../PlayerProjectileDamageEffectsController.js';
 import { Sprite } from '../../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../../SpriteAttributes.js';
-import { CollideScenario, CreateHitboxes, ISpriteWithHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
+import {
+    CollideScenario,
+    CreateHitboxesWithInfoFile,
+    ISpriteWithHitboxes,
+    RectangleHitbox,
+} from '../../SpriteHitbox.js';
 import { EnergyDamageEffect } from '../DamageEffect/EnergyDamageEffect.js';
 import { PossibleSkillName } from '../Skills';
 import { ISkill, SkillsTypeName } from '../Skills.js';
+import InfoBladeExplosionSkillSprite from '../../../SpriteInfoJSON/Skills/infoBladeExplosion.js';
 
 class BladeLevel1
     extends Sprite
@@ -37,14 +43,16 @@ class BladeLevel1
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel1.png',
             ),
-            9,
-            9,
+            InfoBladeExplosionSkillSprite.Level1.Meta.TileDimensions.Width,
+            InfoBladeExplosionSkillSprite.Level1.Meta.TileDimensions.Height,
             x,
             y,
-            -3 * CANVA_SCALEX,
-            -3 * CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level1.Meta.SpriteShiftPosition.X,
+            InfoBladeExplosionSkillSprite.Level1.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level1.Meta.RealDimension.Width,
+            InfoBladeExplosionSkillSprite.Level1.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -67,18 +75,17 @@ class BladeLevel1
         this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
 
         this.direction = direction;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[0]['Hit Rate Per Second']);
+        this.baseTimeBeforeBladeCanHit = 1;
         this.timeLeftBeforeBladeCanHit = 0;
-        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 3 * CANVA_SCALEX,
-                height: 3 * CANVA_SCALEY,
-            },
+        this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoBladeExplosionSkillSprite.Level1.Hitbox,
         ]);
 
-        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.AddAnimation({
+            animation: 'spin',
+            frames: InfoBladeExplosionSkillSprite.Level1.Animations.Spin.Frames,
+            framesLengthInTime: InfoBladeExplosionSkillSprite.Level1.Animations.Spin.FrameLengthInTime,
+        });
         this.AnimationsController.PlayAnimation({ animation: 'spin', loop: true });
 
         this.Collide = new Map();
@@ -110,7 +117,7 @@ class BladeLevel1
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
-        this.timeLeftBeforeBladeCanHit -= dt;
+        this.timeLeftBeforeBladeCanHit -= BladeConstant[0]['Hit Rate Per Second'] * dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
@@ -149,14 +156,16 @@ class BladeLevel2
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel2&3.png',
             ),
-            9,
-            9,
+            InfoBladeExplosionSkillSprite.Level2.Meta.TileDimensions.Width,
+            InfoBladeExplosionSkillSprite.Level2.Meta.TileDimensions.Height,
             x,
             y,
-            -0 * CANVA_SCALEX,
-            -0 * CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level2.Meta.SpriteShiftPosition.X,
+            InfoBladeExplosionSkillSprite.Level2.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level2.Meta.RealDimension.Width,
+            InfoBladeExplosionSkillSprite.Level2.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -179,18 +188,17 @@ class BladeLevel2
         this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
 
         this.direction = direction;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[1]['Hit Rate Per Second']);
+        this.baseTimeBeforeBladeCanHit = 1;
         this.timeLeftBeforeBladeCanHit = 0;
-        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 9 * CANVA_SCALEX,
-                height: 9 * CANVA_SCALEY,
-            },
+        this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoBladeExplosionSkillSprite.Level2.Hitbox,
         ]);
 
-        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.AddAnimation({
+            animation: 'spin',
+            frames: InfoBladeExplosionSkillSprite.Level2.Animations.Spin.Frames,
+            framesLengthInTime: InfoBladeExplosionSkillSprite.Level2.Animations.Spin.FrameLengthInTime,
+        });
         this.AnimationsController.PlayAnimation({ animation: 'spin', loop: true });
 
         this.Collide = new Map();
@@ -221,7 +229,7 @@ class BladeLevel2
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(this);
         }
 
-        this.timeLeftBeforeBladeCanHit -= dt;
+        this.timeLeftBeforeBladeCanHit -= BladeConstant[1]['Hit Rate Per Second'] * dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);
@@ -262,14 +270,16 @@ class BladeLevel3
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel2&3.png',
             ),
-            9,
-            9,
+            InfoBladeExplosionSkillSprite.Level3.Meta.TileDimensions.Width,
+            InfoBladeExplosionSkillSprite.Level3.Meta.TileDimensions.Height,
             x,
             y,
-            0 * CANVA_SCALEX,
-            0 * CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level3.Meta.SpriteShiftPosition.X,
+            InfoBladeExplosionSkillSprite.Level3.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
             CANVA_SCALEY,
+            InfoBladeExplosionSkillSprite.Level3.Meta.RealDimension.Width,
+            InfoBladeExplosionSkillSprite.Level3.Meta.RealDimension.Height,
         );
         this.Generator = 'player';
         this.Category = 'projectile';
@@ -294,31 +304,31 @@ class BladeLevel3
         this.direction = direction;
         this.isSpeedReverted = false;
         this.spawnXPosition = this.X;
-        this.baseTimeBeforeBladeCanHit = FRAME_RATE / (FRAME_RATE * BladeConstant[2]['Hit Rate Per Second']);
+        this.baseTimeBeforeBladeCanHit = 1;
         this.timeLeftBeforeBladeCanHit = 0;
 
         const actionOnEnemyDestroyed = () => {
             this.Damage = this.Damage * BladeConstant[2]['Damage Increase'];
+            this.DamageEffectsController.SetBaseDamage(this.Damage);
         };
         ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
             'enemy destroyed',
             actionOnEnemyDestroyed,
         );
 
-        this.CurrentHitbox = CreateHitboxes(this.X, this.Y, [
-            {
-                offsetX: 0 * CANVA_SCALEX,
-                offsetY: 0 * CANVA_SCALEY,
-                width: 9 * CANVA_SCALEX,
-                height: 9 * CANVA_SCALEY,
-            },
+        this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
+            ...InfoBladeExplosionSkillSprite.Level3.Hitbox,
         ]);
 
-        this.AnimationsController.AddAnimation({ animation: 'spin', frames: [0, 1, 2, 3], framesLengthInTime: 0.05 });
+        this.AnimationsController.AddAnimation({
+            animation: 'spin',
+            frames: InfoBladeExplosionSkillSprite.Level3.Animations.Spin.Frames,
+            framesLengthInTime: InfoBladeExplosionSkillSprite.Level3.Animations.Spin.FrameLengthInTime,
+        });
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
-            frames: [4, 5],
-            framesLengthInTime: 0.05,
+            frames: InfoBladeExplosionSkillSprite.Level3.Animations.Destroyed.Frames,
+            framesLengthInTime: InfoBladeExplosionSkillSprite.Level3.Animations.Destroyed.FrameLengthInTime,
             afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
                     'enemy destroyed',
@@ -365,7 +375,7 @@ class BladeLevel3
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
         }
 
-        this.timeLeftBeforeBladeCanHit -= dt;
+        this.timeLeftBeforeBladeCanHit -= BladeConstant[2]['Hit Rate Per Second'] * dt;
         if (this.CanBladeHit) {
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerProjectileCollideWithEnemies(this);

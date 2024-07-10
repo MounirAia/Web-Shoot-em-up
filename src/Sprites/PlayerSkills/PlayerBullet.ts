@@ -32,8 +32,8 @@ export class RegularPlayerBullet
             ),
             InfoPlayerBulletSprite.Meta.TileDimensions.Width,
             InfoPlayerBulletSprite.Meta.TileDimensions.Height,
-            x,
-            y,
+            x + InfoPlayerBulletSprite.Meta.SpriteShiftPositionOnPlayer.X,
+            y + InfoPlayerBulletSprite.Meta.SpriteShiftPositionOnPlayer.Y,
             InfoPlayerBulletSprite.Meta.SpriteShiftPosition.X,
             InfoPlayerBulletSprite.Meta.SpriteShiftPosition.Y,
             CANVA_SCALEX,
@@ -68,7 +68,6 @@ export class RegularPlayerBullet
             frames: InfoPlayerBulletSprite.Animations.Destroyed.Frames,
             framesLengthInTime: InfoPlayerBulletSprite.Animations.Destroyed.FrameLengthInTime,
             afterPlayingAnimation: () => {
-                console.log("I'm destroyed!");
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
                 );

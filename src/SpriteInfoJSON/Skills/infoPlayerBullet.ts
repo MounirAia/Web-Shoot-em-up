@@ -14,6 +14,10 @@ const Info = {
             X: -3 * CANVA_SCALEX,
             Y: -3 * CANVA_SCALEY,
         },
+        SpriteShiftPositionOnPlayer: {
+            X: 34 * CANVA_SCALEX,
+            Y: 8 * CANVA_SCALEY,
+        },
     },
     Hitbox: [{ X: 0, Y: 0, Width: 2 * CANVA_SCALEX, Height: 2 * CANVA_SCALEY }],
     Animations: {
