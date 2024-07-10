@@ -24,29 +24,18 @@ import {
     SupportConfiguration,
 } from './PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
 import { Sprite } from './Sprite.js';
-import {
-    ISpriteWithAttackSpeed,
-    ISpriteWithAttackSpeedUpgrades,
-    ISpriteWithDamage,
-    ISpriteWithDamageUpgrades,
-    ISpriteWithHealth,
-    ISpriteWithHealthUpgrades,
-    ISpriteWithSpeed,
-} from './SpriteAttributes.js';
+import { ISpriteWithDamage, ISpriteWithHealth, ISpriteWithSpeed } from './SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
+import { IServiceUtilManager } from '../UtilManager';
+import PlayerStats from '../StatsJSON/PlayerStats.js';
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
-    AddDamageUpgrade(upgrade: number): void;
-    AddAttackSpeedStats(upgrade: number): void;
-    AddHealthUpgrade(upgrade: number): void;
     PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void;
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
-    DamageStats: number;
     MaxHealth: number;
     NumberOfBoosts: number;
-    NumberOfDamageUpgrade: number;
     SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
     EffectSkillLevel: number;
@@ -57,29 +46,14 @@ export interface IServicePlayer {
 
 type PlayerSkill = 'effect' | 'special' | 'support';
 
-class Player
-    extends Sprite
-    implements
-        IServicePlayer,
-        ISpriteWithSpeed,
-        ISpriteWithHitboxes,
-        ISpriteWithDamageUpgrades,
-        ISpriteWithHealth,
-        ISpriteWithHealthUpgrades,
-        ISpriteWithAttackSpeed,
-        ISpriteWithAttackSpeedUpgrades
-{
+class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISpriteWithHitboxes, ISpriteWithHealth {
     private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
     private numberOfBoosts: number;
-    DamageUpgrades: number[];
-    HealthUpgrades: number[];
     BaseHealth: number;
     private currentHealth: number;
-    AttackSpeedUpgrades: number[];
-    BaseAttackSpeed: number;
 
     private moneyInWallet: number;
     private specialSkillLevel: number;
@@ -87,10 +61,10 @@ class Player
     private supportSkillLevel: number;
 
     // makes player invulnerable, ex:when collide with enemies
-    private readonly invulnerabilityTimePeriod: number;
+    private invulnerabilityTimePeriod: number;
 
     // Manage shooting rate of the player
-    private baseTimeBeforeNextShoot: number;
+    private baseTimeBeforeNextShootInFrames: number;
     private currentTimeBeforeNextRegularShoot: number;
     private currentTimeBeforeNextSpecialShoot: number;
 
@@ -120,21 +94,23 @@ class Player
             InfoPlayer.Meta.RealDimension.Height,
         );
         ServiceLocator.AddService('Player', this);
-
-        this.baseSpeed = 5;
         this.numberOfBoosts = 0;
-        this.DamageUpgrades = [];
-        this.HealthUpgrades = [];
-        this.BaseHealth = 100;
+
+        this.baseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes:
+                PlayerStats[this.NumberOfBoosts]['Speed of the Player (Number Frames to HalfScreen Distance)'],
+        });
+
+        this.BaseHealth = PlayerStats[this.NumberOfBoosts]['Base Health'];
         this.currentHealth = this.BaseHealth;
-        this.AttackSpeedUpgrades = [];
-        this.BaseAttackSpeed = 3;
         this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
         this.supportSkillLevel = 0;
-        this.invulnerabilityTimePeriod = 1;
-        this.baseTimeBeforeNextShoot = 30;
+        this.invulnerabilityTimePeriod = PlayerStats[this.NumberOfBoosts]['Invulnerability Time Period (Seconds)'];
+        this.baseTimeBeforeNextShootInFrames = 1; // in seconds
         this.currentTimeBeforeNextRegularShoot = 0;
         this.currentTimeBeforeNextSpecialShoot = 0;
 
@@ -257,7 +233,8 @@ class Player
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         } else {
             if (this.currentTimeBeforeNextRegularShoot >= 0) {
-                this.currentTimeBeforeNextRegularShoot -= this.AttackSpeed;
+                const bulletAS = new RegularPlayerBullet(this.X, this.Y).AttackSpeed() * dt;
+                this.currentTimeBeforeNextRegularShoot -= bulletAS;
             }
         }
 
@@ -266,7 +243,7 @@ class Player
         } else if (this.currentSkill.get('special')) {
             const specialSkillAS = this.currentSkill.get('special')?.AttackSpeed?.();
             if (this.currentTimeBeforeNextSpecialShoot >= 0 && specialSkillAS) {
-                this.currentTimeBeforeNextSpecialShoot -= specialSkillAS;
+                this.currentTimeBeforeNextSpecialShoot -= specialSkillAS * dt;
             }
         }
     }
@@ -284,18 +261,6 @@ class Player
 
     Coordinate(): { x: number; y: number } {
         return { x: this.X, y: this.Y };
-    }
-
-    AddDamageUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.DamageUpgrades.push(upgrade);
-    }
-
-    AddHealthUpgrade(upgrade: number): void {
-        if (upgrade > 0) this.HealthUpgrades.push(upgrade);
-    }
-
-    AddAttackSpeedStats(upgrade: number): void {
-        if (upgrade > 0) this.AttackSpeedUpgrades.push(upgrade);
     }
 
     PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void {
@@ -342,30 +307,31 @@ class Player
 
     private set NumberOfBoosts(value: number) {
         this.numberOfBoosts = value;
+
+        // Update the player stats based on the number of boosts
+        this.updatePlayerStatsOnBoost();
     }
 
-    get DamageStats(): number {
-        return this.DamageUpgrades.reduce((total, damage) => {
-            return total + damage;
-        }, 1);
-    }
+    private updatePlayerStatsOnBoost() {
+        const numberOfBoosts = this.NumberOfBoosts;
 
-    get NumberOfDamageUpgrade(): number {
-        return this.DamageUpgrades.length;
-    }
-
-    private get healthStats(): number {
-        return this.HealthUpgrades.reduce((total, health) => {
-            return total + health;
-        }, 1);
+        this.BaseHealth = PlayerStats[numberOfBoosts]['Base Health'];
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: PlayerStats[numberOfBoosts]['Speed of the Player (Number Frames to HalfScreen Distance)'],
+        });
+        this.invulnerabilityTimePeriod = PlayerStats[numberOfBoosts]['Invulnerability Time Period (Seconds)'];
     }
 
     get MaxHealth(): number {
-        return this.BaseHealth * this.healthStats;
+        return this.BaseHealth;
     }
+
     get CurrentHealth(): number {
         return this.currentHealth;
     }
+
     set CurrentHealth(value: number) {
         if (value >= this.MaxHealth) {
             this.currentHealth = this.MaxHealth;
@@ -380,18 +346,9 @@ class Player
         }
     }
 
-    get AttackSpeedStats(): number {
-        return this.AttackSpeedUpgrades.reduce((total, attackSpeed) => {
-            return total + attackSpeed;
-        }, 1);
-    }
-    get AttackSpeed(): number {
-        return this.BaseAttackSpeed * this.AttackSpeedStats;
-    }
-
     public get CanShootRegular(): boolean {
         if (this.currentTimeBeforeNextRegularShoot <= 0) {
-            this.currentTimeBeforeNextRegularShoot = this.baseTimeBeforeNextShoot;
+            this.currentTimeBeforeNextRegularShoot = this.baseTimeBeforeNextShootInFrames;
             return true;
         }
 
@@ -400,7 +357,7 @@ class Player
 
     public get CanShootSpecial(): boolean {
         if (this.currentTimeBeforeNextSpecialShoot <= 0) {
-            this.currentTimeBeforeNextSpecialShoot = this.baseTimeBeforeNextShoot;
+            this.currentTimeBeforeNextSpecialShoot = this.baseTimeBeforeNextShootInFrames;
             return true;
         }
 
