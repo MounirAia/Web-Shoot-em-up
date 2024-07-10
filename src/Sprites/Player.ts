@@ -227,9 +227,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.UpdateHitboxes(dt);
 
         if (Keyboard.Space.IsDown && this.CanShootRegular) {
-            const bulletXOffset = 34 * CANVA_SCALEX;
-            const bulletYOffset = 8 * CANVA_SCALEY;
-            const bullet = new RegularPlayerBullet(this.X + bulletXOffset, this.Y + bulletYOffset);
+            const bullet = new RegularPlayerBullet(this.X, this.Y);
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         } else {
             if (this.currentTimeBeforeNextRegularShoot >= 0) {

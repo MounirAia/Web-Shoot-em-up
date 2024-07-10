@@ -34,6 +34,10 @@ export class PlayerProjectileDamageEffectController {
         return damageToReturn;
     }
 
+    public SetBaseDamage(value: number) {
+        this.baseDamage = value;
+    }
+
     private computeShortDamageEffect(parameters: { projectileDamage: number; target: IEnemy }): number {
         const { target, projectileDamage } = parameters;
         // Compute the remaining damage using the baseDamage of the projectile as a starting point
