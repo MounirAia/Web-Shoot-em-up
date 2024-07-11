@@ -386,7 +386,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 let player: Player;
 export function LoadPlayer() {
     const imgPlayer =
-        ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/player.png');
+        ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/Player.png');
 
     const x = 250;
     const y = 250;
