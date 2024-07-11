@@ -11,10 +11,6 @@ let bigShipImage: HTMLImageElement | undefined;
 let manyEnemies: HTMLImageElement | undefined;
 
 /* Change it during refactor of ImageLoader to AssetManager */
-let pixelFont = new FontFace('pixel', 'url(../fonts/PressStart2P-Regular.ttf)');
-pixelFont.load().then(() => {
-    document.fonts.add(pixelFont);
-});
 
 export function LoadMainMenu() {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
@@ -22,15 +18,8 @@ export function LoadMainMenu() {
     const heightTitle = 9 * CANVA_SCALEY;
     const xTitle = 92 * CANVA_SCALEX; // canvas.width / 2 - widthPlayButton / 2;
     const yTitle = 18 * CANVA_SCALEY; // canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
-    title = new FieldWithText(
-        xTitle,
-        yTitle,
-        widthTitle,
-        heightTitle,
-        "WEB SHOOT'EM UP",
-        9 * CANVA_SCALEX,
-        pixelFont.family,
-    );
+    const fontFamily = 'pixel';
+    title = new FieldWithText(xTitle, yTitle, widthTitle, heightTitle, "WEB SHOOT'EM UP", 9 * CANVA_SCALEX, fontFamily);
     title.HasBorderOnAllSide = false;
     title.HasBottomBorder = true;
 
@@ -45,7 +34,7 @@ export function LoadMainMenu() {
         heightPlayButton,
         'PLAY',
         6 * CANVA_SCALEX,
-        pixelFont.family,
+        fontFamily,
         true,
         () => {
             SceneManager.PlayScene('Game');
@@ -63,7 +52,7 @@ export function LoadMainMenu() {
         heightOptionButton,
         'OPTION',
         6 * CANVA_SCALEX,
-        pixelFont.family,
+        fontFamily,
         true,
     );
 

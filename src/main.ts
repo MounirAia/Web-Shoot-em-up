@@ -35,7 +35,7 @@ function load() {
     LoadCollideManager();
     LoadWaveManager();
     LoadPlayer();
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
 function update(dt: number) {
