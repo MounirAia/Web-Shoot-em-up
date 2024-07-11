@@ -1,5 +1,5 @@
+/// <reference types="vite/client" />
 import { ServiceLocator } from './ServiceLocator.js';
-
 export interface IServiceImageLoader {
     GetImage(imagePath: string): HTMLImageElement;
     IsGameReady(): boolean;
@@ -10,14 +10,15 @@ class ImageLoader implements IServiceImageLoader {
     private listImages: { [key: string]: HTMLImageElement };
     private numberImagesLoaded = 0;
 
-    constructor(imagesPath: string[]) {
+    constructor(imagesPath: Record<string, string>) {
         this.listImages = {};
-        for (const imagePath of imagesPath) {
-            this.listImages[imagePath] = new Image();
-            this.listImages[imagePath].src = imagePath;
-            this.listImages[imagePath].onload = () => {
+        const imagesPathEntries = Object.entries(imagesPath);
+        for (const [key, imagePath] of imagesPathEntries) {
+            this.listImages[key] = new Image();
+            this.listImages[key].src = imagePath;
+            this.listImages[key].onload = () => {
                 this.numberImagesLoaded++;
-                if (this.numberImagesLoaded === imagesPath.length) ImageLoader.isGameReady = true;
+                if (this.numberImagesLoaded === imagesPathEntries.length) ImageLoader.isGameReady = true;
             };
 
             ServiceLocator.AddService('ImageLoader', this);
@@ -34,40 +35,15 @@ class ImageLoader implements IServiceImageLoader {
 }
 
 export function LoadImageLoader() {
-    // load images
-    const assets: string[] = [];
-    assets.push('images/player.png');
-    assets.push('images/galaxy.png');
-    assets.push('images/enemyred.png');
-    assets.push('images/MenuScene/player-ship.png');
-    assets.push('images/MenuScene/many-enemies.png');
-    assets.push('images/Player/player.png');
-    assets.push('images/Player/RegularPlayerBullet.png');
-    assets.push('images/Enemies/Diamond/BigDiamond/BigDiamond.png');
-    assets.push('images/Enemies/Triangle/Triangle.png');
-    assets.push('images/Enemies/EnemiesBullet.png');
-    assets.push('images/Skills/Rocket/RocketProjectileLevel1.png');
-    assets.push('images/Skills/Rocket/RocketProjectileLevel2.png');
-    assets.push('images/Skills/Rocket/RocketProjectileLevel3.png');
-    assets.push('images/Skills/Rocket/RocketSubProjectileLevel3.png');
-    assets.push('images/Player/Cannon.png'); // To remove after setup
-    assets.push('images/Skills/Upgrade/Rocket/Level1.png');
-    assets.push('images/Skills/Upgrade/Rocket/Level2.png');
-    assets.push('images/Skills/Upgrade/Rocket/Level3.png');
-    assets.push('images/Skills/Upgrade/EffectEvolution.png');
-    assets.push('images/Skills/Upgrade/SupportEvolution.png');
-    assets.push('images/Skills/Blade/BladeLevel1.png');
-    assets.push('images/Skills/Blade/BladeLevel2&3.png');
-    assets.push('images/Skills/Mirror/MirrorLevel1.png');
-    assets.push('images/Skills/Mirror/MirrorLevel2&3.png');
-    assets.push('images/Skills/Mirror/Portal.png');
-    assets.push('images/Skills/Mirror/ExplosiveEntity.png');
-    assets.push('images/Skills/FuelChargeShot/FrameLevel1.png');
-    assets.push('images/Skills/FuelChargeShot/LaserLevel1.png');
-    assets.push('images/Skills/FuelChargeShot/FrameLevel2.png');
-    assets.push('images/Skills/FuelChargeShot/LaserLevel2.png');
-    assets.push('images/Skills/FuelChargeShot/FrameLevel3.png');
-    assets.push('images/Skills/FuelChargeShot/LaserLevel3.png');
+    // load all the images in the images folder
+    const images = import.meta.glob('./images/**/*.png', { eager: true });
+
+    // Create a dictionary of all the images with the path as the key and the image as the value (in the final build the image will be a base64 string)
+    // This Image Value in the 'default' key could be a path to the image file in the dist directory, or it could be a base64-encoded data URL if the image is small
+    // enough and your Vite configuration allows it.
+    const assets = Object.fromEntries(
+        Object.entries(images).map(([path, module]: [string, any]) => [path.replace('./', ''), module.default]),
+    );
 
     new ImageLoader(assets); // Load all the assets and add itself as a service
 }
