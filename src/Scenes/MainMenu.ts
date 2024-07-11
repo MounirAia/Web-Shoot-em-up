@@ -3,6 +3,7 @@ import { IServiceSceneManager } from '../SceneManager.js';
 import { canvas, CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { FieldWithText } from '../UserInterface/Field.js';
+import { IServiceUtilManager } from '../UtilManager.js';
 
 let title: FieldWithText;
 let playButton: undefined | FieldWithText;
@@ -41,24 +42,8 @@ export function LoadMainMenu() {
         },
     );
 
-    const widthOptionButton = 41 * CANVA_SCALEX;
-    const heightOptionButton = 11 * CANVA_SCALEY;
-    const xOptionButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
-    const yOptionButton = 88 * CANVA_SCALEY; //canvas.height / 2 + heightPlayButton / 2;
-    optionButton = new FieldWithText(
-        xOptionButton,
-        yOptionButton,
-        widthOptionButton,
-        heightOptionButton,
-        'OPTION',
-        6 * CANVA_SCALEX,
-        fontFamily,
-        true,
-    );
-
-    bigShipImage = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
-        'images/MenuScene/player-ship.png',
-    );
+    bigShipImage =
+        ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/MenuScene/Player.png');
 
     manyEnemies = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
         'images/MenuScene/many-enemies.png',
@@ -76,22 +61,17 @@ export function DrawMainMenu(ctx: CanvasRenderingContext2D) {
     title?.Draw(ctx);
     playButton?.Draw(ctx);
     optionButton?.Draw(ctx);
-    // // To debug draw the center of the canva
-    // ctx.beginPath();
-    // ctx.moveTo(canvas.width / 2, 0);
-    // ctx.lineTo(canvas.width / 2, canvas.height);
-    // ctx.stroke();
-    // ctx.beginPath();
-    // ctx.moveTo(0, canvas.height / 2);
-    // ctx.lineTo(canvas.width, canvas.height / 2);
-    // ctx.stroke();
+
     // Draw image, with scaled coordinate and scaled dimension
+    const shipScaleX = 2 * CANVA_SCALEX;
+    const shipScaleY = 2 * CANVA_SCALEY;
+    console.log(bigShipImage!.width / 2);
     ctx.drawImage(
         bigShipImage!,
-        10 * CANVA_SCALEX,
-        59 * CANVA_SCALEY,
-        CANVA_SCALEX * bigShipImage!.width,
-        CANVA_SCALEY * bigShipImage!.height,
+        canvas.width / 2 - (bigShipImage!.width / 2) * shipScaleX - 100 * CANVA_SCALEX,
+        canvas.height / 2 - (bigShipImage!.height / 2) * shipScaleY,
+        shipScaleX * bigShipImage!.width,
+        shipScaleY * bigShipImage!.height,
     );
 
     ctx.drawImage(

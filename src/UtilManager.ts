@@ -4,6 +4,7 @@ import { ServiceLocator } from './ServiceLocator.js';
 export interface IServiceUtilManager {
     GetRandomObjectFromMap<T>(parameters: { theMap: Map<unknown, unknown> }): T | undefined;
     GetSpeedItTakesToCoverHalfTheScreenWidth: (parameters: { framesItTakes: number }) => number;
+    DrawCenterOfCanvas(ctx: CanvasRenderingContext2D): void;
 }
 
 class UtilManager implements IServiceUtilManager {
@@ -33,6 +34,17 @@ class UtilManager implements IServiceUtilManager {
             return canvas.width / 2 / framesItTakes;
         }
         return 0;
+    }
+
+    DrawCenterOfCanvas(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2);
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
     }
 }
 
