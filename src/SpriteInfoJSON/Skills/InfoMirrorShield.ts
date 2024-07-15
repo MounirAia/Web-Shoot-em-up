@@ -284,6 +284,65 @@ const Info = {
             },
         },
     },
+    SelectSkill: {
+        Level1: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 12 * CANVA_SCALEX,
+                    Height: 14 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -3 * CANVA_SCALEX,
+                    Y: -1 * CANVA_SCALEY,
+                },
+                Description: 'Mirror shield! Reflective and protective!',
+                MoreDescription:
+                    "A mirror spawns in front of the player, acting as a shield against enemies' projectiles. When destroyed, it goes on cooldown.",
+            },
+        },
+        Level2: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 12 * CANVA_SCALEX,
+                    Height: 14 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -3 * CANVA_SCALEX,
+                    Y: -1 * CANVA_SCALEY,
+                },
+                Description: 'Mirror zaps enemies! Shockingly good!',
+                MoreDescription:
+                    'The mirror generates a thunder beam towards enemies upon being hit, inflicting damage.',
+            },
+        },
+        Level3: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 16 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -1 * CANVA_SCALEX,
+                    Y: -0 * CANVA_SCALEY,
+                },
+                Description: 'Mirror zaps and portals! Explosive fun!',
+                MoreDescription:
+                    'The mirror generates a thunder beam on hit and has small portals. These portals release small entities that target enemies and explode after a few seconds, causing additional damage.',
+            },
+        },
+    },
 };
 
 export default Info;
