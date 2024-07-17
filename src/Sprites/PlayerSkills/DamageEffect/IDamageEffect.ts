@@ -9,7 +9,8 @@ export type DamageEffectOptions =
     | 'BaseDamage'
     | 'FuelChargeShotLaserLevel1'
     | 'FuelChargeShotLaserLevel2'
-    | 'FuelChargeShotLaserLevel3';
+    | 'FuelChargeShotLaserLevel3'
+    | '';
 export type EffectMethodTargetParameters = ISpriteWithStateController &
     ISpriteWithHitboxes &
     ISpriteWithAnimationController;

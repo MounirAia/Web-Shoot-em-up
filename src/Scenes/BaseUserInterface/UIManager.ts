@@ -1,4 +1,4 @@
-import { Mouse } from '../../Mouse';
+import { CANVA_SCALEX } from '../../ScreenConstant';
 
 export interface IUIComponent {
     Update(dt: number): void;
@@ -10,6 +10,20 @@ export interface IUIComponent {
 
 export class UIManager {
     private components: IUIComponent[] = [];
+    public static readonly Typography = {
+        title: {
+            fontSize: 9 * CANVA_SCALEX,
+            fontFamily: 'pixel',
+        },
+        button: {
+            fontSize: 6 * CANVA_SCALEX,
+            fontFamily: 'pixel',
+        },
+        description: {
+            fontSize: 3.2 * CANVA_SCALEX,
+            fontFamily: 'pixel',
+        },
+    };
 
     public AddComponent(component: IUIComponent): void {
         this.components.push(component);

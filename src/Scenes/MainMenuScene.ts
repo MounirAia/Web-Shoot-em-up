@@ -8,7 +8,6 @@ const mainMenuUiManager = new UIManager();
 
 export function LoadMainMenu() {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
-    const fontFamily = 'pixel';
 
     // Define the title of the menu
     const widthTitle = 136 * CANVA_SCALEX;
@@ -21,8 +20,8 @@ export function LoadMainMenu() {
         width: widthTitle,
         height: heightTitle,
         text: "WEB SHOOT'EM UP",
-        fontSize: 9 * CANVA_SCALEX,
-        fontFamily: fontFamily,
+        fontSize: UIManager.Typography.title.fontSize,
+        fontFamily: UIManager.Typography.title.fontFamily,
     });
     mainMenuTitle.HasBorderOnAllSide = false;
     mainMenuTitle.HasBottomBorder = true;
@@ -40,8 +39,8 @@ export function LoadMainMenu() {
         width: widthPlayButton,
         height: heightPlayButton,
         text: 'PLAY',
-        fontSize: 6 * CANVA_SCALEX,
-        fontFamily: fontFamily,
+        fontSize: UIManager.Typography.button.fontSize,
+        fontFamily: UIManager.Typography.button.fontFamily,
         HasHovered: true,
         onClick: () => {
             SceneManager.PlayScene('SelectSkill');

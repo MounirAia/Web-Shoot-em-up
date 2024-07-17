@@ -4,11 +4,11 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { FieldWithText } from './BaseUserInterface/FieldWithText.js';
 import { FieldSkillFactory } from './BaseUserInterface/FieldSkill.js';
 import { IUIComponent, UIManager } from './BaseUserInterface/UIManager.js';
+import { SkillsTypeName } from '../Sprites/PlayerSkills/Skills.js';
 
 const selectSkillSceneUIManager = new UIManager();
-type SkillType = 'special' | 'effect' | 'support';
 const selectedSkill: Record<
-    SkillType,
+    SkillsTypeName,
     {
         chosenSkill: IUIComponent | undefined;
         skillTree: IUIComponent[] | undefined;
@@ -28,7 +28,7 @@ const selectedSkill: Record<
     },
 };
 
-function focusASkill(parameters: { skillType: SkillType; chosenSkill: IUIComponent; skillTree: IUIComponent[] }) {
+function focusASkill(parameters: { skillType: SkillsTypeName; chosenSkill: IUIComponent; skillTree: IUIComponent[] }) {
     // Remove the previous selected skill
     selectedSkill[parameters.skillType].chosenSkill?.SetActive(false);
     if (selectedSkill[parameters.skillType].skillTree)
@@ -43,8 +43,6 @@ function focusASkill(parameters: { skillType: SkillType; chosenSkill: IUICompone
 export function LoadSelectSkillScene() {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
 
-    const fontFamily = 'pixel';
-
     // Define the Choose Skill title
     const widthTitle = 120 * CANVA_SCALEX;
     const heightTitle = 9 * CANVA_SCALEY;
@@ -56,8 +54,8 @@ export function LoadSelectSkillScene() {
         width: widthTitle,
         height: heightTitle,
         text: 'Choose Skills',
-        fontSize: 9 * CANVA_SCALEX,
-        fontFamily,
+        fontSize: UIManager.Typography.title.fontSize,
+        fontFamily: UIManager.Typography.title.fontFamily,
     });
     selectSkillTitle.HasBorderOnAllSide = false;
     selectSkillTitle.HasBottomBorder = true;
@@ -75,8 +73,8 @@ export function LoadSelectSkillScene() {
         width: widthEvolutionTitle,
         height: heightEvolutionTitle,
         text: 'Evolution',
-        fontSize: 9 * CANVA_SCALEX,
-        fontFamily,
+        fontSize: UIManager.Typography.title.fontSize,
+        fontFamily: UIManager.Typography.title.fontFamily,
     });
     selectSkillEvolutionTitle.HasBorderOnAllSide = false;
     selectSkillEvolutionTitle.HasBottomBorder = true;
@@ -94,8 +92,8 @@ export function LoadSelectSkillScene() {
         width: widthPlayButton,
         height: heightPlayButton,
         text: 'PLAY',
-        fontSize: 6 * CANVA_SCALEX,
-        fontFamily: fontFamily,
+        fontSize: UIManager.Typography.button.fontSize,
+        fontFamily: UIManager.Typography.button.fontFamily,
         HasHovered: true,
         onClick: () => {
             SceneManager.PlayScene('Game');
@@ -107,7 +105,7 @@ export function LoadSelectSkillScene() {
     /**
      * SKILL DESCRIPTION SECTION
      */
-    const rocketSkillColumnDescription = FieldSkillFactory.CreateColumnFiledSkillWithText({
+    const rocketSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'Rocket',
         columnX: 6 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -115,7 +113,7 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(rocketSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(rocketSkillColumnDescription);
 
-    const bladeSkillColumnDescription = FieldSkillFactory.CreateColumnFiledSkillWithText({
+    const bladeSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'Blade',
         columnX: 113 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -124,8 +122,8 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(bladeSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(bladeSkillColumnDescription);
 
-    const mirrorSkillColumnDescription = FieldSkillFactory.CreateColumnFiledSkillWithText({
-        skillName: 'Mirror',
+    const mirrorSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
+        skillName: 'MirrorShield',
         columnX: 228 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
     });
@@ -133,7 +131,7 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(mirrorSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(mirrorSkillColumnDescription);
 
-    const fuelChargeShotSkillColumnDescription = FieldSkillFactory.CreateColumnFiledSkillWithText({
+    const fuelChargeShotSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'FuelChargeShot',
         columnX: 228 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -172,7 +170,7 @@ export function LoadSelectSkillScene() {
     const selectMirrorSkill = FieldSkillFactory.CreateFieldSkill({
         x: 228 * CANVA_SCALEX,
         y: 28 * CANVA_SCALEY,
-        skillName: 'Mirror',
+        skillName: 'MirrorShield',
         skillLevel: 1,
         onClick: () => {
             focusASkill({
