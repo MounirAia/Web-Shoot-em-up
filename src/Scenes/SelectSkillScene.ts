@@ -4,7 +4,8 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import { FieldWithText } from './BaseUserInterface/FieldWithText.js';
 import { FieldSkillFactory } from './BaseUserInterface/FieldSkill.js';
 import { IUIComponent, UIManager } from './BaseUserInterface/UIManager.js';
-import { SkillsTypeName } from '../Sprites/PlayerSkills/Skills.js';
+import { PossibleSkillName, SkillsTypeName } from '../Sprites/PlayerSkills/Skills.js';
+import { IServicePlayer } from '../Sprites/Player.js';
 
 const selectSkillSceneUIManager = new UIManager();
 const selectedSkill: Record<
@@ -28,7 +29,12 @@ const selectedSkill: Record<
     },
 };
 
-function focusASkill(parameters: { skillType: SkillsTypeName; chosenSkill: IUIComponent; skillTree: IUIComponent[] }) {
+function focusASkill(parameters: {
+    skillType: SkillsTypeName;
+    skillName: PossibleSkillName;
+    chosenSkill: IUIComponent;
+    skillTree: IUIComponent[];
+}) {
     // Remove the previous selected skill
     selectedSkill[parameters.skillType].chosenSkill?.SetActive(false);
     if (selectedSkill[parameters.skillType].skillTree)
@@ -38,6 +44,12 @@ function focusASkill(parameters: { skillType: SkillsTypeName; chosenSkill: IUICo
     selectedSkill[parameters.skillType].chosenSkill?.SetActive(true);
     selectedSkill[parameters.skillType].skillTree = parameters.skillTree;
     selectSkillSceneUIManager.ShowComponents(parameters.skillTree);
+
+    // Select the skill for the player, but do not update the player skills yet with the real object
+    ServiceLocator.GetService<IServicePlayer>('Player').SetSkill({
+        skillType: parameters.skillType,
+        skillName: parameters.skillName,
+    });
 }
 
 export function LoadSelectSkillScene() {
@@ -96,6 +108,8 @@ export function LoadSelectSkillScene() {
         fontFamily: UIManager.Typography.button.fontFamily,
         HasHovered: true,
         onClick: () => {
+            // Update the player skill with the real object, so trigger any side effect of choosing a skill
+            ServiceLocator.GetService<IServicePlayer>('Player').UpdateSkill();
             SceneManager.PlayScene('Game');
         },
     });
@@ -151,6 +165,7 @@ export function LoadSelectSkillScene() {
         onClick: () => {
             focusASkill({
                 skillType: 'special',
+                skillName: 'Rocket',
                 chosenSkill: selectRocketSkill,
                 skillTree: rocketSkillColumnDescription,
             });
@@ -163,7 +178,12 @@ export function LoadSelectSkillScene() {
         skillName: 'Blade',
         skillLevel: 1,
         onClick: () => {
-            focusASkill({ skillType: 'effect', chosenSkill: selectBladeSkill, skillTree: bladeSkillColumnDescription });
+            focusASkill({
+                skillType: 'effect',
+                skillName: 'Blade',
+                chosenSkill: selectBladeSkill,
+                skillTree: bladeSkillColumnDescription,
+            });
         },
     });
 
@@ -175,6 +195,7 @@ export function LoadSelectSkillScene() {
         onClick: () => {
             focusASkill({
                 skillType: 'support',
+                skillName: 'MirrorShield',
                 chosenSkill: selectMirrorSkill,
                 skillTree: mirrorSkillColumnDescription,
             });
@@ -188,6 +209,7 @@ export function LoadSelectSkillScene() {
         onClick: () => {
             focusASkill({
                 skillType: 'support',
+                skillName: 'FuelChargeShot',
                 chosenSkill: selectFuelChargeShotSkill,
                 skillTree: fuelChargeShotSkillColumnDescription,
             });
@@ -204,18 +226,21 @@ export function LoadSelectSkillScene() {
      */
     focusASkill({
         skillType: 'special',
+        skillName: 'Rocket',
         chosenSkill: selectRocketSkill,
         skillTree: rocketSkillColumnDescription,
     });
 
     focusASkill({
         skillType: 'effect',
+        skillName: 'Blade',
         chosenSkill: selectBladeSkill,
         skillTree: bladeSkillColumnDescription,
     });
 
     focusASkill({
         skillType: 'support',
+        skillName: 'MirrorShield',
         chosenSkill: selectMirrorSkill,
         skillTree: mirrorSkillColumnDescription,
     });
