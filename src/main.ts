@@ -15,6 +15,7 @@ import {
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
+import { LoadSkillManager } from './Sprites/PlayerSkills/Skills.js';
 import { LoadEffectConfiguration } from './Sprites/PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
 import { LoadSupportConfiguration } from './Sprites/PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
@@ -33,10 +34,11 @@ function load() {
     LoadSceneManager();
     LoadGalaxyMap();
     LoadMainMenu();
-    LoadSelectSkillScene();
     LoadCollideManager();
     LoadWaveManager();
+    LoadSkillManager();
     LoadPlayer();
+    LoadSelectSkillScene();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
