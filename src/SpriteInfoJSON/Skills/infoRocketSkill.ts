@@ -168,6 +168,62 @@ const Info = {
             },
         },
     },
+    SelectSkill: {
+        Level1: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 10 * CANVA_SCALEX,
+                    Height: 12 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -3 * CANVA_SCALEX,
+                    Y: -2 * CANVA_SCALEY,
+                },
+                Description: "Fires a standard rocket. It's a good start.",
+                MoreDescritpion: '',
+            },
+        },
+        Level2: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 14 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -0 * CANVA_SCALEX,
+                    Y: -1 * CANVA_SCALEY,
+                },
+                Description: 'Twice the fun, double the trouble!',
+                MoreDescription: 'Fires two rockets at once with bigger explosion and more damage.',
+            },
+        },
+        Level3: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 16 * CANVA_SCALEX,
+                    Height: 15 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: 0 * CANVA_SCALEX,
+                    Y: -1 * CANVA_SCALEY,
+                },
+                Description: 'Rocket-ception: rockets within rockets!',
+                MoreDescription: 'Fires rockets that explode into smaller rockets.',
+            },
+        },
+    },
 };
 
 export default Info;

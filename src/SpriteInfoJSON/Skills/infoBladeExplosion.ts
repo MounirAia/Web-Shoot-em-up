@@ -95,6 +95,64 @@ const Info = {
             },
         },
     },
+    SelectSkill: {
+        Level1: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 11 * CANVA_SCALEX,
+                    Height: 12 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -3 * CANVA_SCALEX,
+                    Y: -2 * CANVA_SCALEY,
+                },
+                Description: 'Blades slice through enemies. Sharp action!',
+                MoreDescription:
+                    'When an enemy is destroyed, it generates 2 blades that go through enemies, dealing consistent damage.',
+            },
+        },
+        Level2: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 16 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -1 * CANVA_SCALEX,
+                    Y: -0 * CANVA_SCALEY,
+                },
+                Description: 'Size matters!',
+                MoreDescription: 'When an enemy is destroyed, it generates 2 larger blades that go through enemies.',
+            },
+        },
+        Level3: {
+            Meta: {
+                TileDimensions: {
+                    Width: 16,
+                    Height: 16,
+                },
+                RealDimension: {
+                    Width: 14 * CANVA_SCALEX,
+                    Height: 14 * CANVA_SCALEY,
+                },
+                SpriteShiftPosition: {
+                    X: -1 * CANVA_SCALEX,
+                    Y: -1 * CANVA_SCALEY,
+                },
+                Description: 'Boomerang blades! Double trouble!',
+                MoreDescription:
+                    'When an enemy is destroyed, it generates 2 big blades with a boomerang effect, covering longer distances. Each enemy destroyed by the spinning blades boosts their damage.',
+            },
+        },
+    },
 };
 
 export default Info;

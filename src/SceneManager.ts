@@ -1,6 +1,6 @@
 import { ServiceLocator } from './ServiceLocator.js';
 
-type AvailableScenes = '' | 'Game' | 'InGameMenu' | 'MainMenu' | 'GameOver';
+type AvailableScenes = '' | 'Game' | 'InGameMenu' | 'MainMenu' | 'SelectSkill' | 'GameOver';
 
 export interface IServiceSceneManager {
     PlayScene(scene: AvailableScenes): void;

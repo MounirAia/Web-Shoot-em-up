@@ -1,12 +1,15 @@
-import { Mouse } from '../Mouse.js';
-import { CANVA_SCALEX } from '../ScreenConstant.js';
+import { Mouse } from '../../Mouse';
+import { IUIComponent } from './UIManager';
 
-export class BlankField {
+export class BaseField implements IUIComponent {
     protected X: number;
     protected Y: number;
     protected Width: number;
     protected Height: number;
     protected HasHover: boolean;
+
+    private isVisible: boolean;
+    private isActive: boolean;
 
     public LineWidth: number = 3;
     public HasBorderOnAllSide: boolean = true;
@@ -23,6 +26,8 @@ export class BlankField {
         this.Height = height;
         this.HasHover = HasHover;
         this.onClick = onClick;
+        this.isVisible = true;
+        this.isActive = false; // the field can be activated through different means
     }
 
     public get IsHovered(): boolean {
@@ -69,45 +74,36 @@ export class BlankField {
             }
         }
     }
-}
 
-export class FieldWithText extends BlankField {
-    private text: string;
-    private fontSize: number;
-    private fontFamily: string;
-    constructor(
-        x: number,
-        y: number,
-        width: number,
-        height: number,
-        text: string,
-        fontSize: number = 8 * CANVA_SCALEX,
-        fontFamily: string = 'serif',
-        HasHovered?: boolean,
-        onClick?: () => void,
-    ) {
-        super(x, y, width, height, HasHovered, onClick);
-        this.text = text;
-        this.fontSize = fontSize;
-        this.fontFamily = fontFamily;
+    public SetVisibility(visible: boolean): void {
+        this.isVisible = visible;
     }
 
-    Draw(ctx: CanvasRenderingContext2D) {
-        super.Draw(ctx);
-        if (this.IsHovered && this.HasHover) {
-            ctx.fillStyle = 'black';
-            ctx.fillRect(this.X, this.Y, this.Width, this.Height);
-            ctx.fillStyle = 'white';
-        } else {
-            ctx.fillStyle = 'black';
-        }
-        /* Text drawing */
-        const fontSize = this.fontSize;
-        ctx.font = `${fontSize}px ${this.fontFamily}`;
-        // draw text to the center of the field box
-        const textMetric = ctx.measureText(this.text!);
-        const textWidth = textMetric.width;
-        const textHeight = textMetric.actualBoundingBoxAscent - textMetric.actualBoundingBoxDescent;
-        ctx.fillText(this.text!, this.X + (this.Width - textWidth) / 2, this.Y + this.Height / 2 + textHeight / 2);
+    public GetVisibility(): boolean {
+        return this.isVisible;
+    }
+
+    public SetActive(active: boolean): void {
+        this.isActive = active;
+    }
+
+    public GetActive(): boolean {
+        return this.isActive;
+    }
+
+    public GetWidth(): number {
+        return this.Width;
+    }
+
+    public GetHeight(): number {
+        return this.Height;
+    }
+
+    public GetX(): number {
+        return this.X;
+    }
+
+    public GetY(): number {
+        return this.Y;
     }
 }

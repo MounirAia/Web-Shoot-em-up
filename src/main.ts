@@ -4,7 +4,8 @@ import { Keyboard } from './Keyboard.js';
 import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
 import {} from './Mouse.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
-import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenu.js';
+import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenuScene.js';
+import { LoadSelectSkillScene, UpdateSelectSkillScene, DrawSelectSkillScene } from './Scenes/SelectSkillScene.js';
 import { FRAME_RATE, canvas } from './ScreenConstant.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
@@ -14,6 +15,7 @@ import {
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
+import { LoadSkillManager } from './Sprites/PlayerSkills/Skills.js';
 import { LoadEffectConfiguration } from './Sprites/PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
 import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
 import { LoadSupportConfiguration } from './Sprites/PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
@@ -34,8 +36,10 @@ function load() {
     LoadMainMenu();
     LoadCollideManager();
     LoadWaveManager();
+    LoadSkillManager();
     LoadPlayer();
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('Game');
+    LoadSelectSkillScene();
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
 function update(dt: number) {
@@ -58,6 +62,8 @@ function update(dt: number) {
         }
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         UpdateMainMenu(dt);
+    } else if (SceneManager.CurrentScene === 'SelectSkill') {
+        UpdateSelectSkillScene(dt);
     }
 }
 function draw(ctx: CanvasRenderingContext2D) {
@@ -77,6 +83,8 @@ function draw(ctx: CanvasRenderingContext2D) {
         DrawGeneratedSpritesManager(ctx);
     } else if (SceneManager.CurrentScene === 'MainMenu') {
         DrawMainMenu(ctx);
+    } else if (SceneManager.CurrentScene === 'SelectSkill') {
+        DrawSelectSkillScene(ctx);
     }
 }
 

@@ -9,7 +9,8 @@ type AvailableServices =
     | 'EventManager'
     | 'UtilManager'
     | 'EffectConfigurationGenerator'
-    | 'SupportConfigurationGenerator';
+    | 'SupportConfigurationGenerator'
+    | 'SkillManager';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
 

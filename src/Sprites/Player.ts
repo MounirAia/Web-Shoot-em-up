@@ -7,10 +7,7 @@ import { ServiceLocator } from '../ServiceLocator.js';
 import InfoPlayer from '../SpriteInfoJSON/Player/infoPlayer.js';
 import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
-import { BladeExplosionSkill } from './PlayerSkills/Effect/BladeExplosionSkill.js';
-import { ISkill, PossibleSkillName } from './PlayerSkills/Skills.js';
-import { RocketSkill } from './PlayerSkills/Special/RocketSkill.js';
-import { FuelChargeShotSkill } from './PlayerSkills/Support/FuelChargeShot/FuelChargeShot.js';
+import { IServiceSkillManager, ISkill, PossibleSkillName, SkillsTypeName } from './PlayerSkills/Skills.js';
 import {
     EffectConfiguration,
     IServiceEffectConfigurationGenerator,
@@ -34,6 +31,8 @@ export interface IServicePlayer {
     PlayCollideMethod(collideScenario: CollideScenario, param?: unknown): void;
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
+    SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }): void; // Set the skill for the player, but do not update the player skills yet with the real object
+    UpdateSkill(): void; // Update the player skills with the real object, take into account the updates made with SetSkill
     MaxHealth: number;
     NumberOfBoosts: number;
     SpecialSkillLevel: number;
@@ -44,11 +43,10 @@ export interface IServicePlayer {
     InvulnerabilityTimePeriod: number;
 }
 
-type PlayerSkill = 'effect' | 'special' | 'support';
-
 class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISpriteWithHitboxes, ISpriteWithHealth {
     private baseSpeed: number;
     private hitboxes: RectangleHitbox[];
+    private playerFrameHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
 
     private numberOfBoosts: number;
@@ -68,7 +66,10 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private currentTimeBeforeNextRegularShoot: number;
     private currentTimeBeforeNextSpecialShoot: number;
 
-    private currentSkill: Map<PlayerSkill, ISkill>;
+    private specialSkillChosen: PossibleSkillName;
+    private effectSkillChosen: PossibleSkillName;
+    private supportSkillChosen: PossibleSkillName;
+    private currentSkill: Map<SkillsTypeName, ISkill>;
 
     private cannonConfiguration: CannonConfiguration;
     private effectConfiguration: EffectConfiguration;
@@ -114,18 +115,12 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.currentTimeBeforeNextRegularShoot = 0;
         this.currentTimeBeforeNextSpecialShoot = 0;
 
-        // Skill setup
+        /*
+         * Skill setup
+         */
         this.currentSkill = new Map();
-        this.currentSkill.set('special', new RocketSkill());
-        this.cannonConfiguration =
-            ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
-        this.effectConfiguration =
-            ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
-        this.supportConfiguration = ServiceLocator.GetService<IServiceSupportConfigurationGenerator>(
-            'SupportConfigurationGenerator',
-        ).GetConfig();
 
-        this.currentSkill.set('effect', new BladeExplosionSkill());
+        // Trigger the 'effect' skill when an enemy is destroyed
         const actionOnEnemyDestroyed = () => {
             this.currentSkill.get('effect')?.Effect();
         };
@@ -134,13 +129,8 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             actionOnEnemyDestroyed,
         );
 
-        this.currentSkill.set('support', new FuelChargeShotSkill());
-        this.currentSkill.get('support')?.Effect();
-
-        this.hitboxes = CreateHitboxesWithInfoFile(this.X, this.Y, InfoPlayer.Hitbox);
-
-        // the hitboxe of the player consist of his hitbox and the hitbox of the cannons attached to it
-        this.hitboxes = [...this.hitboxes, ...this.cannonConfiguration.CurrentHitboxes];
+        this.playerFrameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoPlayer.Hitbox);
+        this.hitboxes = [...this.playerFrameHitbox];
 
         const { Idle, Destroyed } = InfoPlayer.Animations;
         this.AnimationsController.AddAnimation({
@@ -278,6 +268,64 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     IsInvulnerable(): boolean {
         return this.StatesController.GetIfInTheStateOf({ stateName: 'onInvulnerable' });
+    }
+
+    SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }) {
+        const { skillType, skillName } = parameters;
+
+        if (skillType === 'effect') {
+            this.effectSkillChosen = skillName;
+        } else if (skillType === 'special') {
+            this.specialSkillChosen = skillName;
+        } else if (skillType === 'support') {
+            this.supportSkillChosen = skillName;
+        }
+    }
+
+    private setSpecialSkill(parameters: { skill: ISkill }): void {
+        const { skill } = parameters;
+        this.currentSkill.set('special', skill);
+        this.cannonConfiguration =
+            ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+
+        // the hitboxe of the player consist of his hitbox and the hitbox of the cannons attached to it
+        this.hitboxes = [...this.playerFrameHitbox, ...this.cannonConfiguration.CurrentHitboxes];
+    }
+
+    private setEffectSkill(parameters: { skill: ISkill }): void {
+        const { skill } = parameters;
+        this.currentSkill.set('effect', skill);
+        this.effectConfiguration =
+            ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
+    }
+
+    private setSupportSkill(parameters: { skill: ISkill }): void {
+        const { skill } = parameters;
+        this.currentSkill.set('support', skill);
+        this.currentSkill.get('support')?.Effect();
+        this.supportConfiguration = ServiceLocator.GetService<IServiceSupportConfigurationGenerator>(
+            'SupportConfigurationGenerator',
+        ).GetConfig();
+    }
+
+    UpdateSkill(): void {
+        const specialSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+            skillName: this.specialSkillChosen,
+        });
+
+        this.setSpecialSkill({ skill: specialSkill });
+
+        const effectSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+            skillName: this.effectSkillChosen,
+        });
+
+        this.setEffectSkill({ skill: effectSkill });
+
+        const supportSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+            skillName: this.supportSkillChosen,
+        });
+
+        this.setSupportSkill({ skill: supportSkill });
     }
 
     get CurrentHitbox(): RectangleHitbox[] {
