@@ -54,7 +54,7 @@ function focusASkill(parameters: {
 
 export function LoadSelectSkillScene() {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
-
+    const fieldSkillFactory = new FieldSkillFactory();
     // Define the Choose Skill title
     const widthTitle = 120 * CANVA_SCALEX;
     const heightTitle = 9 * CANVA_SCALEY;
@@ -119,7 +119,7 @@ export function LoadSelectSkillScene() {
     /**
      * SKILL DESCRIPTION SECTION
      */
-    const rocketSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
+    const rocketSkillColumnDescription = fieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'Rocket',
         columnX: 6 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -127,7 +127,7 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(rocketSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(rocketSkillColumnDescription);
 
-    const bladeSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
+    const bladeSkillColumnDescription = fieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'Blade',
         columnX: 113 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -136,7 +136,7 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(bladeSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(bladeSkillColumnDescription);
 
-    const mirrorSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
+    const mirrorSkillColumnDescription = fieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'MirrorShield',
         columnX: 228 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -145,7 +145,7 @@ export function LoadSelectSkillScene() {
     selectSkillSceneUIManager.HideComponents(mirrorSkillColumnDescription);
     selectSkillSceneUIManager.AddComponents(mirrorSkillColumnDescription);
 
-    const fuelChargeShotSkillColumnDescription = FieldSkillFactory.CreateColumnFieldSkillWithText({
+    const fuelChargeShotSkillColumnDescription = fieldSkillFactory.CreateColumnFieldSkillWithText({
         skillName: 'FuelChargeShot',
         columnX: 228 * CANVA_SCALEX,
         columnY: 98 * CANVA_SCALEY,
@@ -157,7 +157,7 @@ export function LoadSelectSkillScene() {
     /**
      * SELECT SKILL SECTION
      */
-    const selectRocketSkill = FieldSkillFactory.CreateFieldSkill({
+    const selectRocketSkill = fieldSkillFactory.CreateFieldSkill({
         x: 6 * CANVA_SCALEX,
         y: 28 * CANVA_SCALEY,
         skillName: 'Rocket',
@@ -172,7 +172,7 @@ export function LoadSelectSkillScene() {
         },
     });
 
-    const selectBladeSkill = FieldSkillFactory.CreateFieldSkill({
+    const selectBladeSkill = fieldSkillFactory.CreateFieldSkill({
         x: 113 * CANVA_SCALEX,
         y: 28 * CANVA_SCALEY,
         skillName: 'Blade',
@@ -187,7 +187,7 @@ export function LoadSelectSkillScene() {
         },
     });
 
-    const selectMirrorSkill = FieldSkillFactory.CreateFieldSkill({
+    const selectMirrorSkill = fieldSkillFactory.CreateFieldSkill({
         x: 228 * CANVA_SCALEX,
         y: 28 * CANVA_SCALEY,
         skillName: 'MirrorShield',
@@ -201,7 +201,7 @@ export function LoadSelectSkillScene() {
             });
         },
     });
-    const selectFuelChargeShotSkill = FieldSkillFactory.CreateFieldSkill({
+    const selectFuelChargeShotSkill = fieldSkillFactory.CreateFieldSkill({
         x: 256 * CANVA_SCALEX,
         y: 28 * CANVA_SCALEY,
         skillName: 'FuelChargeShot',

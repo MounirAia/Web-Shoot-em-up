@@ -1,10 +1,11 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoPlayer from '../../../../SpriteInfoJSON/Player/infoPlayer.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
 import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 
+const InfoPlayer = GetSpriteStaticInformation({ sprite: 'Player' }).spriteInfo;
 export class SupportCosmetic extends Sprite {
     private offsetXOnPlayer: number;
     private offsetYOnPlayer: number;

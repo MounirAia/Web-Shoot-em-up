@@ -1,20 +1,13 @@
 import { IServiceImageLoader } from '../../ImageLoader';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../ScreenConstant';
 import { ServiceLocator } from '../../ServiceLocator';
-import InfoBladeSkill from '../../SpriteInfoJSON/Skills/infoBladeExplosion';
-import InfoRocketSkill from '../../SpriteInfoJSON/Skills/infoRocketSkill';
-import InfoMirrorSkill from '../../SpriteInfoJSON/Skills/InfoMirrorShield';
-import InfoFuelChargeShotSkill from '../../SpriteInfoJSON/Skills/infoFuelChargeShot';
 import { IUIComponent, UIManager } from './UIManager';
 import { BaseField } from './BaseField';
 import { FieldWithText } from './FieldWithText';
 import { PossibleSkillName } from '../../Sprites/PlayerSkills/Skills';
 import { StaticImage } from './StaticImage';
 import { DamageEffectOptions } from '../../Sprites/PlayerSkills/DamageEffect/IDamageEffect';
-import { RocketConstant } from '../../StatsJSON/Skills/Special/Rocket/RocketConstant';
-import { BladeConstant } from '../../StatsJSON/Skills/Effect/Blade/BladeConstant';
-import { MirrorShieldConstant } from '../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant';
-import { FuelChargeShotLaserConstant } from '../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant';
+import { GetSpriteStaticInformation } from '../../SpriteStaticInformation/SpriteStaticInformationManager';
 
 class FieldSkillImage extends BaseField {
     private image: StaticImage;
@@ -264,163 +257,191 @@ interface SkillMetadata {
 // Define a type for skill level
 type SkillLevel = 1 | 2 | 3; // Add more levels as needed
 
-const skillMetadata: Record<PossibleSkillName, Record<SkillLevel, SkillMetadata>> = {
-    Rocket: {
-        1: {
-            imagePath: 'images/Skills/Rocket/RocketLevel1.png',
-            spriteXOffset: InfoRocketSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoRocketSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoRocketSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
-            frameHeight: InfoRocketSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
-            realWidth: InfoRocketSkill.SelectSkill.Level1.Meta.RealDimension.Width,
-            realHeight: InfoRocketSkill.SelectSkill.Level1.Meta.RealDimension.Height,
-            description: InfoRocketSkill.SelectSkill.Level1.Meta.Description,
-            primaryEffect: RocketConstant[0]['Primary Skill'],
-            secondaryEffect: RocketConstant[0]['Secondary Skill'],
-        },
-        2: {
-            imagePath: 'images/Skills/Rocket/RocketLevel2.png',
-            spriteXOffset: InfoRocketSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoRocketSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoRocketSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
-            frameHeight: InfoRocketSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
-            realWidth: InfoRocketSkill.SelectSkill.Level2.Meta.RealDimension.Width,
-            realHeight: InfoRocketSkill.SelectSkill.Level2.Meta.RealDimension.Height,
-            description: InfoRocketSkill.SelectSkill.Level2.Meta.Description,
-            primaryEffect: RocketConstant[1]['Primary Skill'],
-            secondaryEffect: RocketConstant[1]['Secondary Skill'],
-        },
-        3: {
-            imagePath: 'images/Skills/Rocket/RocketLevel3.png',
-            spriteXOffset: InfoRocketSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoRocketSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoRocketSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
-            frameHeight: InfoRocketSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
-            realWidth: InfoRocketSkill.SelectSkill.Level3.Meta.RealDimension.Width,
-            realHeight: InfoRocketSkill.SelectSkill.Level3.Meta.RealDimension.Height,
-            description: InfoRocketSkill.SelectSkill.Level3.Meta.Description,
-            primaryEffect: RocketConstant[2]['Primary Skill'],
-            secondaryEffect: RocketConstant[2]['Secondary Skill'],
-        },
-    },
-    Blade: {
-        1: {
-            imagePath: 'images/Skills/Blade/Blade-Level1.png',
-            spriteXOffset: InfoBladeSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoBladeSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoBladeSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
-            frameHeight: InfoBladeSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
-            realWidth: InfoBladeSkill.SelectSkill.Level1.Meta.RealDimension.Width,
-            realHeight: InfoBladeSkill.SelectSkill.Level1.Meta.RealDimension.Height,
-            description: InfoBladeSkill.SelectSkill.Level1.Meta.Description,
-            primaryEffect: BladeConstant[0]['Primary Skill'],
-            secondaryEffect: BladeConstant[0]['Secondary Skill'],
-        },
-        2: {
-            imagePath: 'images/Skills/Blade/Blade-Level2.png',
-            spriteXOffset: InfoBladeSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoBladeSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoBladeSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
-            frameHeight: InfoBladeSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
-            realWidth: InfoBladeSkill.SelectSkill.Level2.Meta.RealDimension.Width,
-            realHeight: InfoBladeSkill.SelectSkill.Level2.Meta.RealDimension.Height,
-            description: InfoBladeSkill.SelectSkill.Level2.Meta.Description,
-            primaryEffect: BladeConstant[1]['Primary Skill'],
-            secondaryEffect: BladeConstant[1]['Secondary Skill'],
-        },
-        3: {
-            imagePath: 'images/Skills/Blade/Blade-Level3.png',
-            spriteXOffset: InfoBladeSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoBladeSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoBladeSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
-            frameHeight: InfoBladeSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
-            realWidth: InfoBladeSkill.SelectSkill.Level3.Meta.RealDimension.Width,
-            realHeight: InfoBladeSkill.SelectSkill.Level3.Meta.RealDimension.Height,
-            description: InfoBladeSkill.SelectSkill.Level3.Meta.Description,
-            primaryEffect: BladeConstant[2]['Primary Skill'],
-            secondaryEffect: BladeConstant[2]['Secondary Skill'],
-        },
-    },
-    MirrorShield: {
-        1: {
-            imagePath: 'images/Skills/Mirror/Mirror-1.png',
-            spriteXOffset: InfoMirrorSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoMirrorSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoMirrorSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
-            frameHeight: InfoMirrorSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
-            realWidth: InfoMirrorSkill.SelectSkill.Level1.Meta.RealDimension.Width,
-            realHeight: InfoMirrorSkill.SelectSkill.Level1.Meta.RealDimension.Height,
-            description: InfoMirrorSkill.SelectSkill.Level1.Meta.Description,
-            primaryEffect: MirrorShieldConstant[0]['Primary Skill'],
-            secondaryEffect: MirrorShieldConstant[0]['Secondary Skill'],
-        },
-        2: {
-            imagePath: 'images/Skills/Mirror/Mirror-2.png',
-            spriteXOffset: InfoMirrorSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoMirrorSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoMirrorSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
-            frameHeight: InfoMirrorSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
-            realWidth: InfoMirrorSkill.SelectSkill.Level2.Meta.RealDimension.Width,
-            realHeight: InfoMirrorSkill.SelectSkill.Level2.Meta.RealDimension.Height,
-            description: InfoMirrorSkill.SelectSkill.Level2.Meta.Description,
-            primaryEffect: MirrorShieldConstant[1]['Primary Skill'],
-            secondaryEffect: MirrorShieldConstant[1]['Secondary Skill'],
-        },
-        3: {
-            imagePath: 'images/Skills/Mirror/Mirror-3.png',
-            spriteXOffset: InfoMirrorSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoMirrorSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoMirrorSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
-            frameHeight: InfoMirrorSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
-            realWidth: InfoMirrorSkill.SelectSkill.Level3.Meta.RealDimension.Width,
-            realHeight: InfoMirrorSkill.SelectSkill.Level3.Meta.RealDimension.Height,
-            description: InfoMirrorSkill.SelectSkill.Level3.Meta.Description,
-            primaryEffect: MirrorShieldConstant[2]['Primary Skill'],
-            secondaryEffect: MirrorShieldConstant[2]['Secondary Skill'],
-        },
-    },
-    FuelChargeShot: {
-        1: {
-            imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel1.png',
-            spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
-            frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
-            realWidth: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.RealDimension.Width,
-            realHeight: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.RealDimension.Height,
-            description: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.Description,
-            primaryEffect: FuelChargeShotLaserConstant[0]['Primary Skill'],
-            secondaryEffect: FuelChargeShotLaserConstant[0]['Secondary Skill'],
-        },
-        2: {
-            imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel2.png',
-            spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
-            frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
-            realWidth: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.RealDimension.Width,
-            realHeight: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.RealDimension.Height,
-            description: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.Description,
-            primaryEffect: FuelChargeShotLaserConstant[1]['Primary Skill'],
-            secondaryEffect: FuelChargeShotLaserConstant[1]['Secondary Skill'],
-        },
-        3: {
-            imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel3.png',
-            spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
-            spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
-            frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
-            frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
-            realWidth: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.RealDimension.Width,
-            realHeight: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.RealDimension.Height,
-            description: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.Description,
-            primaryEffect: FuelChargeShotLaserConstant[2]['Primary Skill'],
-            secondaryEffect: FuelChargeShotLaserConstant[2]['Secondary Skill'],
-        },
-    },
-};
-
 export class FieldSkillFactory {
-    public static CreateFieldSkill(parameters: {
+    private skillMetadata: Record<PossibleSkillName, Record<SkillLevel, SkillMetadata>>;
+
+    constructor() {
+        const InfoRocketSkill = GetSpriteStaticInformation({
+            sprite: 'Rocket',
+        }).spriteInfo;
+        const RocketConstant = GetSpriteStaticInformation({
+            sprite: 'Rocket',
+        }).constant;
+
+        const InfoBladeSkill = GetSpriteStaticInformation({
+            sprite: 'Blade',
+        }).spriteInfo;
+        const BladeConstant = GetSpriteStaticInformation({
+            sprite: 'Blade',
+        }).constant;
+
+        const InfoMirrorSkill = GetSpriteStaticInformation({
+            sprite: 'Mirror',
+        }).spriteInfo;
+        const MirrorShieldConstant = GetSpriteStaticInformation({ sprite: 'Mirror' }).constant;
+
+        const InfoFuelChargeShotSkill = GetSpriteStaticInformation({
+            sprite: 'FuelChargeShot',
+        }).spriteInfo;
+        const FuelChargeShotLaserConstant = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).constant;
+
+        this.skillMetadata = {
+            Rocket: {
+                1: {
+                    imagePath: 'images/Skills/Rocket/RocketLevel1.png',
+                    spriteXOffset: InfoRocketSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoRocketSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoRocketSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
+                    frameHeight: InfoRocketSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
+                    realWidth: InfoRocketSkill.SelectSkill.Level1.Meta.RealDimension.Width,
+                    realHeight: InfoRocketSkill.SelectSkill.Level1.Meta.RealDimension.Height,
+                    description: InfoRocketSkill.SelectSkill.Level1.Meta.Description,
+                    primaryEffect: RocketConstant[0]['Primary Skill'],
+                    secondaryEffect: RocketConstant[0]['Secondary Skill'],
+                },
+                2: {
+                    imagePath: 'images/Skills/Rocket/RocketLevel2.png',
+                    spriteXOffset: InfoRocketSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoRocketSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoRocketSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
+                    frameHeight: InfoRocketSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
+                    realWidth: InfoRocketSkill.SelectSkill.Level2.Meta.RealDimension.Width,
+                    realHeight: InfoRocketSkill.SelectSkill.Level2.Meta.RealDimension.Height,
+                    description: InfoRocketSkill.SelectSkill.Level2.Meta.Description,
+                    primaryEffect: RocketConstant[1]['Primary Skill'],
+                    secondaryEffect: RocketConstant[1]['Secondary Skill'],
+                },
+                3: {
+                    imagePath: 'images/Skills/Rocket/RocketLevel3.png',
+                    spriteXOffset: InfoRocketSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoRocketSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoRocketSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
+                    frameHeight: InfoRocketSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
+                    realWidth: InfoRocketSkill.SelectSkill.Level3.Meta.RealDimension.Width,
+                    realHeight: InfoRocketSkill.SelectSkill.Level3.Meta.RealDimension.Height,
+                    description: InfoRocketSkill.SelectSkill.Level3.Meta.Description,
+                    primaryEffect: RocketConstant[2]['Primary Skill'],
+                    secondaryEffect: RocketConstant[2]['Secondary Skill'],
+                },
+            },
+            Blade: {
+                1: {
+                    imagePath: 'images/Skills/Blade/Blade-Level1.png',
+                    spriteXOffset: InfoBladeSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoBladeSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoBladeSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
+                    frameHeight: InfoBladeSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
+                    realWidth: InfoBladeSkill.SelectSkill.Level1.Meta.RealDimension.Width,
+                    realHeight: InfoBladeSkill.SelectSkill.Level1.Meta.RealDimension.Height,
+                    description: InfoBladeSkill.SelectSkill.Level1.Meta.Description,
+                    primaryEffect: BladeConstant[0]['Primary Skill'],
+                    secondaryEffect: BladeConstant[0]['Secondary Skill'],
+                },
+                2: {
+                    imagePath: 'images/Skills/Blade/Blade-Level2.png',
+                    spriteXOffset: InfoBladeSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoBladeSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoBladeSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
+                    frameHeight: InfoBladeSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
+                    realWidth: InfoBladeSkill.SelectSkill.Level2.Meta.RealDimension.Width,
+                    realHeight: InfoBladeSkill.SelectSkill.Level2.Meta.RealDimension.Height,
+                    description: InfoBladeSkill.SelectSkill.Level2.Meta.Description,
+                    primaryEffect: BladeConstant[1]['Primary Skill'],
+                    secondaryEffect: BladeConstant[1]['Secondary Skill'],
+                },
+                3: {
+                    imagePath: 'images/Skills/Blade/Blade-Level3.png',
+                    spriteXOffset: InfoBladeSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoBladeSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoBladeSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
+                    frameHeight: InfoBladeSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
+                    realWidth: InfoBladeSkill.SelectSkill.Level3.Meta.RealDimension.Width,
+                    realHeight: InfoBladeSkill.SelectSkill.Level3.Meta.RealDimension.Height,
+                    description: InfoBladeSkill.SelectSkill.Level3.Meta.Description,
+                    primaryEffect: BladeConstant[2]['Primary Skill'],
+                    secondaryEffect: BladeConstant[2]['Secondary Skill'],
+                },
+            },
+            MirrorShield: {
+                1: {
+                    imagePath: 'images/Skills/Mirror/Mirror-1.png',
+                    spriteXOffset: InfoMirrorSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoMirrorSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoMirrorSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
+                    frameHeight: InfoMirrorSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
+                    realWidth: InfoMirrorSkill.SelectSkill.Level1.Meta.RealDimension.Width,
+                    realHeight: InfoMirrorSkill.SelectSkill.Level1.Meta.RealDimension.Height,
+                    description: InfoMirrorSkill.SelectSkill.Level1.Meta.Description,
+                    primaryEffect: MirrorShieldConstant.Mirror[0]['Primary Skill'],
+                    secondaryEffect: MirrorShieldConstant.Mirror[0]['Secondary Skill'],
+                },
+                2: {
+                    imagePath: 'images/Skills/Mirror/Mirror-2.png',
+                    spriteXOffset: InfoMirrorSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoMirrorSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoMirrorSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
+                    frameHeight: InfoMirrorSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
+                    realWidth: InfoMirrorSkill.SelectSkill.Level2.Meta.RealDimension.Width,
+                    realHeight: InfoMirrorSkill.SelectSkill.Level2.Meta.RealDimension.Height,
+                    description: InfoMirrorSkill.SelectSkill.Level2.Meta.Description,
+                    primaryEffect: MirrorShieldConstant.Mirror[1]['Primary Skill'],
+                    secondaryEffect: MirrorShieldConstant.Mirror[1]['Secondary Skill'],
+                },
+                3: {
+                    imagePath: 'images/Skills/Mirror/Mirror-3.png',
+                    spriteXOffset: InfoMirrorSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoMirrorSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoMirrorSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
+                    frameHeight: InfoMirrorSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
+                    realWidth: InfoMirrorSkill.SelectSkill.Level3.Meta.RealDimension.Width,
+                    realHeight: InfoMirrorSkill.SelectSkill.Level3.Meta.RealDimension.Height,
+                    description: InfoMirrorSkill.SelectSkill.Level3.Meta.Description,
+                    primaryEffect: MirrorShieldConstant.Mirror[2]['Primary Skill'],
+                    secondaryEffect: MirrorShieldConstant.Mirror[2]['Secondary Skill'],
+                },
+            },
+            FuelChargeShot: {
+                1: {
+                    imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel1.png',
+                    spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.TileDimensions.Width,
+                    frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.TileDimensions.Height,
+                    realWidth: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.RealDimension.Width,
+                    realHeight: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.RealDimension.Height,
+                    description: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.Description,
+                    primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[0]['Primary Skill'],
+                    secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[0]['Secondary Skill'],
+                },
+                2: {
+                    imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel2.png',
+                    spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.TileDimensions.Width,
+                    frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.TileDimensions.Height,
+                    realWidth: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.RealDimension.Width,
+                    realHeight: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.RealDimension.Height,
+                    description: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.Description,
+                    primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[1]['Primary Skill'],
+                    secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[1]['Secondary Skill'],
+                },
+                3: {
+                    imagePath: 'images/Skills/FuelChargeShot/FuelChargeShotLevel3.png',
+                    spriteXOffset: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.X,
+                    spriteYOffset: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.SpriteShiftPosition.Y,
+                    frameWidth: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.TileDimensions.Width,
+                    frameHeight: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.TileDimensions.Height,
+                    realWidth: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.RealDimension.Width,
+                    realHeight: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.RealDimension.Height,
+                    description: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.Description,
+                    primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[2]['Primary Skill'],
+                    secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[2]['Secondary Skill'],
+                },
+            },
+        };
+    }
+
+    public CreateFieldSkill(parameters: {
         x: number;
         y: number;
         HasHover?: boolean;
@@ -429,7 +450,7 @@ export class FieldSkillFactory {
         onClick?: () => void;
     }): FieldSkillImage {
         const { x, y, HasHover, skillName, skillLevel, onClick } = parameters;
-        const metadata = skillMetadata[skillName][skillLevel];
+        const metadata = this.skillMetadata[skillName][skillLevel];
         return new FieldSkillImage({
             imagePath: metadata.imagePath,
             x: x,
@@ -445,7 +466,7 @@ export class FieldSkillFactory {
         });
     }
 
-    public static CreateFieldSkillWithText(parameters: {
+    public CreateFieldSkillWithText(parameters: {
         x: number;
         y: number;
         HasHover?: boolean;
@@ -454,7 +475,7 @@ export class FieldSkillFactory {
         onClick?: () => void;
     }): FieldSkillImageAndText {
         const { x, y, HasHover, skillName, skillLevel, onClick } = parameters;
-        const metadata = skillMetadata[skillName][skillLevel];
+        const metadata = this.skillMetadata[skillName][skillLevel];
         return new FieldSkillImageAndText({
             x: x,
             y: y,
@@ -471,7 +492,7 @@ export class FieldSkillFactory {
         });
     }
 
-    private static CreateFieldSkillType(parameters: {
+    private CreateFieldSkillType(parameters: {
         skillName: PossibleSkillName;
         skillLevel: SkillLevel;
         x: number;
@@ -480,7 +501,7 @@ export class FieldSkillFactory {
         const { skillName, skillLevel, x } = parameters;
         const toReturn: FieldDamageEffectTypeWithText[] = [];
         for (const [index, effectRank] of effectRanks.entries()) {
-            const effectType = skillMetadata[skillName][skillLevel][effectRank];
+            const effectType = this.skillMetadata[skillName][skillLevel][effectRank];
 
             let imagePath = '';
 
@@ -509,14 +530,14 @@ export class FieldSkillFactory {
         return toReturn;
     }
 
-    public static CreateColumnFieldSkillWithText(parameters: {
+    public CreateColumnFieldSkillWithText(parameters: {
         skillName: PossibleSkillName;
         columnX: number;
         columnY: number;
     }): (FieldSkillImageAndText | FieldDamageEffectTypeWithText)[] {
         const skillsLevel = [1, 2, 3] as SkillLevel[];
         const fieldSkillImageAndText = skillsLevel.map((level, i) =>
-            FieldSkillFactory.CreateFieldSkillWithText({
+            this.CreateFieldSkillWithText({
                 x: parameters.columnX,
                 y: parameters.columnY + i * 23 * CANVA_SCALEY,
                 skillName: parameters.skillName,
@@ -526,7 +547,7 @@ export class FieldSkillFactory {
         );
 
         // Primary and Secondary effect information
-        const fieldSkillType = FieldSkillFactory.CreateFieldSkillType({
+        const fieldSkillType = this.CreateFieldSkillType({
             skillName: parameters.skillName,
             skillLevel: 3,
             x: parameters.columnX,

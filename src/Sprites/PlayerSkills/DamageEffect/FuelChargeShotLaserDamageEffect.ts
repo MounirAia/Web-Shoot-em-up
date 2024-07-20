@@ -1,10 +1,13 @@
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { FuelChargeShotLaserConstant } from '../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
-import { FuelChargeShotDamage } from '../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotDamage.js';
+import { GetSpriteStaticInformation } from '../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IEnemy } from '../../Enemies/IEnemy.js';
 import { IServicePlayer } from '../../Player.js';
 import { DamageEffectFunctionReturnType, DamageEffectOptions, IDamageEffect } from './IDamageEffect.js';
+
+const FuelChargeShotDamage = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).stats;
+const FuelChargeShotLaserConstant = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).constant
+    .FuelChargeShotLaser;
 
 export class FuelChargeShotLaserLevel1DamageEffect implements IDamageEffect {
     private resistanceStatDebuf: number;

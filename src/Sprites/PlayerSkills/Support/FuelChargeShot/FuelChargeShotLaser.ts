@@ -1,9 +1,6 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoFuelChargeShot from '../../../../SpriteInfoJSON/Skills/infoFuelChargeShot.js';
-import { FuelChargeShotLaserConstant } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
-import { FuelChargeShotDamage } from '../../../../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotDamage.js';
 import { IServiceUtilManager } from '../../../../UtilManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
@@ -18,6 +15,12 @@ import {
     FuelChargeShotLaserLevel2DamageEffect,
     FuelChargeShotLaserLevel3DamageEffect,
 } from '../../DamageEffect/FuelChargeShotLaserDamageEffect.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const InfoFuelChargeShot = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).spriteInfo;
+const FuelChargeShotLaserConstant = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).constant
+    .FuelChargeShotLaser;
+const FuelChargeShotDamage = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).stats;
 
 export class FuelChargeShotLaserLevel1
     extends Sprite

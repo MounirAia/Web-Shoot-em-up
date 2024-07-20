@@ -4,7 +4,6 @@ import { Keyboard } from '../Keyboard.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
-import InfoPlayer from '../SpriteInfoJSON/Player/infoPlayer.js';
 import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
 import { IServiceSkillManager, ISkill, PossibleSkillName, SkillsTypeName } from './PlayerSkills/Skills.js';
@@ -24,7 +23,10 @@ import { Sprite } from './Sprite.js';
 import { ISpriteWithDamage, ISpriteWithHealth, ISpriteWithSpeed } from './SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
 import { IServiceUtilManager } from '../UtilManager';
-import PlayerStats from '../StatsJSON/PlayerStats.js';
+import { GetSpriteStaticInformation } from '../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const InfoPlayer = GetSpriteStaticInformation({ sprite: 'Player' }).spriteInfo;
+const PlayerStats = GetSpriteStaticInformation({ sprite: 'Player' }).stats;
 
 export interface IServicePlayer {
     Coordinate(): { x: number; y: number };
@@ -71,9 +73,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private supportSkillChosen: PossibleSkillName;
     private currentSkill: Map<SkillsTypeName, ISkill>;
 
-    private cannonConfiguration: CannonConfiguration;
-    private effectConfiguration: EffectConfiguration;
-    private supportConfiguration: SupportConfiguration;
+    private cannonConfiguration?: CannonConfiguration;
+    private effectConfiguration?: EffectConfiguration;
+    private supportConfiguration?: SupportConfiguration;
 
     constructor(
         image: HTMLImageElement,
@@ -156,7 +158,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
         this.Collide.set('WithProjectile', (bullet: unknown) => {
             this.StatesController.PlayState({ stateName: 'onHit' });
-            this.cannonConfiguration.PlayCollisionMethod({ collisionScenario: 'WithProjectile' });
+            this.cannonConfiguration?.PlayCollisionMethod({ collisionScenario: 'WithProjectile' });
 
             const myBullet = bullet as ISpriteWithDamage;
             this.CurrentHealth -= myBullet.Damage;
@@ -164,7 +166,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
         this.Collide.set('WithEnemy', (enemy: unknown) => {
             this.StatesController.PlayState({ stateName: 'onInvulnerable', duration: this.invulnerabilityTimePeriod });
-            this.cannonConfiguration.PlayCollisionMethod({ collisionScenario: 'WithEnemy' });
+            this.cannonConfiguration?.PlayCollisionMethod({ collisionScenario: 'WithEnemy' });
 
             this.CurrentHealth -= this.MaxHealth * 0.5;
         });
@@ -210,9 +212,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
         }
 
-        this.cannonConfiguration.Update(dt);
-        this.effectConfiguration.Update(dt);
-        this.supportConfiguration.Update(dt);
+        this.cannonConfiguration?.Update(dt);
+        this.effectConfiguration?.Update(dt);
+        this.supportConfiguration?.Update(dt);
 
         this.UpdateHitboxes(dt);
 
@@ -242,9 +244,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     Draw(ctx: CanvasRenderingContext2D) {
         super.Draw(ctx);
-        this.cannonConfiguration.Draw(ctx);
-        this.effectConfiguration.Draw(ctx);
-        this.supportConfiguration.Draw(ctx);
+        this.cannonConfiguration?.Draw(ctx);
+        this.effectConfiguration?.Draw(ctx);
+        this.supportConfiguration?.Draw(ctx);
     }
 
     Coordinate(): { x: number; y: number } {

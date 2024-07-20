@@ -7,10 +7,12 @@ import { PlayerProjectileDamageEffectController } from '../PlayerProjectileDamag
 import { Sprite } from '../Sprite.js';
 import { ISpriteWithDamage, ISpriteWithDamageEffects, ISpriteWithSpeed } from '../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from '../SpriteHitbox.js';
-import { PlayerBulletDamageStats } from '../../StatsJSON/Skills/PlayerBulletDamage.js';
 import { IServicePlayer } from '../Player.js';
 import { IServiceUtilManager } from '../../UtilManager.js';
-import InfoPlayerBulletSprite from '../../SpriteInfoJSON/Skills/infoPlayerBullet.js';
+import { GetSpriteStaticInformation } from '../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const PlayerBulletDamageStats = GetSpriteStaticInformation({ sprite: 'PlayerBullet' }).stats;
+const InfoPlayerBulletSprite = GetSpriteStaticInformation({ sprite: 'PlayerBullet' }).spriteInfo;
 
 export class RegularPlayerBullet
     extends Sprite

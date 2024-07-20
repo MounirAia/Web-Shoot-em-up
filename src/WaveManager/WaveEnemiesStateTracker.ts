@@ -3,7 +3,10 @@ import {
     DamageEffectFunctionReturnType,
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
-import { FuelChargeShotLaserConstant } from '../StatsJSON/Skills/Support/FuelChargeShot/FuelChargeShotConstant.js';
+import { GetSpriteStaticInformation } from '../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const FuelChargeShotLaserConstant = GetSpriteStaticInformation({ sprite: 'FuelChargeShot' }).constant
+    .FuelChargeShotLaser;
 
 export class WaveEnemiesDamageStateTracker {
     private listEnemiesState: Map<IEnemy, Map<DamageEffectOptions, DamageEffectFunctionReturnType[]>>;

@@ -1,12 +1,6 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoMirrorShield from '../../../../SpriteInfoJSON/Skills/InfoMirrorShield.js';
-import {
-    MirrorShieldConstant,
-    MirrorShieldExplosiveEntityConstant,
-} from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
-import { MirrorShieldDamage } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldDamage.js';
 import { IServiceUtilManager } from '../../../../UtilManager.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
@@ -24,6 +18,12 @@ import {
 } from '../../../SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { ExplosiveDamageEffect } from '../../DamageEffect/ExplosiveDamageEffect.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const MirrorShieldConstant = GetSpriteStaticInformation({ sprite: 'Mirror' }).constant.Mirror;
+const MirrorShieldExplosiveEntityConstant = GetSpriteStaticInformation({ sprite: 'Mirror' }).constant.ExplosiveEntity;
+const MirrorShieldDamage = GetSpriteStaticInformation({ sprite: 'Mirror' }).stats;
+const InfoMirrorShield = GetSpriteStaticInformation({ sprite: 'Mirror' }).spriteInfo;
 
 class MirrorShieldPortal extends Sprite {
     private offsetXOnPlayer: number;
