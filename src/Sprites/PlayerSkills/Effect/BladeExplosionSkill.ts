@@ -2,8 +2,6 @@ import { IServiceEventManager } from '../../../EventManager.js';
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { BladeConstant } from '../../../StatsJSON/Skills/Effect/Blade/BladeConstant.js';
-import { BladeDamageStats } from '../../../StatsJSON/Skills/Effect/Blade/BladeDamage.js';
 import { IServiceUtilManager } from '../../../UtilManager.js';
 import { IServiceWaveManager } from '../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../CollideManager.js';
@@ -21,7 +19,11 @@ import {
 import { EnergyDamageEffect } from '../DamageEffect/EnergyDamageEffect.js';
 import { PossibleSkillName } from '../Skills';
 import { ISkill, SkillsTypeName } from '../Skills.js';
-import InfoBladeExplosionSkillSprite from '../../../SpriteInfoJSON/Skills/infoBladeExplosion.js';
+import { GetSpriteStaticInformation } from '../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const InfoBladeExplosionSkillSprite = GetSpriteStaticInformation({ sprite: 'Blade' }).spriteInfo;
+const BladeDamageStats = GetSpriteStaticInformation({ sprite: 'Blade' }).stats;
+const BladeConstant = GetSpriteStaticInformation({ sprite: 'Blade' }).constant;
 
 class BladeLevel1
     extends Sprite

@@ -1,7 +1,6 @@
 import { IServiceImageLoader } from '../../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../../ServiceLocator.js';
-import InfoRocketCannon from '../../../../../SpriteInfoJSON/Skills/Upgrade/infoRocketCannon.js';
 import { IServicePlayer } from '../../../../Player.js';
 import { Sprite } from '../../../../Sprite.js';
 import {
@@ -10,8 +9,10 @@ import {
     ISpriteWithHitboxes,
     RectangleHitbox,
 } from '../../../../SpriteHitbox.js';
+import { GetSpriteStaticInformation } from '../../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
 
-import InfoPlayer from '../../../../../SpriteInfoJSON/Player/infoPlayer.js';
+const InfoRocketCannon = GetSpriteStaticInformation({ sprite: 'RocketCannonCosmetic' }).spriteInfo;
+const InfoPlayer = GetSpriteStaticInformation({ sprite: 'Player' }).spriteInfo;
 
 export class RocketCannonLevel1 extends Sprite implements ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];

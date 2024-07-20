@@ -1,10 +1,11 @@
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoRocketCannon from '../../../../SpriteInfoJSON/Skills/Upgrade/infoRocketCannon.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
 import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 import { AvailableAnimation } from '../../../SpriteAnimationsController.js';
 import { CollideScenario, ISpriteWithHitboxes, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { RocketCannonLevel1, RocketCannonLevel2, RocketCannonLevel3 } from './RocketSkill/RocketCannon.js';
+const InfoRocketCannon = GetSpriteStaticInformation({ sprite: 'RocketCannonCosmetic' }).spriteInfo;
 
 // Cannons are attached to the player sprite as an extension, thus the hitbox of the cannons are part of the hitbox of the player
 // It is the responsability of the player sprite to call the animation of the cannon

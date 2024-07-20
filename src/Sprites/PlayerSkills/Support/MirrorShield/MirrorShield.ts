@@ -1,8 +1,6 @@
 import { IServiceImageLoader } from '../../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoMirrorShield from '../../../../SpriteInfoJSON/Skills/InfoMirrorShield.js';
-import { MirrorShieldConstant } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../../../Player.js';
@@ -17,6 +15,10 @@ import {
 import { ISkill, PossibleSkillName, SkillsTypeName } from '../../Skills.js';
 import { MirrorShieldPortals } from './MirrorShieldPortal.js';
 import { MirrorShieldThunderBeam } from './MirrorShieldThunderBeam.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const InfoMirrorShield = GetSpriteStaticInformation({ sprite: 'Mirror' }).spriteInfo;
+const MirrorShieldConstant = GetSpriteStaticInformation({ sprite: 'Mirror' }).constant.Mirror;
 
 class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGeneratedSprite, ISpriteWithHealth {
     BaseHealth: number;

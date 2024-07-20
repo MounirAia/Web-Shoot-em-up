@@ -1,8 +1,6 @@
 import { IServiceImageLoader } from '../../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../ServiceLocator.js';
-import { RocketConstant } from '../../../StatsJSON/Skills/Special/Rocket/RocketConstant.js';
-import { RocketDamageStats } from '../../../StatsJSON/Skills/Special/Rocket/RocketDamage.js';
 import { IServiceUtilManager } from '../../../UtilManager.js';
 import { IServiceCollideManager } from '../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../GeneratedSpriteManager.js';
@@ -18,7 +16,10 @@ import {
 } from '../../SpriteHitbox.js';
 import { ExplosiveDamageEffect } from '../DamageEffect/ExplosiveDamageEffect.js';
 import { ISkill, PossibleSkillName, SkillsTypeName } from '../Skills.js';
-import InfoRocketSkillSprite from '../../../SpriteInfoJSON/Skills/infoRocketSkill.js';
+import { GetSpriteStaticInformation } from '../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+const RocketConstant = GetSpriteStaticInformation({ sprite: 'Rocket' }).constant;
+const RocketDamageStats = GetSpriteStaticInformation({ sprite: 'Rocket' }).stats;
+const InfoRocketSkillSprite = GetSpriteStaticInformation({ sprite: 'Rocket' }).spriteInfo;
 
 export class RocketBulletLevel1
     extends Sprite

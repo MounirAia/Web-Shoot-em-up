@@ -1,4 +1,4 @@
-import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE } from '../../ScreenConstant.js';
+import { CANVA_SCALEX, CANVA_SCALEY, FRAME_RATE } from '../../../ScreenConstant.js';
 
 const Info = {
     Meta: {

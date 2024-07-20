@@ -1,7 +1,5 @@
 import { FRAME_RATE, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import { MirrorShieldThunderBeamConstant } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldConstant.js';
-import { MirrorShieldDamage } from '../../../../StatsJSON/Skills/Support/MirrorShield/MirrorShieldDamage.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../../../GeneratedSpriteManager.js';
@@ -10,6 +8,10 @@ import { PlayerProjectileDamageEffectController } from '../../../PlayerProjectil
 import { ISpriteWithDamage, ISpriteWithDamageEffects } from '../../../SpriteAttributes.js';
 import { CollideScenario, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { EnergyDamageEffect } from '../../DamageEffect/EnergyDamageEffect.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+
+const MirrorShieldThunderBeamConstant = GetSpriteStaticInformation({ sprite: 'Mirror' }).constant.ThunderBeam;
+const MirrorShieldDamage = GetSpriteStaticInformation({ sprite: 'Mirror' }).stats;
 
 export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDamage, ISpriteWithDamageEffects {
     Generator: 'player' | 'enemy';

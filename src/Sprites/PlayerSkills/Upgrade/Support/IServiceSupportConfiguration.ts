@@ -1,8 +1,9 @@
 import { ServiceLocator } from '../../../../ServiceLocator.js';
-import InfoPlayer from '../../../../SpriteInfoJSON/Player/infoPlayer.js';
+import { GetSpriteStaticInformation } from '../../../../SpriteStaticInformation/SpriteStaticInformationManager.js';
 import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 import { SupportCosmetic } from './SupportCosmetic.js';
+const InfoPlayer = GetSpriteStaticInformation({ sprite: 'Player' }).spriteInfo;
 
 export class SupportConfiguration {
     supportConfiguration: Sprite[];
