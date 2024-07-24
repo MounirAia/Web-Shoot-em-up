@@ -23,6 +23,10 @@ export class UIManager {
             fontSize: 3.2 * CANVA_SCALEX,
             fontFamily: 'pixel',
         },
+        InGameUI: {
+            fontSize: 12 * CANVA_SCALEX,
+            fontFamily: 'pixel',
+        },
     };
 
     public AddComponent(component: IUIComponent): void {

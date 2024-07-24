@@ -76,4 +76,8 @@ export class FieldWithText extends BaseField {
 
         return linesToDraw;
     }
+
+    public SetText(text: string) {
+        this.text = text;
+    }
 }

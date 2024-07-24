@@ -29,6 +29,8 @@ export interface IServiceWaveManager {
     GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined;
     ParalyzeEnemy(parameters: { target: IEnemy }): void;
     StopParalyzeEnemy(parameters: { target: IEnemy }): void;
+
+    Round: number;
 }
 
 class WaveManager implements IServiceWaveManager {

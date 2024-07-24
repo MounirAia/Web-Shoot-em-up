@@ -1,4 +1,5 @@
 import { Mouse } from '../../Mouse';
+import { CANVA_SCALEX } from '../../ScreenConstant';
 import { IUIComponent } from './UIManager';
 
 export class BaseField implements IUIComponent {
@@ -11,7 +12,7 @@ export class BaseField implements IUIComponent {
     private isVisible: boolean;
     private isActive: boolean;
 
-    public LineWidth: number = 3;
+    public LineWidth: number = (3 / 4) * CANVA_SCALEX;
     public HasBorderOnAllSide: boolean = true;
     public HasTopBorder?: boolean;
     public HasRightBorder?: boolean;

@@ -36,6 +36,8 @@ export interface IServicePlayer {
     SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }): void; // Set the skill for the player, but do not update the player skills yet with the real object
     UpdateSkill(): void; // Update the player skills with the real object, take into account the updates made with SetSkill
     MaxHealth: number;
+    CurrentHealth: number;
+    MoneyInWallet: number;
     NumberOfBoosts: number;
     SpecialSkillLevel: number;
     SpeciallSkillName: PossibleSkillName | undefined;
@@ -343,6 +345,10 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     private set BaseSpeed(value: number) {
         this.baseSpeed = value;
+    }
+
+    get MoneyInWallet(): number {
+        return this.moneyInWallet;
     }
 
     get NumberOfBoosts(): number {
