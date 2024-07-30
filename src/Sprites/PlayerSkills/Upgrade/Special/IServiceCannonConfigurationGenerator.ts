@@ -64,7 +64,7 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
     }
 
     public GetConfig(): CannonConfiguration {
-        const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpeciallSkillName;
+        const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillName;
         const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
 
         if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {

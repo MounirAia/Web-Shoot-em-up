@@ -5,6 +5,8 @@ import { IServicePlayer } from '../Sprites/Player';
 import { Sprite } from '../Sprites/Sprite';
 import { IServiceUtilManager } from '../UtilManager';
 import { IServiceWaveManager } from '../WaveManager/WaveManager';
+import { BaseField } from './BaseUserInterface/BaseField';
+import { FieldSkillFactory } from './BaseUserInterface/FieldSkill';
 import { FieldWithText } from './BaseUserInterface/FieldWithText';
 import { UIManager } from './BaseUserInterface/UIManager';
 
@@ -103,6 +105,13 @@ class CityBackgroundManager {
 class UserStateUI {
     private roundNumber: FieldWithText;
     private money: FieldWithText;
+    private playerSpecialSkillLevel: number;
+    private playerEffectSkillLevel: number;
+    private playerSupportSkillLevel: number;
+
+    private specialSkillFrame: BaseField | undefined;
+    private effectSkillFrame: BaseField | undefined;
+    private supportSkillFrame: BaseField | undefined;
 
     constructor() {
         const currentRoundNumber = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').Round;
@@ -129,9 +138,66 @@ class UserStateUI {
         });
 
         this.money.HasBorderOnAllSide = false;
+
+        this.playerSpecialSkillLevel = 0;
+        this.playerEffectSkillLevel = 0;
+        this.playerSupportSkillLevel = 0;
+
+        this.specialSkillFrame = undefined;
+
+        this.effectSkillFrame = undefined;
+
+        this.supportSkillFrame = undefined;
     }
 
-    public Update(dt: number): void {}
+    public Update(dt: number): void {
+        this.updateSkillFrame();
+    }
+
+    private updateSkillFrame(): void {
+        const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
+        const playerEffectSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillLevel;
+        const playerSupportSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SupportSkillLevel;
+
+        if (playerSpecialSkillLevel > 0 && this.playerSpecialSkillLevel !== playerSpecialSkillLevel) {
+            const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillName!;
+            this.playerSpecialSkillLevel = playerSpecialSkillLevel;
+            const fieldSkillFactory = new FieldSkillFactory();
+            this.specialSkillFrame = fieldSkillFactory.CreateFieldSkill({
+                skillName: playerSpecialSkillName,
+                skillLevel: playerSpecialSkillLevel as 1 | 2 | 3,
+                x: 61 * CANVA_SCALEX,
+                y: 158 * CANVA_SCALEY,
+                HasHover: false,
+            });
+        }
+
+        if (playerEffectSkillLevel > 0 && this.playerEffectSkillLevel !== playerEffectSkillLevel) {
+            const playerEffectSkillName = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillName!;
+            this.playerEffectSkillLevel = playerEffectSkillLevel;
+            const fieldSkillFactory = new FieldSkillFactory();
+            this.effectSkillFrame = fieldSkillFactory.CreateFieldSkill({
+                skillName: playerEffectSkillName,
+                skillLevel: playerEffectSkillLevel as 1 | 2 | 3,
+                x: 91 * CANVA_SCALEX,
+                y: 158 * CANVA_SCALEY,
+                HasHover: false,
+            });
+        }
+
+        if (playerSupportSkillLevel > 0 && this.playerSupportSkillLevel !== playerSupportSkillLevel) {
+            const playerSupportSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SupportSkillName!;
+            this.playerSupportSkillLevel = playerSupportSkillLevel;
+            const fieldSkillFactory = new FieldSkillFactory();
+            this.supportSkillFrame = fieldSkillFactory.CreateFieldSkill({
+                skillName: playerSupportSkillName,
+                skillLevel: playerSupportSkillLevel as 1 | 2 | 3,
+                x: 122 * CANVA_SCALEX,
+                y: 158 * CANVA_SCALEY,
+                HasHover: false,
+            });
+        }
+    }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = '#B09F9E';
@@ -143,6 +209,7 @@ class UserStateUI {
 
         this.drawFrame({ ctx, lineWidth });
         this.drawHealthBar({ ctx, lineWidth });
+        this.drawSkillFrame({ ctx, lineWidth });
         this.drawBoost({ ctx, lineWidth });
 
         ctx.stroke();
@@ -205,6 +272,13 @@ class UserStateUI {
             48 * CANVA_SCALEX,
             8 * CANVA_SCALEY,
         );
+    }
+
+    private drawSkillFrame(parameters: { ctx: CanvasRenderingContext2D; lineWidth: number }): void {
+        const { ctx, lineWidth } = parameters;
+        this.specialSkillFrame?.Draw(ctx);
+        this.effectSkillFrame?.Draw(ctx);
+        this.supportSkillFrame?.Draw(ctx);
     }
 
     private drawBoost(parameters: { ctx: CanvasRenderingContext2D; lineWidth: number }): void {

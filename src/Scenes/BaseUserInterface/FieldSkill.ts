@@ -4,7 +4,7 @@ import { ServiceLocator } from '../../ServiceLocator';
 import { IUIComponent, UIManager } from './UIManager';
 import { BaseField } from './BaseField';
 import { FieldWithText } from './FieldWithText';
-import { PossibleSkillName } from '../../Sprites/PlayerSkills/Skills';
+import { PossibleSkillLevel, PossibleSkillName } from '../../Sprites/PlayerSkills/Skills';
 import { StaticImage } from './StaticImage';
 import { DamageEffectOptions } from '../../Sprites/PlayerSkills/DamageEffect/IDamageEffect';
 import { GetSpriteStaticInformation } from '../../SpriteStaticInformation/SpriteStaticInformationManager';
@@ -255,7 +255,7 @@ interface SkillMetadata {
 }
 
 // Define a type for skill level
-type SkillLevel = 1 | 2 | 3; // Add more levels as needed
+type SkillLevel = Exclude<PossibleSkillLevel, 0>;
 
 export class FieldSkillFactory {
     private skillMetadata: Record<PossibleSkillName, Record<SkillLevel, SkillMetadata>>;

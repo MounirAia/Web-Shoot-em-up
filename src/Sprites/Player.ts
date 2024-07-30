@@ -6,7 +6,13 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
-import { IServiceSkillManager, ISkill, PossibleSkillName, SkillsTypeName } from './PlayerSkills/Skills.js';
+import {
+    IServiceSkillManager,
+    ISkill,
+    PossibleSkillLevel,
+    PossibleSkillName,
+    SkillsTypeName,
+} from './PlayerSkills/Skills.js';
 import {
     EffectConfiguration,
     IServiceEffectConfigurationGenerator,
@@ -39,10 +45,12 @@ export interface IServicePlayer {
     CurrentHealth: number;
     MoneyInWallet: number;
     NumberOfBoosts: number;
-    SpecialSkillLevel: number;
-    SpeciallSkillName: PossibleSkillName | undefined;
-    EffectSkillLevel: number;
-    SupportSkillLevel: number;
+    SpecialSkillLevel: PossibleSkillLevel;
+    SpecialSkillName: PossibleSkillName | undefined;
+    EffectSkillLevel: PossibleSkillLevel;
+    EffectSkillName: PossibleSkillName | undefined;
+    SupportSkillLevel: PossibleSkillLevel;
+    SupportSkillName: PossibleSkillName | undefined;
     CurrentHitbox: RectangleHitbox[];
     InvulnerabilityTimePeriod: number;
 }
@@ -58,9 +66,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private currentHealth: number;
 
     private moneyInWallet: number;
-    private specialSkillLevel: number;
-    private effectSkillLevel: number;
-    private supportSkillLevel: number;
+    private specialSkillLevel: PossibleSkillLevel;
+    private effectSkillLevel: PossibleSkillLevel;
+    private supportSkillLevel: PossibleSkillLevel;
 
     // makes player invulnerable, ex:when collide with enemies
     private invulnerabilityTimePeriod: number;
@@ -418,20 +426,37 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         return false;
     }
 
-    get SpecialSkillLevel(): number {
+    get SpecialSkillLevel(): PossibleSkillLevel {
+        if (this.specialSkillLevel > 3) {
+            return 3;
+        }
         return this.specialSkillLevel;
     }
 
-    get SpeciallSkillName(): PossibleSkillName | undefined {
+    get SpecialSkillName(): PossibleSkillName | undefined {
         return this.currentSkill.get('special')?.SkillName;
     }
 
-    get EffectSkillLevel(): number {
+    get EffectSkillLevel(): PossibleSkillLevel {
+        if (this.effectSkillLevel > 3) {
+            return 3;
+        }
         return this.effectSkillLevel;
     }
 
-    get SupportSkillLevel(): number {
+    get EffectSkillName(): PossibleSkillName | undefined {
+        return this.currentSkill.get('effect')?.SkillName;
+    }
+
+    get SupportSkillLevel(): PossibleSkillLevel {
+        if (this.supportSkillLevel > 3) {
+            return 3;
+        }
         return this.supportSkillLevel;
+    }
+
+    get SupportSkillName(): PossibleSkillName | undefined {
+        return this.currentSkill.get('support')?.SkillName;
     }
 
     get InvulnerabilityTimePeriod(): number {
