@@ -29,7 +29,7 @@ class CityBackground extends Sprite {
 
 class CityBackgroundManager {
     private citiesImages: CityBackground[];
-    private cityPadding = 3 * CANVA_SCALEX;
+    private cityPadding = 3 * CANVA_SCALEX; // right padding for the city
     constructor() {
         this.citiesImages = [];
         const initialX = this.cityPadding;

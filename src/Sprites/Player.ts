@@ -200,26 +200,37 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         let isOutsideBottomScreen = false;
         for (const hitbox of this.CurrentHitbox) {
             isOutsideLeftScreen =
-                isOutsideLeftScreen || hitbox.CheckIfBoxOverlap(-canvas.width, 0, canvas.width, canvas.height);
+                isOutsideLeftScreen ||
+                hitbox.CheckIfBoxOverlap(this.getScreenLimit('left'), 0, canvas.width, canvas.height);
+
             isOutsideTopScreen =
-                isOutsideTopScreen || hitbox.CheckIfBoxOverlap(0, -canvas.height, canvas.width, canvas.height);
+                isOutsideTopScreen ||
+                hitbox.CheckIfBoxOverlap(0, this.getScreenLimit('top'), canvas.width, (3 / 4) * CANVA_SCALEX);
+
             isOutsideRightScreen =
-                isOutsideRightScreen || hitbox.CheckIfBoxOverlap(canvas.width, 0, canvas.width, canvas.height);
+                isOutsideRightScreen ||
+                hitbox.CheckIfBoxOverlap(this.getScreenLimit('right'), 0, canvas.width, canvas.height);
+
             isOutsideBottomScreen =
-                isOutsideBottomScreen || hitbox.CheckIfBoxOverlap(0, canvas.height, canvas.width, canvas.height);
+                isOutsideBottomScreen ||
+                hitbox.CheckIfBoxOverlap(0, this.getScreenLimit('bottom'), canvas.width, canvas.height);
         }
 
         if (Keyboard.a.IsDown) {
             if (!isOutsideLeftScreen) this.X -= this.BaseSpeed;
+            else this.X = this.getResetPositionOnScreenLimit('left');
         }
         if (Keyboard.w.IsDown) {
             if (!isOutsideTopScreen) this.Y -= this.BaseSpeed;
+            else this.getResetPositionOnScreenLimit('top');
         }
         if (Keyboard.d.IsDown) {
             if (!isOutsideRightScreen) this.X += this.BaseSpeed;
+            else this.X = this.getResetPositionOnScreenLimit('right');
         }
         if (Keyboard.s.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
+            else this.Y = this.getResetPositionOnScreenLimit('bottom');
         }
 
         this.cannonConfiguration?.Update(dt);
@@ -384,6 +395,48 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             framesItTakes: PlayerStats[numberOfBoosts]['Speed of the Player (Number Frames to HalfScreen Distance)'],
         });
         this.invulnerabilityTimePeriod = PlayerStats[numberOfBoosts]['Invulnerability Time Period (Seconds)'];
+    }
+
+    private getScreenLimit(direction: 'left' | 'right' | 'top' | 'bottom'): number {
+        const canvasWidth = canvas.width;
+
+        const resetPlayerOnLeftScreenLimit = -(canvasWidth - 1);
+        const resetPlayerOnRightScreenLimit = canvasWidth - 1;
+        const resetPlayerOnTopScreenLimit = 15 * CANVA_SCALEX + ((3 / 4) * CANVA_SCALEX) / 6;
+        const resetPlayerOnBottomScreenLimit = (155 - (1 * CANVA_SCALEX) / 2) * CANVA_SCALEY;
+
+        switch (direction) {
+            case 'left':
+                return resetPlayerOnLeftScreenLimit;
+            case 'right':
+                return resetPlayerOnRightScreenLimit;
+            case 'top':
+                return resetPlayerOnTopScreenLimit;
+            case 'bottom':
+                return resetPlayerOnBottomScreenLimit;
+            default:
+                return 0;
+        }
+    }
+
+    private getResetPositionOnScreenLimit(direction: string): number {
+        let resetPlayerOnTopScreenLimit = 15 * CANVA_SCALEX + (3 / 4) * CANVA_SCALEX;
+        let resetPlayerOnRightScreenLimit = canvas.width - this.Width;
+        let resetPlayerOnBottomScreenLimit = (155 - (1 * CANVA_SCALEX) / 4) * CANVA_SCALEY - this.Height;
+        let resetPlayerOnLeftScreenLimit = 0;
+
+        switch (direction) {
+            case 'left':
+                return resetPlayerOnLeftScreenLimit;
+            case 'right':
+                return resetPlayerOnRightScreenLimit;
+            case 'top':
+                return resetPlayerOnTopScreenLimit;
+            case 'bottom':
+                return resetPlayerOnBottomScreenLimit;
+            default:
+                return 0;
+        }
     }
 
     get MaxHealth(): number {
