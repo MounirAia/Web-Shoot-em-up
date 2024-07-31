@@ -5,6 +5,7 @@ import { FuelChargeShotSkill } from './Support/FuelChargeShot/FuelChargeShot';
 import { MirrorShieldSkill } from './Support/MirrorShield/MirrorShield';
 
 export type PossibleSkillName = 'Rocket' | 'Blade' | 'MirrorShield' | 'FuelChargeShot';
+export type PossibleSkillLevel = 0 | 1 | 2 | 3;
 export type SkillsTypeName = 'special' | 'support' | 'effect';
 
 export interface ISkill {

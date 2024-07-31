@@ -1,7 +1,7 @@
 import { LoadEventManager } from './EventManager.js';
 import { IServiceImageLoader, LoadImageLoader } from './ImageLoader.js';
 import { Keyboard } from './Keyboard.js';
-import { DrawGalaxyMap, LoadGalaxyMap, UpdateGalaxyMap } from './Map/Galaxy.js';
+import { DrawGameScene, LoadGameScene, UpdateGameScene } from './Scenes/GameScene.js';
 import {} from './Mouse.js';
 import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
 import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenuScene.js';
@@ -32,13 +32,13 @@ function load() {
     LoadSupportConfiguration();
     LoadImageLoader();
     LoadSceneManager();
-    LoadGalaxyMap();
     LoadMainMenu();
     LoadCollideManager();
     LoadWaveManager();
     LoadSkillManager();
     LoadPlayer();
     LoadSelectSkillScene();
+    LoadGameScene();
     ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
 }
 
@@ -48,7 +48,7 @@ function update(dt: number) {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
 
     if (SceneManager.CurrentScene === 'Game') {
-        UpdateGalaxyMap(dt);
+        UpdateGameScene(dt);
         UpdateWaveManager(dt);
         UpdatePlayer(dt);
         UpdateGeneratedSpritesManager(dt);
@@ -72,12 +72,12 @@ function draw(ctx: CanvasRenderingContext2D) {
     const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
 
     if (SceneManager.CurrentScene === 'Game') {
-        DrawGalaxyMap(ctx);
+        DrawGameScene(ctx);
         DrawGeneratedSpritesManager(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
     } else if (SceneManager.CurrentScene === 'InGameMenu') {
-        DrawGalaxyMap(ctx);
+        DrawGameScene(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
         DrawGeneratedSpritesManager(ctx);
