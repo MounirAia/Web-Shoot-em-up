@@ -1,4 +1,4 @@
-import { FRAME_RATE, canvas } from '../../../../ScreenConstant.js';
+import { CANVA_SCALEX, FRAME_RATE, canvas } from '../../../../ScreenConstant.js';
 import { ServiceLocator } from '../../../../ServiceLocator.js';
 import { IServiceWaveManager } from '../../../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../../../CollideManager.js';
@@ -26,7 +26,7 @@ export class MirrorShieldThunderBeam implements IGeneratedSprite, ISpriteWithDam
     private setOfKeyPoints: { x: number; y: number }[];
     private readonly verticalRange = 30;
     private readonly potentialPartitionNumbers = [1 / 2, 1 / 4, 1 / 5];
-    private readonly lineWidth = 3;
+    private readonly lineWidth = (3 / 4) * CANVA_SCALEX;
     private currentDisappearTimer = 1 / FRAME_RATE;
     constructor(params: { startingPoint: { x: number; y: number } }) {
         const { startingPoint } = params;
