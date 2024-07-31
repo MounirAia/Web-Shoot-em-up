@@ -16,9 +16,6 @@ import {
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
 import { LoadSkillManager } from './Sprites/PlayerSkills/Skills.js';
-import { LoadEffectConfiguration } from './Sprites/PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
-import { LoadCannonConfiguration } from './Sprites/PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
-import { LoadSupportConfiguration } from './Sprites/PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
 import { LoadUtilManager } from './UtilManager.js';
 import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
 
@@ -27,9 +24,6 @@ function load() {
     LoadUtilManager();
     LoadEventManager();
     LoadGeneratedSpritesManager();
-    LoadCannonConfiguration();
-    LoadEffectConfiguration();
-    LoadSupportConfiguration();
     LoadImageLoader();
     LoadSceneManager();
     LoadMainMenu();
@@ -39,7 +33,7 @@ function load() {
     LoadPlayer();
     LoadSelectSkillScene();
     LoadGameScene();
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('MainMenu');
+    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('SelectSkill');
 }
 
 function update(dt: number) {

@@ -4,8 +4,8 @@ import { IServicePlayer } from '../../../Player.js';
 import { Sprite } from '../../../Sprite.js';
 import { AvailableAnimation } from '../../../SpriteAnimationsController.js';
 import { CollideScenario, ISpriteWithHitboxes, RectangleHitbox } from '../../../SpriteHitbox.js';
+import { PossibleSkillLevel, PossibleSkillName } from '../../Skills.js';
 import { RocketCannonLevel1, RocketCannonLevel2, RocketCannonLevel3 } from './RocketSkill/RocketCannon.js';
-const InfoRocketCannon = GetSpriteStaticInformation({ sprite: 'RocketCannonCosmetic' }).spriteInfo;
 
 // Cannons are attached to the player sprite as an extension, thus the hitbox of the cannons are part of the hitbox of the player
 // It is the responsability of the player sprite to call the animation of the cannon
@@ -55,25 +55,33 @@ export class CannonConfiguration {
     }
 }
 
-export interface IServiceCannonConfigurationGenerator {
-    GetConfig: () => CannonConfiguration;
-}
-class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerator {
-    constructor() {
-        ServiceLocator.AddService('CannonConfigurationGenerator', this);
+export class CannonConfigurationFactory {
+    private playerSpecialSkillName?: PossibleSkillName;
+    private playerSpecialSkillLevel: PossibleSkillLevel;
+    private playerX: number;
+    private playerY: number;
+
+    constructor(parameters: {
+        playerSpecialSkillName?: PossibleSkillName;
+        playerSpecialSkillLevel: PossibleSkillLevel;
+        playerX: number;
+        playerY: number;
+    }) {
+        const { playerSpecialSkillName, playerSpecialSkillLevel, playerX, playerY } = parameters;
+        this.playerSpecialSkillName = playerSpecialSkillName;
+        this.playerSpecialSkillLevel = playerSpecialSkillLevel;
+        this.playerX = playerX;
+        this.playerY = playerY;
     }
 
     public GetConfig(): CannonConfiguration {
-        const playerSpecialSkillName = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillName;
-        const playerSpecialSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').SpecialSkillLevel;
-
-        if (!playerSpecialSkillName || playerSpecialSkillLevel === 0) {
+        if (!this.playerSpecialSkillName || this.playerSpecialSkillLevel === 0) {
             return new CannonConfiguration([]);
         }
 
-        let cannonConfig = [];
-        if (playerSpecialSkillName === 'Rocket') {
-            cannonConfig = this.getRocketCannonConfiguration(playerSpecialSkillLevel);
+        let cannonConfig: (Sprite & ISpriteWithHitboxes)[] = [];
+        if (this.playerSpecialSkillName === 'Rocket') {
+            cannonConfig = this.getRocketCannonConfiguration(this.playerSpecialSkillLevel);
             return new CannonConfiguration(cannonConfig);
         }
 
@@ -81,47 +89,49 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
     }
 
     private getRocketCannonConfiguration(skillLevel: number): (Sprite & ISpriteWithHitboxes)[] {
-        const cannonConfig = [];
-        const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
+        const { Level1, Level2, Level3 } = GetSpriteStaticInformation({ sprite: 'RocketCannonCosmetic' }).spriteInfo;
         if (skillLevel === 1) {
+            const cannonConfig: RocketCannonLevel1[] = [];
             const cannon1 = new RocketCannonLevel1({
-                X: playerX,
-                Y: playerY,
-                offsetXOnPlayer: InfoRocketCannon.Level1.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
-                offsetYOnPlayer: InfoRocketCannon.Level1.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
+                X: this.playerX,
+                Y: this.playerY,
+                offsetXOnPlayer: Level1.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
+                offsetYOnPlayer: Level1.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
             });
             cannonConfig.push(cannon1);
             return cannonConfig;
         } else if (skillLevel == 2) {
+            const cannonConfig: RocketCannonLevel2[] = [];
             const cannon1 = new RocketCannonLevel2({
-                X: playerX,
-                Y: playerY,
-                offsetXOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
-                offsetYOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
+                X: this.playerX,
+                Y: this.playerY,
+                offsetXOnPlayer: Level2.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
+                offsetYOnPlayer: Level2.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
                 direction: 'up',
             });
             const cannon2 = new RocketCannonLevel2({
-                X: playerX,
-                Y: playerY,
-                offsetXOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
-                offsetYOnPlayer: InfoRocketCannon.Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
+                X: this.playerX,
+                Y: this.playerY,
+                offsetXOnPlayer: Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
+                offsetYOnPlayer: Level2.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
                 direction: 'down',
             });
             cannonConfig.push(cannon1, cannon2);
             return cannonConfig;
         } else if (skillLevel == 3) {
+            const cannonConfig: RocketCannonLevel3[] = [];
             const cannon1 = new RocketCannonLevel3({
-                X: playerX,
-                Y: playerY,
-                offsetXOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
-                offsetYOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
+                X: this.playerX,
+                Y: this.playerY,
+                offsetXOnPlayer: Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.X,
+                offsetYOnPlayer: Level3.Meta.SpriteShiftPositionOnPlayer.Cannon1.Y,
                 direction: 'up',
             });
             const cannon2 = new RocketCannonLevel3({
-                X: playerX,
-                Y: playerY,
-                offsetXOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
-                offsetYOnPlayer: InfoRocketCannon.Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
+                X: this.playerX,
+                Y: this.playerY,
+                offsetXOnPlayer: Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.X,
+                offsetYOnPlayer: Level3.Meta.SpriteShiftPositionOnPlayer.Cannon2.Y,
                 direction: 'down',
             });
             cannonConfig.push(cannon1, cannon2);
@@ -130,8 +140,4 @@ class CannonConfigurationGenerator implements IServiceCannonConfigurationGenerat
 
         return [];
     }
-}
-
-export function LoadCannonConfiguration() {
-    const cannonConfigurationGenerator = new CannonConfigurationGenerator();
 }

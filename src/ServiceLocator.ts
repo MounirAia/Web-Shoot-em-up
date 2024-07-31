@@ -5,11 +5,8 @@ type AvailableServices =
     | 'WaveManager'
     | 'GeneratedSpritesManager'
     | 'CollideManager'
-    | 'CannonConfigurationGenerator'
     | 'EventManager'
     | 'UtilManager'
-    | 'EffectConfigurationGenerator'
-    | 'SupportConfigurationGenerator'
     | 'SkillManager';
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};
