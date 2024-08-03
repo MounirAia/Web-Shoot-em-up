@@ -6,13 +6,7 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
-import {
-    IServiceSkillManager,
-    ISkill,
-    PossibleSkillLevel,
-    PossibleSkillName,
-    SkillsTypeName,
-} from './PlayerSkills/Skills.js';
+import { ISkill, PossibleSkillLevel, PossibleSkillName, SkillFactory, SkillsTypeName } from './PlayerSkills/Skills.js';
 import {
     EffectConfiguration,
     EffectConfigurationFactory,
@@ -119,9 +113,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.BaseHealth = PlayerStats[this.NumberOfBoosts]['Base Health'];
         this.currentHealth = this.BaseHealth;
         this.moneyInWallet = 0;
-        this.specialSkillLevel = 3;
+        this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
-        this.supportSkillLevel = 1;
+        this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = PlayerStats[this.NumberOfBoosts]['Invulnerability Time Period (Seconds)'];
         this.baseTimeBeforeNextShootInFrames = 1; // in seconds
         this.currentTimeBeforeNextRegularShoot = 0;
@@ -344,22 +338,24 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     }
 
     UpdateSkill(): void {
-        const specialSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const skillFactory = new SkillFactory();
+        const specialSkill = skillFactory.GetSkill({
             skillName: this.specialSkillChosen,
+            playerOldSkill: this.currentSkill.get('special'),
         });
 
         this.setSpecialSkill({ skill: specialSkill });
 
-        const effectSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const effectSkill = skillFactory.GetSkill({
             skillName: this.effectSkillChosen,
+            playerOldSkill: this.currentSkill.get('effect'),
         });
-
         this.setEffectSkill({ skill: effectSkill });
 
-        const supportSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const supportSkill = skillFactory.GetSkill({
             skillName: this.supportSkillChosen,
+            playerOldSkill: this.currentSkill.get('support'),
         });
-
         this.setSupportSkill({ skill: supportSkill });
     }
 

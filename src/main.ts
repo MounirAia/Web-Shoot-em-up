@@ -15,7 +15,6 @@ import {
     UpdateGeneratedSpritesManager,
 } from './Sprites/GeneratedSpriteManager.js';
 import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
-import { LoadSkillManager } from './Sprites/PlayerSkills/Skills.js';
 import { LoadUtilManager } from './UtilManager.js';
 import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
 
@@ -29,7 +28,6 @@ function load() {
     LoadMainMenu();
     LoadCollideManager();
     LoadWaveManager();
-    LoadSkillManager();
     LoadPlayer();
     LoadSelectSkillScene();
     LoadGameScene();

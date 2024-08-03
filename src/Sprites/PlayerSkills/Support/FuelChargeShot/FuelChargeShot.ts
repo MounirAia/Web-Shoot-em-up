@@ -258,10 +258,11 @@ class FuelChargeShotLevel3 extends Sprite implements IGeneratedSprite {
 export class FuelChargeShotSkill implements ISkill {
     Type: SkillsTypeName;
     SkillName: PossibleSkillName;
-
+    refFrameSprites: IGeneratedSprite[];
     constructor() {
         this.Type = 'support';
         this.SkillName = 'FuelChargeShot';
+        this.refFrameSprites = [];
     }
 
     Effect() {
@@ -279,13 +280,20 @@ export class FuelChargeShotSkill implements ISkill {
             }
 
             if (cannons.length > 0) {
-                cannons.forEach((cannon) =>
+                cannons.forEach((cannon) => {
+                    this.refFrameSprites.push(cannon);
                     ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                         cannon,
-                    ),
-                );
+                    );
+                });
             }
         }
+    }
+
+    ClearSkillSprite() {
+        this.refFrameSprites.forEach((frame) => {
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(frame);
+        });
     }
 }
 
