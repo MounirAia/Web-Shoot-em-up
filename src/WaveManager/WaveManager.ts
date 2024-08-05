@@ -207,6 +207,10 @@ class WaveManager implements IServiceWaveManager {
     public StopParalyzeEnemy(parameters: { target: IEnemy }) {
         this.currentWave?.RemoveParalyzeEnemy(parameters);
     }
+
+    public testQuantity() {
+        console.log('Wave Manager size: ', this.listWaves.length);
+    }
 }
 
 let waveManager: WaveManager;

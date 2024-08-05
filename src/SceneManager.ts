@@ -28,8 +28,10 @@ export class SceneManager implements IServiceSceneManager {
     }
 
     public PlayMainScene(scene: AvailableScenes) {
+        this.PlaySecondaryScene('None'); // Unload the secondary scene
+
         this.currentMainScene?.Unload();
-        this.currentMainScene = this.createScene(scene);
+        this.currentMainScene = this.createMainScene(scene);
         this.currentMainScene?.Load();
     }
 
@@ -48,11 +50,17 @@ export class SceneManager implements IServiceSceneManager {
     }
 
     public Draw(ctx: CanvasRenderingContext2D) {
-        this.currentMainScene?.Draw(ctx);
+        if (this.currentSecondaryScene) {
+            this.applyBlurToScene((ctx: CanvasRenderingContext2D) => {
+                this.currentMainScene?.Draw(ctx);
+            }, ctx);
+        } else {
+            this.currentMainScene?.Draw(ctx);
+        }
         this.currentSecondaryScene?.Draw(ctx);
     }
 
-    private createScene(scene: AvailableScenes): IScene {
+    private createMainScene(scene: AvailableScenes): IScene {
         switch (scene) {
             case 'Game':
                 return new GameScene();
@@ -77,6 +85,12 @@ export class SceneManager implements IServiceSceneManager {
             default:
                 return undefined;
         }
+    }
+
+    private applyBlurToScene(drawScene: (ctx: CanvasRenderingContext2D) => void, ctx: CanvasRenderingContext2D) {
+        ctx.filter = 'blur(2px)';
+        drawScene(ctx);
+        ctx.filter = 'none';
     }
 }
 

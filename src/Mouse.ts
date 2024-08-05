@@ -22,6 +22,10 @@ export class Mouse {
     }
 
     public static get IsPressed() {
+        if (this.isPressed) {
+            this.isPressed = false;
+            return true;
+        }
         return this.isPressed;
     }
 
@@ -35,6 +39,8 @@ canvas.addEventListener('mousemove', (e) => {
 
     Mouse.X = clientX - canvas.offsetLeft;
     Mouse.Y = clientY - canvas.offsetTop;
+
+    Mouse.IsPressed = false;
 });
 
 canvas.addEventListener('mouseup', (e) => {

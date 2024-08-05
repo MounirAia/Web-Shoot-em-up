@@ -47,6 +47,10 @@ class EventManager implements IServiceEventManager {
             action();
         });
     }
+
+    public testQuantity() {
+        console.log('Event Manager size: ', this.events.size);
+    }
 }
 
 let eventManager: EventManager;
