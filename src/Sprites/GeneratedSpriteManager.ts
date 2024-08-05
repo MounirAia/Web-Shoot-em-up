@@ -120,6 +120,10 @@ export function DrawGeneratedSpritesManager(ctx: CanvasRenderingContext2D) {
     bulletManager.Draw(ctx);
 }
 
+export function UnloadGeneratedSpritesManager() {
+    LoadGeneratedSpritesManager();
+}
+
 // Util function
 function objectKeys<T extends Object>(obj: T): (keyof T)[] {
     return Object.keys(obj) as (keyof T)[];

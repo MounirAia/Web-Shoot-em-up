@@ -1,59 +1,68 @@
-import { IServiceSceneManager } from '../SceneManager.js';
+import { IScene, IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { FieldWithText } from './BaseUserInterface/FieldWithText.js';
 import { UIManager } from './BaseUserInterface/UIManager.js';
 
-const mainMenuUiManager = new UIManager();
+export class MainMenuScene implements IScene {
+    private mainMenuUiManager: UIManager;
+    Load() {
+        this.loadUI();
+    }
 
-export function LoadMainMenu() {
-    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
+    Update(dt: number) {
+        this.mainMenuUiManager.Update(dt);
+    }
 
-    // Define the title of the menu
-    const widthTitle = 136 * CANVA_SCALEX;
-    const heightTitle = 9 * CANVA_SCALEY;
-    const xTitle = 92 * CANVA_SCALEX; // canvas.width / 2 - widthPlayButton / 2;
-    const yTitle = 18 * CANVA_SCALEY; // canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
-    const mainMenuTitle = new FieldWithText({
-        x: xTitle,
-        y: yTitle,
-        width: widthTitle,
-        height: heightTitle,
-        text: "WEB SHOOT'EM UP",
-        fontSize: UIManager.Typography.title.fontSize,
-        fontFamily: UIManager.Typography.title.fontFamily,
-    });
-    mainMenuTitle.HasBorderOnAllSide = false;
-    mainMenuTitle.HasBottomBorder = true;
+    Draw(ctx: CanvasRenderingContext2D) {
+        this.mainMenuUiManager.Draw(ctx);
+    }
 
-    mainMenuUiManager.AddComponent(mainMenuTitle);
+    Unload(): void {}
 
-    // Define the play button
-    const widthPlayButton = 41 * CANVA_SCALEX;
-    const heightPlayButton = 11 * CANVA_SCALEY;
-    const xPlayButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
-    const yPlayButton = 84 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
-    const mainMenuPlayButton = new FieldWithText({
-        x: xPlayButton,
-        y: yPlayButton,
-        width: widthPlayButton,
-        height: heightPlayButton,
-        text: 'PLAY',
-        fontSize: UIManager.Typography.button.fontSize,
-        fontFamily: UIManager.Typography.button.fontFamily,
-        HasHovered: true,
-        onClick: () => {
-            SceneManager.PlayScene('SelectSkill');
-        },
-    });
+    private loadUI() {
+        this.mainMenuUiManager = new UIManager();
 
-    mainMenuUiManager.AddComponent(mainMenuPlayButton);
-}
+        const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
 
-export function UpdateMainMenu(dt: number) {
-    mainMenuUiManager.Update(dt);
-}
+        // Define the title of the menu
+        const widthTitle = 136 * CANVA_SCALEX;
+        const heightTitle = 9 * CANVA_SCALEY;
+        const xTitle = 92 * CANVA_SCALEX; // canvas.width / 2 - widthPlayButton / 2;
+        const yTitle = 18 * CANVA_SCALEY; // canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
+        const mainMenuTitle = new FieldWithText({
+            x: xTitle,
+            y: yTitle,
+            width: widthTitle,
+            height: heightTitle,
+            text: "WEB SHOOT'EM UP",
+            fontSize: UIManager.Typography.title.fontSize,
+            fontFamily: UIManager.Typography.title.fontFamily,
+        });
+        mainMenuTitle.HasBorderOnAllSide = false;
+        mainMenuTitle.HasBottomBorder = true;
 
-export function DrawMainMenu(ctx: CanvasRenderingContext2D) {
-    mainMenuUiManager.Draw(ctx);
+        this.mainMenuUiManager.AddComponent(mainMenuTitle);
+
+        // Define the play button
+        const widthPlayButton = 41 * CANVA_SCALEX;
+        const heightPlayButton = 11 * CANVA_SCALEY;
+        const xPlayButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
+        const yPlayButton = 84 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
+        const mainMenuPlayButton = new FieldWithText({
+            x: xPlayButton,
+            y: yPlayButton,
+            width: widthPlayButton,
+            height: heightPlayButton,
+            text: 'PLAY',
+            fontSize: UIManager.Typography.button.fontSize,
+            fontFamily: UIManager.Typography.button.fontFamily,
+            HasHovered: true,
+            onClick: () => {
+                SceneManager.PlayMainScene('SelectSkill');
+            },
+        });
+
+        this.mainMenuUiManager.AddComponent(mainMenuPlayButton);
+    }
 }

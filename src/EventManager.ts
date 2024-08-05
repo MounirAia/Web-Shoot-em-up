@@ -49,6 +49,12 @@ class EventManager implements IServiceEventManager {
     }
 }
 
+let eventManager: EventManager;
+
 export function LoadEventManager() {
-    new EventManager();
+    eventManager = new EventManager();
+}
+
+export function UnloadEventManager() {
+    LoadEventManager();
 }

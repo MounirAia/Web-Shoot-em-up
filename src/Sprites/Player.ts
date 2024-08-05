@@ -277,6 +277,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     MakeTransactionOnWallet(value: number): void {
         this.moneyInWallet += value;
+        this.moneyInWallet = Math.round(this.moneyInWallet);
 
         if (this.moneyInWallet < 0) {
             this.moneyInWallet = 0;
@@ -465,7 +466,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
-            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('GameOver');
+            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayMainScene('GameOver');
         }
     }
 
@@ -542,4 +543,8 @@ export function UpdatePlayer(dt: number) {
 
 export function DrawPlayer(ctx: CanvasRenderingContext2D) {
     player.Draw(ctx);
+}
+
+export function UnloadPlayer() {
+    LoadPlayer();
 }

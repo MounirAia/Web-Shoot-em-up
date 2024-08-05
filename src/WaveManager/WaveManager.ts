@@ -221,3 +221,7 @@ export function UpdateWaveManager(dt: number) {
 export function DrawWaveManager(ctx: CanvasRenderingContext2D) {
     waveManager.Draw(ctx);
 }
+
+export function UnloadWaveManager() {
+    LoadWaveManager();
+}

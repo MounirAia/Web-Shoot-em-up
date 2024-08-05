@@ -9,7 +9,10 @@ export interface IUIComponent {
 }
 
 export class UIManager {
-    private components: IUIComponent[] = [];
+    private components: IUIComponent[];
+    constructor() {
+        this.components = [];
+    }
     public static readonly Typography = {
         title: {
             fontSize: 9 * CANVA_SCALEX,

@@ -1,83 +1,37 @@
 import { LoadEventManager } from './EventManager.js';
 import { IServiceImageLoader, LoadImageLoader } from './ImageLoader.js';
-import { Keyboard } from './Keyboard.js';
-import { DrawGameScene, LoadGameScene, UpdateGameScene } from './Scenes/GameScene.js';
 import {} from './Mouse.js';
-import { IServiceSceneManager, LoadSceneManager } from './SceneManager.js';
-import { DrawMainMenu, LoadMainMenu, UpdateMainMenu } from './Scenes/MainMenuScene.js';
-import { LoadSelectSkillScene, UpdateSelectSkillScene, DrawSelectSkillScene } from './Scenes/SelectSkillScene.js';
+import { DrawSceneManager, LoadSceneManager, UpdateSceneManager } from './SceneManager.js';
 import { FRAME_RATE, canvas } from './ScreenConstant.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
-import {
-    DrawGeneratedSpritesManager,
-    LoadGeneratedSpritesManager,
-    UpdateGeneratedSpritesManager,
-} from './Sprites/GeneratedSpriteManager.js';
-import { DrawPlayer, LoadPlayer, UpdatePlayer } from './Sprites/Player.js';
+import { LoadGeneratedSpritesManager } from './Sprites/GeneratedSpriteManager.js';
+import { LoadPlayer } from './Sprites/Player.js';
 import { LoadUtilManager } from './UtilManager.js';
-import { DrawWaveManager, LoadWaveManager, UpdateWaveManager } from './WaveManager/WaveManager.js';
+import { LoadWaveManager } from './WaveManager/WaveManager.js';
 
 const ctx = canvas.getContext('2d')!;
 function load() {
+    // Load all the services
     LoadUtilManager();
     LoadEventManager();
     LoadGeneratedSpritesManager();
     LoadImageLoader();
     LoadSceneManager();
-    LoadMainMenu();
     LoadCollideManager();
     LoadWaveManager();
     LoadPlayer();
-    LoadSelectSkillScene();
-    LoadGameScene();
-    ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('SelectSkill');
 }
 
 function update(dt: number) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
-
-    if (SceneManager.CurrentScene === 'Game') {
-        UpdateGameScene(dt);
-        UpdateWaveManager(dt);
-        UpdatePlayer(dt);
-        UpdateGeneratedSpritesManager(dt);
-
-        if (Keyboard.Escape.IsPressed) {
-            SceneManager.PlayScene('InGameMenu');
-        }
-    } else if (SceneManager.CurrentScene === 'InGameMenu') {
-        if (Keyboard.Escape.IsPressed) {
-            SceneManager.PlayScene('Game');
-        }
-    } else if (SceneManager.CurrentScene === 'MainMenu') {
-        UpdateMainMenu(dt);
-    } else if (SceneManager.CurrentScene === 'SelectSkill') {
-        UpdateSelectSkillScene(dt);
-    }
+    UpdateSceneManager(dt);
 }
 function draw(ctx: CanvasRenderingContext2D) {
     if (!ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').IsGameReady()) return;
 
-    const SceneManager = ServiceLocator.GetService<IServiceSceneManager>('SceneManager');
-
-    if (SceneManager.CurrentScene === 'Game') {
-        DrawGameScene(ctx);
-        DrawGeneratedSpritesManager(ctx);
-        DrawPlayer(ctx);
-        DrawWaveManager(ctx);
-    } else if (SceneManager.CurrentScene === 'InGameMenu') {
-        DrawGameScene(ctx);
-        DrawPlayer(ctx);
-        DrawWaveManager(ctx);
-        DrawGeneratedSpritesManager(ctx);
-    } else if (SceneManager.CurrentScene === 'MainMenu') {
-        DrawMainMenu(ctx);
-    } else if (SceneManager.CurrentScene === 'SelectSkill') {
-        DrawSelectSkillScene(ctx);
-    }
+    DrawSceneManager(ctx);
 }
 
 // ****************************************** Init Game Loop ***************************************
