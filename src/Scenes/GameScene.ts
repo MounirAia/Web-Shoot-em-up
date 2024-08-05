@@ -1,10 +1,18 @@
+import { UnloadEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader';
+import { Keyboard } from '../Keyboard';
+import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
-import { IServicePlayer } from '../Sprites/Player';
+import {
+    DrawGeneratedSpritesManager,
+    UnloadGeneratedSpritesManager,
+    UpdateGeneratedSpritesManager,
+} from '../Sprites/GeneratedSpriteManager';
+import { DrawPlayer, IServicePlayer, UnloadPlayer, UpdatePlayer } from '../Sprites/Player';
 import { Sprite } from '../Sprites/Sprite';
 import { IServiceUtilManager } from '../UtilManager';
-import { IServiceWaveManager } from '../WaveManager/WaveManager';
+import { DrawWaveManager, IServiceWaveManager, UnloadWaveManager, UpdateWaveManager } from '../WaveManager/WaveManager';
 import { BaseField } from './BaseUserInterface/BaseField';
 import { FieldSkillFactory } from './BaseUserInterface/FieldSkill';
 import { FieldWithText } from './BaseUserInterface/FieldWithText';
@@ -313,19 +321,50 @@ class UserStateUI {
     }
 }
 
-let cityBackgroundManager: CityBackgroundManager;
-let userStateUI: UserStateUI;
-export function LoadGameScene() {
-    cityBackgroundManager = new CityBackgroundManager();
-    userStateUI = new UserStateUI();
-}
+export class GameScene implements IScene {
+    private cityBackgroundManager: CityBackgroundManager;
+    private userStateUI: UserStateUI;
 
-export function UpdateGameScene(dt: number) {
-    cityBackgroundManager.Update(dt);
-    userStateUI.Update(dt);
-}
+    Load() {
+        this.loadUI();
+    }
 
-export function DrawGameScene(ctx: CanvasRenderingContext2D) {
-    cityBackgroundManager.Draw(ctx);
-    userStateUI.Draw(ctx);
+    Update(dt: number) {
+        UpdateWaveManager(dt);
+        UpdatePlayer(dt);
+        UpdateGeneratedSpritesManager(dt);
+        this.updateUI(dt);
+        if (Keyboard.Escape.IsPressed) {
+            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('InGameMenu');
+        }
+    }
+
+    Draw(ctx: CanvasRenderingContext2D) {
+        this.drawUI(ctx);
+        DrawGeneratedSpritesManager(ctx);
+        DrawPlayer(ctx);
+        DrawWaveManager(ctx);
+    }
+
+    Unload(): void {
+        UnloadEventManager();
+        UnloadGeneratedSpritesManager();
+        UnloadWaveManager();
+        UnloadPlayer();
+    }
+
+    private loadUI() {
+        this.cityBackgroundManager = new CityBackgroundManager();
+        this.userStateUI = new UserStateUI();
+    }
+
+    private updateUI(dt: number) {
+        this.cityBackgroundManager.Update(dt);
+        this.userStateUI.Update(dt);
+    }
+
+    private drawUI(ctx: CanvasRenderingContext2D) {
+        this.cityBackgroundManager.Draw(ctx);
+        this.userStateUI.Draw(ctx);
+    }
 }

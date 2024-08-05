@@ -6,25 +6,19 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { RegularPlayerBullet } from './PlayerSkills/PlayerBullet.js';
 import { IServiceGeneratedSpritesManager } from './GeneratedSpriteManager';
-import {
-    IServiceSkillManager,
-    ISkill,
-    PossibleSkillLevel,
-    PossibleSkillName,
-    SkillsTypeName,
-} from './PlayerSkills/Skills.js';
+import { ISkill, PossibleSkillLevel, PossibleSkillName, SkillFactory, SkillsTypeName } from './PlayerSkills/Skills.js';
 import {
     EffectConfiguration,
-    IServiceEffectConfigurationGenerator,
-} from './PlayerSkills/Upgrade/Effect/IServiceEffectConfiguration.js';
+    EffectConfigurationFactory,
+} from './PlayerSkills/Upgrade/Effect/EffectConfigurationFactory.js';
 import {
     CannonConfiguration,
-    IServiceCannonConfigurationGenerator,
-} from './PlayerSkills/Upgrade/Special/IServiceCannonConfigurationGenerator.js';
+    CannonConfigurationFactory,
+} from './PlayerSkills/Upgrade/Special/CannonConfigurationFactory.js';
 import {
-    IServiceSupportConfigurationGenerator,
     SupportConfiguration,
-} from './PlayerSkills/Upgrade/Support/IServiceSupportConfiguration.js';
+    SupportConfigurationFactory,
+} from './PlayerSkills/Upgrade/Support/SupportConfigurationFactory.js';
 import { Sprite } from './Sprite.js';
 import { ISpriteWithDamage, ISpriteWithHealth, ISpriteWithSpeed } from './SpriteAttributes.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
@@ -283,6 +277,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     MakeTransactionOnWallet(value: number): void {
         this.moneyInWallet += value;
+        this.moneyInWallet = Math.round(this.moneyInWallet);
 
         if (this.moneyInWallet < 0) {
             this.moneyInWallet = 0;
@@ -308,8 +303,13 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private setSpecialSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('special', skill);
-        this.cannonConfiguration =
-            ServiceLocator.GetService<IServiceCannonConfigurationGenerator>('CannonConfigurationGenerator').GetConfig();
+        const cannonConfigurationFactory = new CannonConfigurationFactory({
+            playerSpecialSkillName: this.SpecialSkillName,
+            playerSpecialSkillLevel: this.SpecialSkillLevel,
+            playerX: this.X,
+            playerY: this.Y,
+        });
+        this.cannonConfiguration = cannonConfigurationFactory.GetConfig();
 
         // the hitboxe of the player consist of his hitbox and the hitbox of the cannons attached to it
         this.hitboxes = [...this.playerFrameHitbox, ...this.cannonConfiguration.CurrentHitboxes];
@@ -318,36 +318,45 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private setEffectSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('effect', skill);
-        this.effectConfiguration =
-            ServiceLocator.GetService<IServiceEffectConfigurationGenerator>('EffectConfigurationGenerator').GetConfig();
+        const effectConfigurationFactory = new EffectConfigurationFactory({
+            playerEffectSkillLevel: this.EffectSkillLevel,
+            playerX: this.X,
+            playerY: this.Y,
+        });
+        this.effectConfiguration = effectConfigurationFactory.GetConfig();
     }
 
     private setSupportSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('support', skill);
         this.currentSkill.get('support')?.Effect();
-        this.supportConfiguration = ServiceLocator.GetService<IServiceSupportConfigurationGenerator>(
-            'SupportConfigurationGenerator',
-        ).GetConfig();
+        const supportConfigurationFactory = new SupportConfigurationFactory({
+            playerSupportSkillLevel: this.SupportSkillLevel,
+            playerX: this.X,
+            playerY: this.Y,
+        });
+        this.supportConfiguration = supportConfigurationFactory.GetConfig();
     }
 
     UpdateSkill(): void {
-        const specialSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const skillFactory = new SkillFactory();
+        const specialSkill = skillFactory.GetSkill({
             skillName: this.specialSkillChosen,
+            playerOldSkill: this.currentSkill.get('special'),
         });
 
         this.setSpecialSkill({ skill: specialSkill });
 
-        const effectSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const effectSkill = skillFactory.GetSkill({
             skillName: this.effectSkillChosen,
+            playerOldSkill: this.currentSkill.get('effect'),
         });
-
         this.setEffectSkill({ skill: effectSkill });
 
-        const supportSkill = ServiceLocator.GetService<IServiceSkillManager>('SkillManager').GetSkill({
+        const supportSkill = skillFactory.GetSkill({
             skillName: this.supportSkillChosen,
+            playerOldSkill: this.currentSkill.get('support'),
         });
-
         this.setSupportSkill({ skill: supportSkill });
     }
 
@@ -457,7 +466,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
-            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayScene('GameOver');
+            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayMainScene('GameOver');
         }
     }
 
@@ -534,4 +543,8 @@ export function UpdatePlayer(dt: number) {
 
 export function DrawPlayer(ctx: CanvasRenderingContext2D) {
     player.Draw(ctx);
+}
+
+export function UnloadPlayer() {
+    LoadPlayer();
 }

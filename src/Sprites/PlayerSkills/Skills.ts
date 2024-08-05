@@ -1,4 +1,3 @@
-import { ServiceLocator } from '../../ServiceLocator';
 import { BladeExplosionSkill } from './Effect/BladeExplosionSkill';
 import { RocketSkill } from './Special/RocketSkill';
 import { FuelChargeShotSkill } from './Support/FuelChargeShot/FuelChargeShot';
@@ -13,30 +12,29 @@ export interface ISkill {
     SkillName: PossibleSkillName;
     Effect: () => void;
     AttackSpeed?: () => void;
+    ClearSkillSprite?: () => void;
 }
 
-export interface IServiceSkillManager {
-    GetSkill(parameters: { skillName: PossibleSkillName }): ISkill;
-}
+export class SkillFactory {
+    constructor() {}
 
-export class SkillService implements IServiceSkillManager {
-    private skills: Record<PossibleSkillName, ISkill> = {
-        Rocket: new RocketSkill(),
-        Blade: new BladeExplosionSkill(),
-        MirrorShield: new MirrorShieldSkill(),
-        FuelChargeShot: new FuelChargeShotSkill(),
-    };
+    GetSkill(parameters: { skillName: PossibleSkillName; playerOldSkill: ISkill | undefined }): ISkill {
+        const { skillName, playerOldSkill } = parameters;
 
-    constructor() {
-        ServiceLocator.AddService('SkillManager', this);
+        if (playerOldSkill) {
+            // Before generating a new skill, clear the old skill sprite
+            playerOldSkill.ClearSkillSprite?.();
+        }
+
+        switch (skillName) {
+            case 'Rocket':
+                return new RocketSkill();
+            case 'Blade':
+                return new BladeExplosionSkill();
+            case 'MirrorShield':
+                return new MirrorShieldSkill();
+            case 'FuelChargeShot':
+                return new FuelChargeShotSkill();
+        }
     }
-
-    GetSkill(parameters: { skillName: PossibleSkillName }): ISkill {
-        const { skillName } = parameters;
-        return this.skills[skillName];
-    }
-}
-
-export function LoadSkillManager() {
-    new SkillService();
 }

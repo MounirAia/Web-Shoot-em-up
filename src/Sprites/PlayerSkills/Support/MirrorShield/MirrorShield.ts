@@ -400,10 +400,11 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
 export class MirrorShieldSkill implements ISkill {
     Type: SkillsTypeName;
     SkillName: PossibleSkillName;
-
+    refMirrorSprite: IGeneratedSprite | undefined;
     constructor() {
         this.Type = 'support';
         this.SkillName = 'MirrorShield';
+        this.refMirrorSprite = undefined;
     }
 
     Effect() {
@@ -420,7 +421,16 @@ export class MirrorShieldSkill implements ISkill {
         }
 
         if (mirror) {
+            this.refMirrorSprite = mirror;
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(mirror);
+        }
+    }
+
+    ClearSkillSprite() {
+        if (this.refMirrorSprite) {
+            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
+                this.refMirrorSprite,
+            );
         }
     }
 }
