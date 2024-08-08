@@ -337,6 +337,10 @@ export class GameScene implements IScene {
         if (Keyboard.Escape.IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('InGameMenu');
         }
+
+        if (Keyboard.h.IsPressed) {
+            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('ShoppingMenu');
+        }
     }
 
     Draw(ctx: CanvasRenderingContext2D) {

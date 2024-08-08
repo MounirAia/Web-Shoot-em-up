@@ -339,7 +339,7 @@ const Info = {
                 },
                 Description: 'Mirror zaps and portals! Explosive fun!',
                 MoreDescription:
-                    'The mirror generates a thunder beam on hit and has small portals. These portals release small entities that target enemies and explode after a few seconds, causing additional damage.',
+                    'The mirror has tiny portals attached to it. After a few seconds, the portals disappear randomly, releasing small projectiles that target enemies and explode, causing damage.',
             },
         },
     },

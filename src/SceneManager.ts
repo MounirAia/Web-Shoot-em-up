@@ -3,6 +3,7 @@ import { GameScene } from './Scenes/GameScene.js';
 import { SelectSkillScene } from './Scenes/SelectSkillScene.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { InGameMenuScene } from './Scenes/InGameMenuScene.js';
+import { ShoppingMenuScene } from './Scenes/ShopScene.js';
 
 type AvailableScenes = 'Game' | 'MainMenu' | 'SelectSkill' | 'GameOver';
 type AvailableSecondaryScenes = 'None' | 'InGameMenu' | 'ShoppingMenu';
@@ -51,6 +52,7 @@ export class SceneManager implements IServiceSceneManager {
 
     public Draw(ctx: CanvasRenderingContext2D) {
         if (this.currentSecondaryScene) {
+            // If there is a secondary scene, draw the main scene with a blur effect
             this.applyBlurToScene((ctx: CanvasRenderingContext2D) => {
                 this.currentMainScene?.Draw(ctx);
             }, ctx);
@@ -80,7 +82,7 @@ export class SceneManager implements IServiceSceneManager {
             case 'InGameMenu':
                 return new InGameMenuScene();
             case 'ShoppingMenu':
-            // return new ShoppingMenuScene();
+                return new ShoppingMenuScene();
             case 'None':
             default:
                 return undefined;
