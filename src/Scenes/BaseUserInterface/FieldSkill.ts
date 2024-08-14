@@ -57,12 +57,29 @@ class FieldSkillImage extends BaseField {
     Draw(ctx: CanvasRenderingContext2D) {
         super.Draw(ctx);
         this.image.Draw(ctx);
-        if ((this.IsHovered && this.HasHover) || (this.HasHover && this.GetActive())) {
-            ctx.strokeStyle = '#B09F9E';
-            ctx.strokeRect(this.X, this.Y, this.Width, this.Height);
-        } else {
-            ctx.strokeStyle = 'black';
-        }
+    }
+}
+
+class BoostField extends BaseField {
+    boostWidth: number;
+    boostHeight: number;
+    constructor(parameters: { x: number; y: number; HasHover?: boolean; onClick?: () => void }) {
+        const { x, y, HasHover = true, onClick } = parameters;
+        super(x, y, 22 * CANVA_SCALEX, 20 * CANVA_SCALEY, HasHover, onClick);
+        this.boostWidth = 4 * CANVA_SCALEX;
+        this.boostHeight = 4 * CANVA_SCALEY;
+    }
+
+    Draw(ctx: CanvasRenderingContext2D) {
+        super.Draw(ctx);
+        // draw a black rectangle in the middle of the field
+        ctx.fillStyle = 'black';
+        ctx.fillRect(
+            this.X + this.Width / 2 - this.boostWidth / 2,
+            this.Y + this.Height / 2 - this.boostHeight / 2,
+            this.boostWidth,
+            this.boostHeight,
+        );
     }
 }
 
@@ -251,6 +268,7 @@ interface SkillMetadata {
     realHeight: number;
     description: string;
     moreDescription: string;
+    price: number;
     primaryEffect: DamageEffectOptions | null;
     secondaryEffect: DamageEffectOptions | null;
 }
@@ -298,6 +316,7 @@ export class FieldSkillFactory {
                     realHeight: InfoRocketSkill.SelectSkill.Level1.Meta.RealDimension.Height,
                     description: InfoRocketSkill.SelectSkill.Level1.Meta.Description,
                     moreDescription: InfoRocketSkill.SelectSkill.Level1.Meta.MoreDescription,
+                    price: RocketConstant[0]['Skill Price'],
                     primaryEffect: RocketConstant[0]['Primary Skill'],
                     secondaryEffect: RocketConstant[0]['Secondary Skill'],
                 },
@@ -311,6 +330,7 @@ export class FieldSkillFactory {
                     realHeight: InfoRocketSkill.SelectSkill.Level2.Meta.RealDimension.Height,
                     description: InfoRocketSkill.SelectSkill.Level2.Meta.Description,
                     moreDescription: InfoRocketSkill.SelectSkill.Level2.Meta.MoreDescription,
+                    price: RocketConstant[1]['Skill Price'],
                     primaryEffect: RocketConstant[1]['Primary Skill'],
                     secondaryEffect: RocketConstant[1]['Secondary Skill'],
                 },
@@ -324,6 +344,7 @@ export class FieldSkillFactory {
                     realHeight: InfoRocketSkill.SelectSkill.Level3.Meta.RealDimension.Height,
                     description: InfoRocketSkill.SelectSkill.Level3.Meta.Description,
                     moreDescription: InfoRocketSkill.SelectSkill.Level3.Meta.MoreDescription,
+                    price: RocketConstant[2]['Skill Price'],
                     primaryEffect: RocketConstant[2]['Primary Skill'],
                     secondaryEffect: RocketConstant[2]['Secondary Skill'],
                 },
@@ -339,6 +360,7 @@ export class FieldSkillFactory {
                     realHeight: InfoBladeSkill.SelectSkill.Level1.Meta.RealDimension.Height,
                     description: InfoBladeSkill.SelectSkill.Level1.Meta.Description,
                     moreDescription: InfoBladeSkill.SelectSkill.Level1.Meta.MoreDescription,
+                    price: BladeConstant[0]['Skill Price'],
                     primaryEffect: BladeConstant[0]['Primary Skill'],
                     secondaryEffect: BladeConstant[0]['Secondary Skill'],
                 },
@@ -352,6 +374,7 @@ export class FieldSkillFactory {
                     realHeight: InfoBladeSkill.SelectSkill.Level2.Meta.RealDimension.Height,
                     description: InfoBladeSkill.SelectSkill.Level2.Meta.Description,
                     moreDescription: InfoBladeSkill.SelectSkill.Level2.Meta.MoreDescription,
+                    price: BladeConstant[1]['Skill Price'],
                     primaryEffect: BladeConstant[1]['Primary Skill'],
                     secondaryEffect: BladeConstant[1]['Secondary Skill'],
                 },
@@ -365,6 +388,7 @@ export class FieldSkillFactory {
                     realHeight: InfoBladeSkill.SelectSkill.Level3.Meta.RealDimension.Height,
                     description: InfoBladeSkill.SelectSkill.Level3.Meta.Description,
                     moreDescription: InfoBladeSkill.SelectSkill.Level3.Meta.MoreDescription,
+                    price: BladeConstant[2]['Skill Price'],
                     primaryEffect: BladeConstant[2]['Primary Skill'],
                     secondaryEffect: BladeConstant[2]['Secondary Skill'],
                 },
@@ -380,6 +404,7 @@ export class FieldSkillFactory {
                     realHeight: InfoMirrorSkill.SelectSkill.Level1.Meta.RealDimension.Height,
                     description: InfoMirrorSkill.SelectSkill.Level1.Meta.Description,
                     moreDescription: InfoMirrorSkill.SelectSkill.Level1.Meta.MoreDescription,
+                    price: MirrorShieldConstant.Mirror[0]['Skill Price'],
                     primaryEffect: MirrorShieldConstant.Mirror[0]['Primary Skill'],
                     secondaryEffect: MirrorShieldConstant.Mirror[0]['Secondary Skill'],
                 },
@@ -393,6 +418,7 @@ export class FieldSkillFactory {
                     realHeight: InfoMirrorSkill.SelectSkill.Level2.Meta.RealDimension.Height,
                     description: InfoMirrorSkill.SelectSkill.Level2.Meta.Description,
                     moreDescription: InfoMirrorSkill.SelectSkill.Level2.Meta.MoreDescription,
+                    price: MirrorShieldConstant.Mirror[1]['Skill Price'],
                     primaryEffect: MirrorShieldConstant.Mirror[1]['Primary Skill'],
                     secondaryEffect: MirrorShieldConstant.Mirror[1]['Secondary Skill'],
                 },
@@ -406,6 +432,7 @@ export class FieldSkillFactory {
                     realHeight: InfoMirrorSkill.SelectSkill.Level3.Meta.RealDimension.Height,
                     description: InfoMirrorSkill.SelectSkill.Level3.Meta.Description,
                     moreDescription: InfoMirrorSkill.SelectSkill.Level3.Meta.MoreDescription,
+                    price: MirrorShieldConstant.Mirror[2]['Skill Price'],
                     primaryEffect: MirrorShieldConstant.Mirror[2]['Primary Skill'],
                     secondaryEffect: MirrorShieldConstant.Mirror[2]['Secondary Skill'],
                 },
@@ -421,6 +448,7 @@ export class FieldSkillFactory {
                     realHeight: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.RealDimension.Height,
                     description: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.Description,
                     moreDescription: InfoFuelChargeShotSkill.SelectSkill.Level1.Meta.MoreDescription,
+                    price: FuelChargeShotLaserConstant.FuelChargeShotFrame[0]['Skill Price'],
                     primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[0]['Primary Skill'],
                     secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[0]['Secondary Skill'],
                 },
@@ -434,6 +462,7 @@ export class FieldSkillFactory {
                     realHeight: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.RealDimension.Height,
                     description: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.Description,
                     moreDescription: InfoFuelChargeShotSkill.SelectSkill.Level2.Meta.MoreDescription,
+                    price: FuelChargeShotLaserConstant.FuelChargeShotFrame[1]['Skill Price'],
                     primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[1]['Primary Skill'],
                     secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[1]['Secondary Skill'],
                 },
@@ -447,6 +476,7 @@ export class FieldSkillFactory {
                     realHeight: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.RealDimension.Height,
                     description: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.Description,
                     moreDescription: InfoFuelChargeShotSkill.SelectSkill.Level3.Meta.MoreDescription,
+                    price: FuelChargeShotLaserConstant.FuelChargeShotFrame[2]['Skill Price'],
                     primaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[2]['Primary Skill'],
                     secondaryEffect: FuelChargeShotLaserConstant.FuelChargeShotLaser[2]['Secondary Skill'],
                 },
@@ -581,14 +611,15 @@ export class FieldSkillFactory {
         return [...fieldSkillImageAndText, ...fieldSkillType];
     }
 
+    // used in the shopping skill scene
     public CreateShoppingFieldSkill(parameters: {
         skillName: PossibleSkillName;
         skillLevel: SkillLevel;
-        rowX: number;
-        rowY: number;
+        x: number;
+        y: number;
         onClick?: () => void;
-    }): { skillImage: FieldSkillImage; skillText: IUIComponent[] } {
-        const { skillName, skillLevel, rowX, rowY, onClick } = parameters;
+    }): { skillImage: BaseField; skillText: IUIComponent[]; price: number } {
+        const { skillName, skillLevel, x: rowX, y: rowY, onClick } = parameters;
         const skillText: IUIComponent[] = [];
 
         const skillImage = this.CreateFieldSkill({
@@ -617,7 +648,7 @@ export class FieldSkillFactory {
             y: 158 * CANVA_SCALEY,
             width: 56 * CANVA_SCALEX,
             height: 6 * CANVA_SCALEY,
-            text: `20000$`,
+            text: `${this.skillMetadata[parameters.skillName][skillLevel].price}$`,
             fontSize: UIManager.Typography.button.fontSize,
             fontFamily: UIManager.Typography.button.fontFamily,
             leftAlign: true,
@@ -633,6 +664,52 @@ export class FieldSkillFactory {
 
         skillText.push(description, price, ...fieldSkillType);
 
-        return { skillImage, skillText };
+        return { skillImage, skillText, price: this.skillMetadata[parameters.skillName][skillLevel].price };
+    }
+
+    public CreateShoppingBoostFieldSkill(parameters: { x: number; y: number; onClick?: () => void }): {
+        skillImage: BaseField;
+        skillText: IUIComponent[];
+        price: number;
+    } {
+        const { x, y, onClick } = parameters;
+        const skillText: IUIComponent[] = [];
+
+        const skillImage = new BoostField({
+            x: x,
+            y: y,
+            HasHover: true,
+            onClick: onClick,
+        });
+
+        const boostDescription = GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant['Boost Description'];
+        const description = new FieldWithText({
+            x: 174 * CANVA_SCALEX,
+            y: 23 * CANVA_SCALEY,
+            width: 116 * CANVA_SCALEX,
+            height: 50 * CANVA_SCALEY,
+            text: boostDescription,
+            fontSize: UIManager.Typography.button.fontSize,
+            fontFamily: UIManager.Typography.button.fontFamily,
+            leftAlign: true,
+        });
+        description.HasBorderOnAllSide = false;
+
+        const boostPrice = GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant['Boost Price'];
+        const price = new FieldWithText({
+            x: 68 * CANVA_SCALEX,
+            y: 158 * CANVA_SCALEY,
+            width: 56 * CANVA_SCALEX,
+            height: 6 * CANVA_SCALEY,
+            text: `${boostPrice}$`,
+            fontSize: UIManager.Typography.button.fontSize,
+            fontFamily: UIManager.Typography.button.fontFamily,
+            leftAlign: true,
+        });
+        price.HasBorderOnAllSide = false;
+
+        skillText.push(description, price);
+
+        return { skillImage, skillText, price: boostPrice };
     }
 }

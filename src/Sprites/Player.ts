@@ -34,7 +34,11 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }): void; // Set the skill for the player, but do not update the player skills yet with the real object
-    UpdateSkill(): void; // Update the player skills with the real object, take into account the updates made with SetSkill
+    UpdateSkill(): void; // Update the all player skills with the real object, take into account the updates made with SetSkill
+    GetSkillLevel: (parameters: { skillType: SkillsTypeName }) => PossibleSkillLevel;
+    UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void; // Update a specific skill level
+    UpgradeBoost(): void;
+    GetIsMaxNumberBoostAttained(): boolean;
     MaxHealth: number;
     CurrentHealth: number;
     MoneyInWallet: number;
@@ -112,7 +116,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
         this.BaseHealth = PlayerStats[this.NumberOfBoosts]['Base Health'];
         this.currentHealth = this.BaseHealth;
-        this.moneyInWallet = 0;
+        this.moneyInWallet = 10000;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
         this.supportSkillLevel = 0;
@@ -360,6 +364,44 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.setSupportSkill({ skill: supportSkill });
     }
 
+    GetSkillLevel(parameters: { skillType: SkillsTypeName }): PossibleSkillLevel {
+        const { skillType } = parameters;
+        if (skillType === 'special') {
+            return this.SpecialSkillLevel;
+        } else if (skillType === 'effect') {
+            return this.EffectSkillLevel;
+        } else if (skillType === 'support') {
+            return this.SupportSkillLevel;
+        }
+        return 0;
+    }
+
+    UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void {
+        const { skillType } = parameters;
+        if (skillType === 'special') {
+            this.specialSkillLevel++;
+        } else if (skillType === 'effect') {
+            this.effectSkillLevel++;
+        } else if (skillType === 'support') {
+            this.supportSkillLevel++;
+        }
+
+        this.UpdateSkill();
+    }
+
+    UpgradeBoost(): void {
+        this.NumberOfBoosts++;
+
+        this.updatePlayerStatsOnBoost();
+    }
+
+    GetIsMaxNumberBoostAttained(): boolean {
+        return (
+            this.NumberOfBoosts >=
+            GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant['Max Number of Boosts']
+        );
+    }
+
     get CurrentHitbox(): RectangleHitbox[] {
         return this.hitboxes;
     }
@@ -380,7 +422,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     }
 
     get NumberOfBoosts(): number {
-        const maxNumberOfBoosts = 25;
+        const maxNumberOfBoosts = GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant[
+            'Max Number of Boosts'
+        ];
         if (this.numberOfBoosts > maxNumberOfBoosts) return maxNumberOfBoosts;
         if (this.numberOfBoosts < 0) return 0;
 
@@ -398,6 +442,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         const numberOfBoosts = this.NumberOfBoosts;
 
         this.BaseHealth = PlayerStats[numberOfBoosts]['Base Health'];
+        this.CurrentHealth = this.BaseHealth;
         this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
             'UtilManager',
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({

@@ -3,6 +3,7 @@ import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
 import { IServicePlayer } from '../Sprites/Player';
+import { PossibleSkillLevel, SkillsTypeName } from '../Sprites/PlayerSkills/Skills';
 import { BaseField } from './BaseUserInterface/BaseField';
 import { FieldSkillFactory } from './BaseUserInterface/FieldSkill';
 import { FieldWithText } from './BaseUserInterface/FieldWithText';
@@ -10,20 +11,21 @@ import { IUIComponent, UIManager } from './BaseUserInterface/UIManager';
 
 class BuySkillSection {
     private skillUIManager: UIManager;
-    private currentFocusedField: { fieldImage: BaseField; fieldText: IUIComponent[] };
-
-    private focusField(fieldToFocus: { fieldImage: BaseField; fieldText: IUIComponent[] }) {
-        this.currentFocusedField.fieldImage.SetActive(false);
-        this.skillUIManager.HideComponents(this.currentFocusedField.fieldText);
-        this.skillUIManager.ShowComponents(fieldToFocus.fieldText);
-        fieldToFocus.fieldImage.SetActive(true);
-        this.currentFocusedField = fieldToFocus;
-    }
+    private currentFocusedField: {
+        fieldImage: BaseField;
+        fieldText: IUIComponent[];
+        price: number;
+        type: SkillsTypeName | 'boost';
+        level?: PossibleSkillLevel;
+    };
 
     constructor() {
         this.skillUIManager = new UIManager();
         const skillFactory = new FieldSkillFactory();
-
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        const playerSpecialSkillName = player.SpecialSkillName!;
+        const playerEffectSkillName = player.EffectSkillName!;
+        const playerSupportSkillName = player.SupportSkillName!;
         /* Skill Title */
         const specialSkillTitle = new FieldWithText({
             x: 28 * CANVA_SCALEX,
@@ -70,43 +72,61 @@ class BuySkillSection {
         for (const level of skillsLevel) {
             // Special Skill
             const specialSkill = skillFactory.CreateShoppingFieldSkill({
-                skillName: 'Rocket',
+                skillName: playerSpecialSkillName,
                 skillLevel: level,
-                rowX: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
-                rowY: 19 * CANVA_SCALEY,
+                x: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
+                y: 19 * CANVA_SCALEY,
                 onClick: () => {
                     this.focusField({
                         fieldImage: specialSkill.skillImage,
                         fieldText: specialSkill.skillText,
+                        price: specialSkill.price,
+                        type: 'special',
+                        level: level,
                     });
                 },
             });
+
+            if (player.GetSkillLevel({ skillType: 'special' }) < level) specialSkill.skillImage.SetDisabled(true);
 
             this.skillUIManager.AddComponent(specialSkill.skillImage);
             this.skillUIManager.AddComponents(specialSkill.skillText);
             this.skillUIManager.HideComponents(specialSkill.skillText);
             // By default, the first level special skill is focused
             if (level === 1) {
-                this.currentFocusedField = { fieldImage: specialSkill.skillImage, fieldText: specialSkill.skillText };
+                this.currentFocusedField = {
+                    fieldImage: specialSkill.skillImage,
+                    fieldText: specialSkill.skillText,
+                    price: specialSkill.price,
+                    type: 'special',
+                    level: level,
+                };
                 this.focusField({
                     fieldImage: specialSkill.skillImage,
                     fieldText: specialSkill.skillText,
+                    price: specialSkill.price,
+                    type: 'special',
+                    level: level,
                 });
             }
 
             // Effect Skill
             const effectSkill = skillFactory.CreateShoppingFieldSkill({
-                skillName: 'Blade',
+                skillName: playerEffectSkillName,
                 skillLevel: level,
-                rowX: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
-                rowY: 43 * CANVA_SCALEY,
+                x: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
+                y: 43 * CANVA_SCALEY,
                 onClick: () => {
                     this.focusField({
                         fieldImage: effectSkill.skillImage,
                         fieldText: effectSkill.skillText,
+                        price: effectSkill.price,
+                        type: 'effect',
+                        level: level,
                     });
                 },
             });
+            if (player.GetSkillLevel({ skillType: 'effect' }) < level) effectSkill.skillImage.SetDisabled(true);
 
             this.skillUIManager.AddComponent(effectSkill.skillImage);
             this.skillUIManager.AddComponents(effectSkill.skillText);
@@ -114,22 +134,57 @@ class BuySkillSection {
 
             // Support Skill
             const supportSkill = skillFactory.CreateShoppingFieldSkill({
-                skillName: 'MirrorShield',
+                skillName: playerSupportSkillName,
                 skillLevel: level,
-                rowX: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
-                rowY: 66 * CANVA_SCALEY,
+                x: 95 * CANVA_SCALEX + (level - 1) * 26 * CANVA_SCALEX,
+                y: 66 * CANVA_SCALEY,
                 onClick: () => {
                     this.focusField({
                         fieldImage: supportSkill.skillImage,
                         fieldText: supportSkill.skillText,
+                        price: supportSkill.price,
+                        type: 'support',
+                        level: level,
                     });
                 },
             });
+            if (player.GetSkillLevel({ skillType: 'support' }) < level) supportSkill.skillImage.SetDisabled(true);
 
             this.skillUIManager.AddComponent(supportSkill.skillImage);
             this.skillUIManager.AddComponents(supportSkill.skillText);
             this.skillUIManager.HideComponents(supportSkill.skillText);
         }
+        /* Buy Boost Field */
+        const buyBoostTitle = new FieldWithText({
+            x: 28 * CANVA_SCALEX,
+            y: 96 * CANVA_SCALEY,
+            width: 64 * CANVA_SCALEX,
+            height: 8 * CANVA_SCALEY,
+            text: 'BOOST',
+            fontSize: UIManager.Typography.title.fontSize,
+            fontFamily: UIManager.Typography.title.fontFamily,
+            leftAlign: true,
+        });
+        buyBoostTitle.HasBorderOnAllSide = false;
+        this.skillUIManager.AddComponent(buyBoostTitle);
+
+        const buyBoostField = skillFactory.CreateShoppingBoostFieldSkill({
+            x: 95 * CANVA_SCALEX,
+            y: 90 * CANVA_SCALEY,
+            onClick: () => {
+                this.focusField({
+                    fieldImage: buyBoostField.skillImage,
+                    fieldText: buyBoostField.skillText,
+                    price: buyBoostField.price,
+                    type: 'boost',
+                });
+            },
+        });
+        if (player.GetIsMaxNumberBoostAttained()) buyBoostField.skillImage.SetDisabled(true);
+
+        this.skillUIManager.AddComponent(buyBoostField.skillImage);
+        this.skillUIManager.AddComponents(buyBoostField.skillText);
+        this.skillUIManager.HideComponents(buyBoostField.skillText);
 
         /* Player Balance Text */
         const playerBalanceText = new FieldWithText({
@@ -184,7 +239,9 @@ class BuySkillSection {
             fontFamily: UIManager.Typography.button.fontFamily,
             HasHovered: true,
             onClick: () => {
-                console.log('Buy Button Clicked');
+                this.buyField();
+                const playerBalance = ServiceLocator.GetService<IServicePlayer>('Player').MoneyInWallet;
+                playerBalanceValue.SetText(`${playerBalance}$`);
             },
         });
         this.skillUIManager.AddComponent(buyButton);
@@ -212,6 +269,76 @@ class BuySkillSection {
 
     public Draw(ctx: CanvasRenderingContext2D) {
         this.skillUIManager.Draw(ctx);
+    }
+
+    private focusField(fieldToFocus: {
+        fieldImage: BaseField;
+        fieldText: IUIComponent[];
+        price: number;
+        type: SkillsTypeName | 'boost';
+        level?: PossibleSkillLevel;
+    }) {
+        this.currentFocusedField.fieldImage.SetActive(false);
+        this.skillUIManager.HideComponents(this.currentFocusedField.fieldText);
+        this.skillUIManager.ShowComponents(fieldToFocus.fieldText);
+        fieldToFocus.fieldImage.SetActive(true);
+        this.currentFocusedField = fieldToFocus;
+    }
+
+    private buySkill(parameters: {
+        selectedSkillLevel: PossibleSkillLevel;
+        selectedSkillPrice: number;
+        selectedSkillType: SkillsTypeName;
+    }) {
+        const { selectedSkillLevel, selectedSkillType, selectedSkillPrice } = parameters;
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        let playerBalance = player.MoneyInWallet;
+        const playerSkillLevel = player.GetSkillLevel({ skillType: selectedSkillType });
+
+        // 1) verify if the player can buy the progression of the skill level
+        if (selectedSkillLevel - playerSkillLevel !== 1) return;
+
+        // 2) verify if the player has enough money to buy the skill
+        if (playerBalance - selectedSkillPrice < 0) return;
+
+        player.MakeTransactionOnWallet(-selectedSkillPrice);
+
+        player.UpgradeSkillLevel({ skillType: selectedSkillType });
+    }
+
+    private buyBoost(parameters: { boostPrice: number }) {
+        const { boostPrice } = parameters;
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        let playerBalance = player.MoneyInWallet;
+        // 1) verify if the player has already reached the max number of boost
+        if (player.GetIsMaxNumberBoostAttained()) return;
+
+        // 2) verify if the player has enough money to buy the boost
+        if (playerBalance - boostPrice < 0) return;
+        player.MakeTransactionOnWallet(-boostPrice);
+        player.UpgradeBoost();
+
+        // 3) if the player attained the max number of boost after the transaction, disable the boost field
+        if (player.GetIsMaxNumberBoostAttained()) return;
+    }
+
+    private buyField() {
+        const { type, level, price } = this.currentFocusedField;
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        const oldBalance = player.MoneyInWallet;
+
+        if (type === 'boost') {
+            this.buyBoost({ boostPrice: price });
+        } else {
+            this.buySkill({ selectedSkillLevel: level!, selectedSkillPrice: price, selectedSkillType: type });
+        }
+
+        const newBalance = player.MoneyInWallet;
+        if (oldBalance !== newBalance) this.currentFocusedField.fieldImage.SetDisabled(false);
+
+        // When the player has reached the max number of boost, disable the boost field
+        if (type === 'boost' && player.GetIsMaxNumberBoostAttained())
+            this.currentFocusedField.fieldImage.SetDisabled(true);
     }
 }
 
@@ -271,7 +398,7 @@ export class ShoppingMenuScene implements IScene {
 
     Update(dt: number): void {
         this.buySkillSection.Update(dt);
-        if (Keyboard.h.IsPressed) {
+        if (Keyboard.h.IsPressed || Keyboard.Escape.IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('None');
         }
     }

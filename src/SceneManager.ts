@@ -3,7 +3,7 @@ import { GameScene } from './Scenes/GameScene.js';
 import { SelectSkillScene } from './Scenes/SelectSkillScene.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { InGameMenuScene } from './Scenes/InGameMenuScene.js';
-import { ShoppingMenuScene } from './Scenes/ShopScene.js';
+import { ShoppingMenuScene } from './Scenes/ShoppingMenuScene.js';
 
 type AvailableScenes = 'Game' | 'MainMenu' | 'SelectSkill' | 'GameOver';
 type AvailableSecondaryScenes = 'None' | 'InGameMenu' | 'ShoppingMenu';
