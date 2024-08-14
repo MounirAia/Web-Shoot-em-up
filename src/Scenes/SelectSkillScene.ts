@@ -171,6 +171,8 @@ export class SelectSkillScene implements IScene {
         /**
          * SELECT SKILL SECTION
          */
+
+        // Special Skill
         const selectRocketSkill = fieldSkillFactory.CreateFieldSkill({
             x: 6 * CANVA_SCALEX,
             y: 28 * CANVA_SCALEY,
@@ -186,6 +188,7 @@ export class SelectSkillScene implements IScene {
             },
         });
 
+        // Effect Skill
         const selectBladeSkill = fieldSkillFactory.CreateFieldSkill({
             x: 113 * CANVA_SCALEX,
             y: 28 * CANVA_SCALEY,
@@ -201,6 +204,7 @@ export class SelectSkillScene implements IScene {
             },
         });
 
+        // Support Skill
         const selectMirrorSkill = fieldSkillFactory.CreateFieldSkill({
             x: 228 * CANVA_SCALEX,
             y: 28 * CANVA_SCALEY,

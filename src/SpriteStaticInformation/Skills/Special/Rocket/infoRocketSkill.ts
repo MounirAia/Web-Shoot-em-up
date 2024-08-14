@@ -184,7 +184,7 @@ const Info = {
                     Y: -2 * CANVA_SCALEY,
                 },
                 Description: "Fires a standard rocket. It's a good start.",
-                MoreDescritpion: '',
+                MoreDescription: "Fires a standard rocket. It's a good start.",
             },
         },
         Level2: {

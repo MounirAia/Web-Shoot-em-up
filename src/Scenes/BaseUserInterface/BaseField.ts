@@ -11,6 +11,7 @@ export class BaseField implements IUIComponent {
 
     private isVisible: boolean;
     private isActive: boolean;
+    private isDisabled: boolean;
 
     public LineWidth: number = (3 / 4) * CANVA_SCALEX;
     public HasBorderOnAllSide: boolean = true;
@@ -29,6 +30,7 @@ export class BaseField implements IUIComponent {
         this.onClick = onClick;
         this.isVisible = true;
         this.isActive = false; // the field can be activated through different means
+        this.isDisabled = false;
     }
 
     public get IsHovered(): boolean {
@@ -74,6 +76,18 @@ export class BaseField implements IUIComponent {
                 ctx.stroke();
             }
         }
+
+        if ((this.IsHovered && this.HasHover) || (this.HasHover && this.GetActive())) {
+            ctx.strokeStyle = '#B09F9E';
+            ctx.strokeRect(this.X, this.Y, this.Width, this.Height);
+        } else {
+            ctx.strokeStyle = 'black';
+        }
+
+        if (this.isDisabled) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fillRect(this.X, this.Y, this.Width, this.Height);
+        }
     }
 
     public SetVisibility(visible: boolean): void {
@@ -90,6 +104,14 @@ export class BaseField implements IUIComponent {
 
     public GetActive(): boolean {
         return this.isActive;
+    }
+
+    public SetDisabled(disabled: boolean): void {
+        this.isDisabled = disabled;
+    }
+
+    public GetDisabled(): boolean {
+        return this.isDisabled;
     }
 
     public GetWidth(): number {

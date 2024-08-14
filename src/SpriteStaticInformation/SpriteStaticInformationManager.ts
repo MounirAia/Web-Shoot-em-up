@@ -23,6 +23,7 @@ import {
     MirrorShieldExplosiveEntityConstant,
 } from './Skills/Support/MirrorShield/MirrorShieldConstant';
 import { MirrorShieldDamage as MirrorShieldDamageStats } from './Skills/Support/MirrorShield/MirrorShieldDamage';
+import { PlayerBoostConstant } from './Skills/PlayerBoostConstant';
 
 // Define the structure of the infos object
 const infos = {
@@ -35,6 +36,11 @@ const infos = {
         stats: PlayerBulletDamageStats,
         spriteInfo: SpriteInfoBullet,
         constant: undefined,
+    },
+    PlayerBoost: {
+        spriteInfo: undefined,
+        stats: undefined,
+        constant: PlayerBoostConstant,
     },
     Rocket: {
         stats: RocketDamageStats,
