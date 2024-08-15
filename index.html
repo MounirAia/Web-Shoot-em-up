@@ -11,17 +11,76 @@
                 src: url('./assets/pixel-DogiNJoF.ttf');
             }
             body {
-                width: 100vw;
-                height: 100vh;
+                margin: 0;
+                padding: 0;
+                font-size: 62.5%;
+            }
+
+            .header {
+                font-family: 'pixel';
+                font-size: 2rem;
+                color: #fff;
+                text-align: center;
+                margin: 0;
+                padding: 1rem;
+                background-color: #333;
+            }
+
+            .game {
+                margin-top: 10rem;
                 display: flex;
                 justify-content: center;
-                align-items: center;
-                margin: 0;
+            }
+
+            .game-container {
+                display: flex;
+                flex-direction: column;
+            }
+
+            ul {
+                list-style: none;
+                font-family: 'pixel';
+                font-size: 1rem;
+                color: #fff;
+                background-color: #333;
+                padding: 1rem;
+                border-radius: 0.5rem;
+                box-sizing: border-box;
+                margin-top: 5rem;
+            }
+            ul li {
+                position: relative;
+                padding-left: 2rem; /* Space for the bullet */
+                margin-bottom: 1rem; /* Space between list items */
+            }
+
+            ul li::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 1rem; /* Size of the square bullet */
+                height: 1rem; /* Size of the square bullet */
+                background-color: #fff; /* White color for the bullet */
+                border-radius: 2px; /* Optional: rounded corners for the square */
             }
         </style>
-      <script type="module" crossorigin src="./assets/index-D1z4mTfS.js"></script>
+      <script type="module" crossorigin src="./assets/index-hSKNh0Qb.js"></script>
     </head>
     <body>
-        <canvas id="canvas" width="1280" height="720" style="background-color: #cccccc"></canvas>
+        <h1 class="header">Web Shoot em UP</h1>
+        <div class="game">
+            <div class="game-container">
+                <canvas id="canvas" width="1280" height="720" style="background-color: #cccccc"></canvas>
+                <ul>
+                    <li>Use the arrow keys to move the player</li>
+                    <li>Use the space bar to shoot</li>
+                    <li>Press 'H' to buy skills</li>
+                    <li>Press 'escape' to pause the game</li>
+                    <li>Goal is to finish a 100 rounds as fast as possible</li>
+                </ul>
+            </div>
+        </div>
     </body>
 </html>
