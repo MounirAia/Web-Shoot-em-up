@@ -214,19 +214,19 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
                 hitbox.CheckIfBoxOverlap(0, this.getScreenLimit('bottom'), canvas.width, canvas.height);
         }
 
-        if (Keyboard.a.IsDown) {
+        if (Keyboard.ArrowLeft.IsDown) {
             if (!isOutsideLeftScreen) this.X -= this.BaseSpeed;
             else this.X = this.getResetPositionOnScreenLimit('left');
         }
-        if (Keyboard.w.IsDown) {
+        if (Keyboard.ArrowUp.IsDown) {
             if (!isOutsideTopScreen) this.Y -= this.BaseSpeed;
             else this.getResetPositionOnScreenLimit('top');
         }
-        if (Keyboard.d.IsDown) {
+        if (Keyboard.ArrowRight.IsDown) {
             if (!isOutsideRightScreen) this.X += this.BaseSpeed;
             else this.X = this.getResetPositionOnScreenLimit('right');
         }
-        if (Keyboard.s.IsDown) {
+        if (Keyboard.ArrowDown.IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
             else this.Y = this.getResetPositionOnScreenLimit('bottom');
         }
