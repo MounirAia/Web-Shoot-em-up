@@ -13,6 +13,12 @@ export default defineConfig({
             input: {
                 index: resolve(__dirname, 'index.html'),
             },
+            output: {
+                // Set assetFileNames and chunkFileNames to place all assets at the root level
+                assetFileNames: '[name].[ext]',
+                chunkFileNames: '[name].js',
+                entryFileNames: '[name].js',
+            },
         },
     },
 });
