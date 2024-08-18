@@ -1,3 +1,5 @@
+import { ServiceLocator } from './ServiceLocator';
+
 enum KeyCode {
     Backspace = 8,
     Tab = 9,
@@ -144,7 +146,7 @@ class Key {
     }
 }
 
-export const Keyboard: { [key: string]: Key } = {};
+const Keyboard: { [key: string]: Key } = {};
 
 for (const key in KeyCode) {
     let stringKey = KeyCode[key];
@@ -179,3 +181,45 @@ window.addEventListener('keyup', (e) => {
         Keyboard[code].IsPressed = false;
     }
 });
+
+type PossibleCommands =
+    | 'MoveUp'
+    | 'MoveDown'
+    | 'MoveLeft'
+    | 'MoveRight'
+    | 'PlayerShoot'
+    | 'OpenInGameMenu'
+    | 'CloseInGameMenu'
+    | 'OpenShopMenu'
+    | 'CloseShopMenu';
+export interface IServiceKeyboardManager {
+    GetCommandState(parameters: { command: PossibleCommands }): Key;
+}
+
+export class ServiceKeyboardManager implements IServiceKeyboardManager {
+    private commandsStates: Map<PossibleCommands, Key>;
+    constructor() {
+        this.commandsStates = new Map();
+        this.commandsStates.set('MoveUp', Keyboard.w);
+        this.commandsStates.set('MoveLeft', Keyboard.a);
+        this.commandsStates.set('MoveDown', Keyboard.s);
+        this.commandsStates.set('MoveRight', Keyboard.d);
+        this.commandsStates.set('PlayerShoot', Keyboard.Space);
+        this.commandsStates.set('OpenInGameMenu', Keyboard.Escape);
+        this.commandsStates.set('CloseInGameMenu', Keyboard.Escape);
+        this.commandsStates.set('OpenShopMenu', Keyboard.h);
+        this.commandsStates.set('CloseShopMenu', Keyboard.h);
+
+        ServiceLocator.AddService('KeyboardManager', this);
+    }
+
+    public GetCommandState(parameters: { command: PossibleCommands }): Key {
+        const { command } = parameters;
+        return this.commandsStates.get(command) as Key;
+    }
+}
+
+let keyboardManager: ServiceKeyboardManager;
+export function LoadKeyboardManager() {
+    keyboardManager = new ServiceKeyboardManager();
+}

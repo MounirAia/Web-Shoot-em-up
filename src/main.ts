@@ -1,5 +1,6 @@
 import { LoadEventManager } from './EventManager.js';
 import { IServiceImageLoader, LoadImageLoader } from './ImageLoader.js';
+import { LoadKeyboardManager } from './Keyboard.js';
 import {} from './Mouse.js';
 import { DrawSceneManager, LoadSceneManager, UpdateSceneManager } from './SceneManager.js';
 import { FRAME_RATE, canvas } from './ScreenConstant.js';
@@ -14,6 +15,7 @@ const ctx = canvas.getContext('2d')!;
 function load() {
     // Load all the services
     LoadUtilManager();
+    LoadKeyboardManager();
     LoadEventManager();
     LoadGeneratedSpritesManager();
     LoadImageLoader();

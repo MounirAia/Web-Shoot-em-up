@@ -1,6 +1,6 @@
 import { UnloadEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader';
-import { Keyboard } from '../Keyboard';
+import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
@@ -334,11 +334,12 @@ export class GameScene implements IScene {
         UpdatePlayer(dt);
         UpdateGeneratedSpritesManager(dt);
         this.updateUI(dt);
-        if (Keyboard.Escape.IsPressed) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        if (keyboardManager.GetCommandState({ command: 'OpenInGameMenu' }).IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('InGameMenu');
         }
 
-        if (Keyboard.h.IsPressed) {
+        if (keyboardManager.GetCommandState({ command: 'OpenShopMenu' }).IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('ShoppingMenu');
         }
     }
