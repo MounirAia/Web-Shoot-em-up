@@ -4,9 +4,10 @@ import { SelectSkillScene } from './Scenes/SelectSkillScene.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { InGameMenuScene } from './Scenes/InGameMenuScene.js';
 import { ShoppingMenuScene } from './Scenes/ShoppingMenuScene.js';
+import { OptionMenu } from './Scenes/OptionMenu.js';
 
 type AvailableScenes = 'Game' | 'MainMenu' | 'SelectSkill' | 'GameOver';
-type AvailableSecondaryScenes = 'None' | 'InGameMenu' | 'ShoppingMenu';
+type AvailableSecondaryScenes = 'None' | 'InGameMenu' | 'ShoppingMenu' | 'OptionMenu';
 
 export interface IServiceSceneManager {
     PlayMainScene(scene: AvailableScenes): void;
@@ -83,6 +84,8 @@ export class SceneManager implements IServiceSceneManager {
                 return new InGameMenuScene();
             case 'ShoppingMenu':
                 return new ShoppingMenuScene();
+            case 'OptionMenu':
+                return new OptionMenu();
             case 'None':
             default:
                 return undefined;

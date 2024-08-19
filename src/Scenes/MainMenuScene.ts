@@ -48,7 +48,7 @@ export class MainMenuScene implements IScene {
         const widthPlayButton = 41 * CANVA_SCALEX;
         const heightPlayButton = 11 * CANVA_SCALEY;
         const xPlayButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
-        const yPlayButton = 84 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
+        const yPlayButton = 67 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
         const mainMenuPlayButton = new FieldWithText({
             x: xPlayButton,
             y: yPlayButton,
@@ -64,5 +64,26 @@ export class MainMenuScene implements IScene {
         });
 
         this.mainMenuUiManager.AddComponent(mainMenuPlayButton);
+
+        // Define the option button
+        const widthOptionButton = 41 * CANVA_SCALEX;
+        const heightOptionButton = 11 * CANVA_SCALEY;
+        const xOptionButton = 139 * CANVA_SCALEX; //canvas.width / 2 - widthPlayButton / 2;
+        const yOptionButton = 92 * CANVA_SCALEY; //canvas.height / 2 - heightPlayButton - heightPlayButton / 2;
+        const mainMenuOptionButton = new FieldWithText({
+            x: xOptionButton,
+            y: yOptionButton,
+            width: widthOptionButton,
+            height: heightOptionButton,
+            text: 'OPTION',
+            fontSize: UIManager.Typography.button.fontSize,
+            fontFamily: UIManager.Typography.button.fontFamily,
+            HasHovered: true,
+            onClick: () => {
+                SceneManager.PlaySecondaryScene('OptionMenu');
+            },
+        });
+
+        this.mainMenuUiManager.AddComponent(mainMenuOptionButton);
     }
 }
