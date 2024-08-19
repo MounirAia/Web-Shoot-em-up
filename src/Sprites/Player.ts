@@ -1,6 +1,6 @@
 import { IServiceEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader.js';
-import { Keyboard } from '../Keyboard.js';
+import { IServiceKeyboardManager } from '../Keyboard.js';
 import { IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
@@ -214,19 +214,20 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
                 hitbox.CheckIfBoxOverlap(0, this.getScreenLimit('bottom'), canvas.width, canvas.height);
         }
 
-        if (Keyboard.ArrowLeft.IsDown) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        if (keyboardManager.GetCommandState({ command: 'MoveLeft' }).IsDown) {
             if (!isOutsideLeftScreen) this.X -= this.BaseSpeed;
             else this.X = this.getResetPositionOnScreenLimit('left');
         }
-        if (Keyboard.ArrowUp.IsDown) {
+        if (keyboardManager.GetCommandState({ command: 'MoveUp' }).IsDown) {
             if (!isOutsideTopScreen) this.Y -= this.BaseSpeed;
             else this.getResetPositionOnScreenLimit('top');
         }
-        if (Keyboard.ArrowRight.IsDown) {
+        if (keyboardManager.GetCommandState({ command: 'MoveRight' }).IsDown) {
             if (!isOutsideRightScreen) this.X += this.BaseSpeed;
             else this.X = this.getResetPositionOnScreenLimit('right');
         }
-        if (Keyboard.ArrowDown.IsDown) {
+        if (keyboardManager.GetCommandState({ command: 'MoveDown' }).IsDown) {
             if (!isOutsideBottomScreen) this.Y += this.BaseSpeed;
             else this.Y = this.getResetPositionOnScreenLimit('bottom');
         }
@@ -237,7 +238,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
         this.UpdateHitboxes(dt);
 
-        if (Keyboard.Space.IsDown && this.CanShootRegular) {
+        if (keyboardManager.GetCommandState({ command: 'PlayerShoot' }).IsDown && this.CanShootRegular) {
             const bullet = new RegularPlayerBullet(this.X, this.Y);
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         } else {
@@ -247,7 +248,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             }
         }
 
-        if (Keyboard.Space.IsDown && this.CanShootSpecial) {
+        if (keyboardManager.GetCommandState({ command: 'PlayerShoot' }).IsDown && this.CanShootSpecial) {
             this.currentSkill.get('special')?.Effect();
         } else if (this.currentSkill.get('special')) {
             const specialSkillAS = this.currentSkill.get('special')?.AttackSpeed?.();
@@ -407,7 +408,13 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     }
 
     public get BaseSpeed(): number {
-        if ((Keyboard.a.IsDown || Keyboard.d.IsDown) && (Keyboard.w.IsDown || Keyboard.s.IsDown)) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        const moveLeft = keyboardManager.GetCommandState({ command: 'MoveLeft' }).IsDown;
+        const moveRight = keyboardManager.GetCommandState({ command: 'MoveRight' }).IsDown;
+        const moveUp = keyboardManager.GetCommandState({ command: 'MoveUp' }).IsDown;
+        const moveDown = keyboardManager.GetCommandState({ command: 'MoveDown' }).IsDown;
+
+        if ((moveLeft || moveRight) && (moveUp || moveDown)) {
             return this.baseSpeed / Math.sqrt(2); // to avoid faster movement when player goes in diagonal
         }
         return this.baseSpeed;

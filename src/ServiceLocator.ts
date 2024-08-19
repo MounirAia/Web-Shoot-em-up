@@ -6,7 +6,8 @@ type AvailableServices =
     | 'GeneratedSpritesManager'
     | 'CollideManager'
     | 'EventManager'
-    | 'UtilManager';
+    | 'UtilManager'
+    | 'KeyboardManager';
 
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};

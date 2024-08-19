@@ -1,118 +1,107 @@
+import { ServiceLocator } from './ServiceLocator';
+
 enum KeyCode {
-    Backspace = 8,
-    Tab = 9,
-    Enter = 13,
-    Shift = 16,
-    Ctrl = 17,
-    Alt = 18,
-    PauseBreak = 19,
-    CapsLock = 20,
-    Escape = 27,
-    Space = 32,
-    PageUp = 33,
-    PageDown = 34,
-    End = 35,
-    Home = 36,
-    ArrowLeft = 37,
-    ArrowUp = 38,
-    ArrowRight = 39,
-    ArrowDown = 40,
-    Insert = 45,
-    Delete = 46,
-    Zero = 48,
-    ClosedParen = 48,
-    One = 49,
-    ExclamationMark = 49,
-    Two = 50,
-    AtSign = 50,
-    Three = 51,
-    PoundSign = 51,
-    Hash = 51,
-    Four = 52,
-    DollarSign = 52,
-    Five = 53,
-    PercentSign = 53,
-    Six = 54,
-    Caret = 54,
-    Hat = 54,
-    Seven = 55,
-    Ampersand = 55,
-    Eight = 56,
-    Star = 56,
-    Asterik = 56,
-    Nine = 57,
-    OpenParen = 57,
-    A = 65,
-    B = 66,
-    C = 67,
-    D = 68,
-    E = 69,
-    F = 70,
-    G = 71,
-    H = 72,
-    I = 73,
-    J = 74,
-    K = 75,
-    L = 76,
-    M = 77,
-    N = 78,
-    O = 79,
-    P = 80,
-    Q = 81,
-    R = 82,
-    S = 83,
-    T = 84,
-    U = 85,
-    V = 86,
-    W = 87,
-    X = 88,
-    Y = 89,
-    Z = 90,
-    LeftWindowKey = 91,
-    RightWindowKey = 92,
-    SelectKey = 93,
-    Numpad0 = 96,
-    Numpad1 = 97,
-    Numpad2 = 98,
-    Numpad3 = 99,
-    Numpad4 = 100,
-    Numpad5 = 101,
-    Numpad6 = 102,
-    Numpad7 = 103,
-    Numpad8 = 104,
-    Numpad9 = 105,
-    Multiply = 106,
-    Add = 107,
-    Subtract = 109,
-    DecimalPoint = 110,
-    Divide = 111,
-    F1 = 112,
-    F2 = 113,
-    F3 = 114,
-    F4 = 115,
-    F5 = 116,
-    F6 = 117,
-    F7 = 118,
-    F8 = 119,
-    F9 = 120,
-    F10 = 121,
-    F11 = 122,
-    F12 = 123,
-    NumLock = 144,
-    ScrollLock = 145,
-    SemiColon = 186,
-    Equals = 187,
-    Comma = 188,
-    Dash = 189,
-    Period = 190,
-    UnderScore = 189,
-    PlusSign = 187,
-    ForwardSlash = 191,
-    Tilde = 192,
-    GraveAccent = 192,
-    OpenBracket = 219,
-    ClosedBracket = 221,
-    Quote = 222,
+    Backspace = 'Backspace',
+    Tab = 'Tab',
+    Enter = 'Enter',
+    ShiftLeft = 'ShiftLeft',
+    ShiftRight = 'ShiftRight',
+    CtrlLeft = 'ControlLeft',
+    CtrlRight = 'ControlRight',
+    AltLeft = 'AltLeft',
+    AltRight = 'AltRight',
+    PauseBreak = 'Pause',
+    CapsLock = 'CapsLock',
+    Escape = 'Escape',
+    Space = 'Space',
+    PageUp = 'PageUp',
+    PageDown = 'PageDown',
+    End = 'End',
+    Home = 'Home',
+    ArrowLeft = 'ArrowLeft',
+    ArrowUp = 'ArrowUp',
+    ArrowRight = 'ArrowRight',
+    ArrowDown = 'ArrowDown',
+    Insert = 'Insert',
+    Delete = 'Delete',
+    Digit0 = 'Digit0',
+    Digit1 = 'Digit1',
+    Digit2 = 'Digit2',
+    Digit3 = 'Digit3',
+    Digit4 = 'Digit4',
+    Digit5 = 'Digit5',
+    Digit6 = 'Digit6',
+    Digit7 = 'Digit7',
+    Digit8 = 'Digit8',
+    Digit9 = 'Digit9',
+    KeyA = 'KeyA',
+    KeyB = 'KeyB',
+    KeyC = 'KeyC',
+    KeyD = 'KeyD',
+    KeyE = 'KeyE',
+    KeyF = 'KeyF',
+    KeyG = 'KeyG',
+    KeyH = 'KeyH',
+    KeyI = 'KeyI',
+    KeyJ = 'KeyJ',
+    KeyK = 'KeyK',
+    KeyL = 'KeyL',
+    KeyM = 'KeyM',
+    KeyN = 'KeyN',
+    KeyO = 'KeyO',
+    KeyP = 'KeyP',
+    KeyQ = 'KeyQ',
+    KeyR = 'KeyR',
+    KeyS = 'KeyS',
+    KeyT = 'KeyT',
+    KeyU = 'KeyU',
+    KeyV = 'KeyV',
+    KeyW = 'KeyW',
+    KeyX = 'KeyX',
+    KeyY = 'KeyY',
+    KeyZ = 'KeyZ',
+    LeftWindowKey = 'MetaLeft',
+    RightWindowKey = 'MetaRight',
+    SelectKey = 'ContextMenu',
+    Numpad0 = 'Numpad0',
+    Numpad1 = 'Numpad1',
+    Numpad2 = 'Numpad2',
+    Numpad3 = 'Numpad3',
+    Numpad4 = 'Numpad4',
+    Numpad5 = 'Numpad5',
+    Numpad6 = 'Numpad6',
+    Numpad7 = 'Numpad7',
+    Numpad8 = 'Numpad8',
+    Numpad9 = 'Numpad9',
+    NumpadMultiply = 'NumpadMultiply',
+    NumpadAdd = 'NumpadAdd',
+    NumpadSubtract = 'NumpadSubtract',
+    NumpadDecimal = 'NumpadDecimal',
+    NumpadDivide = 'NumpadDivide',
+    F1 = 'F1',
+    F2 = 'F2',
+    F3 = 'F3',
+    F4 = 'F4',
+    F5 = 'F5',
+    F6 = 'F6',
+    F7 = 'F7',
+    F8 = 'F8',
+    F9 = 'F9',
+    F10 = 'F10',
+    F11 = 'F11',
+    F12 = 'F12',
+    NumLock = 'NumLock',
+    ScrollLock = 'ScrollLock',
+    Semicolon = 'Semicolon',
+    Equal = 'Equal',
+    Comma = 'Comma',
+    Minus = 'Minus',
+    Period = 'Period',
+    Slash = 'Slash',
+    Backquote = 'Backquote',
+    BracketLeft = 'BracketLeft',
+    BracketRight = 'BracketRight',
+    Quote = 'Quote',
 }
 
 class Key {
@@ -144,24 +133,18 @@ class Key {
     }
 }
 
-export const Keyboard: { [key: string]: Key } = {};
+const Keyboard: { [key: string]: Key } = {};
 
 for (const key in KeyCode) {
-    let stringKey = KeyCode[key];
-    if (!Number.isInteger(stringKey)) {
-        // for single letter
-        stringKey = stringKey.length === 1 ? stringKey.toLowerCase() : stringKey;
-        Keyboard[stringKey] = new Key();
-    }
+    const stringKey = KeyCode[key];
+    Keyboard[stringKey] = new Key();
 }
 
 window.addEventListener('keydown', (e) => {
     e.preventDefault();
-    const { key, code } = e;
-    if (Keyboard[key]) {
-        Keyboard[key].IsDown = true;
-        Keyboard[key].IsPressed = true;
-    } else if (Keyboard[code]) {
+    const { code } = e;
+    console.log(code);
+    if (Keyboard[code]) {
         Keyboard[code].IsDown = true;
         Keyboard[code].IsPressed = true;
     }
@@ -169,13 +152,53 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
     e.preventDefault();
-    const { key, code } = e;
-    if (Keyboard[key]) {
-        Keyboard[key].IsDown = false;
-
-        Keyboard[key].IsPressed = false;
-    } else if (Keyboard[code]) {
+    const { code } = e;
+    if (Keyboard[code]) {
         Keyboard[code].IsDown = false;
         Keyboard[code].IsPressed = false;
     }
 });
+
+type PossibleCommands =
+    | 'MoveUp'
+    | 'MoveDown'
+    | 'MoveLeft'
+    | 'MoveRight'
+    | 'PlayerShoot'
+    | 'OpenInGameMenu'
+    | 'CloseInGameMenu'
+    | 'OpenShopMenu'
+    | 'CloseShopMenu'
+    | 'CloseOptionMenu';
+export interface IServiceKeyboardManager {
+    GetCommandState(parameters: { command: PossibleCommands }): Key;
+}
+
+export class ServiceKeyboardManager implements IServiceKeyboardManager {
+    private commandsStates: Map<PossibleCommands, Key>;
+    constructor() {
+        this.commandsStates = new Map();
+        this.commandsStates.set('MoveUp', Keyboard['KeyW']);
+        this.commandsStates.set('MoveLeft', Keyboard['KeyA']);
+        this.commandsStates.set('MoveDown', Keyboard['KeyS']);
+        this.commandsStates.set('MoveRight', Keyboard['KeyD']);
+        this.commandsStates.set('PlayerShoot', Keyboard['Space']);
+        this.commandsStates.set('OpenInGameMenu', Keyboard['Escape']);
+        this.commandsStates.set('CloseInGameMenu', Keyboard['Escape']);
+        this.commandsStates.set('OpenShopMenu', Keyboard['KeyH']);
+        this.commandsStates.set('CloseShopMenu', Keyboard['KeyH']);
+        this.commandsStates.set('CloseOptionMenu', Keyboard['Escape']);
+
+        ServiceLocator.AddService('KeyboardManager', this);
+    }
+
+    public GetCommandState(parameters: { command: PossibleCommands }): Key {
+        const { command } = parameters;
+        return this.commandsStates.get(command) as Key;
+    }
+}
+
+let keyboardManager: ServiceKeyboardManager;
+export function LoadKeyboardManager() {
+    keyboardManager = new ServiceKeyboardManager();
+}

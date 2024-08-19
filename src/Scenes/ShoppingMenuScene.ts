@@ -1,4 +1,4 @@
-import { Keyboard } from '../Keyboard';
+import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
@@ -398,7 +398,8 @@ export class ShoppingMenuScene implements IScene {
 
     Update(dt: number): void {
         this.buySkillSection.Update(dt);
-        if (Keyboard.h.IsPressed || Keyboard.Escape.IsPressed) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        if (keyboardManager.GetCommandState({ command: 'CloseShopMenu' }).IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('None');
         }
     }

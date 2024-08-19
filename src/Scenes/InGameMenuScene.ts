@@ -1,4 +1,4 @@
-import { Keyboard } from '../Keyboard';
+import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
@@ -11,7 +11,8 @@ export class InGameMenuScene implements IScene {
         this.loadUI();
     }
     Update(dt: number): void {
-        if (Keyboard.Escape.IsPressed) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        if (keyboardManager.GetCommandState({ command: 'CloseInGameMenu' }).IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('None');
         }
         this.inGameMenuUiManager.Update(dt);
