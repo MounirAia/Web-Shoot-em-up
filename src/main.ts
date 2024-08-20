@@ -1,4 +1,3 @@
-import { LoadEventManager } from './EventManager.js';
 import { IServiceImageLoader, LoadImageLoader } from './ImageLoader.js';
 import { LoadKeyboardManager } from './Keyboard.js';
 import {} from './Mouse.js';
@@ -6,23 +5,16 @@ import { DrawSceneManager, LoadSceneManager, UpdateSceneManager } from './SceneM
 import { FRAME_RATE, canvas } from './ScreenConstant.js';
 import { ServiceLocator } from './ServiceLocator.js';
 import { LoadCollideManager } from './Sprites/CollideManager.js';
-import { LoadGeneratedSpritesManager } from './Sprites/GeneratedSpriteManager.js';
-import { LoadPlayer } from './Sprites/Player.js';
 import { LoadUtilManager } from './UtilManager.js';
-import { LoadWaveManager } from './WaveManager/WaveManager.js';
 
 const ctx = canvas.getContext('2d')!;
 function load() {
-    // Load all the services
+    // Load the static services that should be loaded only once
     LoadUtilManager();
     LoadKeyboardManager();
-    LoadEventManager();
-    LoadGeneratedSpritesManager();
     LoadImageLoader();
-    LoadSceneManager();
     LoadCollideManager();
-    LoadWaveManager();
-    LoadPlayer();
+    LoadSceneManager();
 }
 
 function update(dt: number) {

@@ -169,7 +169,8 @@ type PossibleCommands =
     | 'CloseInGameMenu'
     | 'OpenShopMenu'
     | 'CloseShopMenu'
-    | 'CloseOptionMenu';
+    | 'CloseOptionMenu'
+    | 'ToggleInGameTimer';
 export interface IServiceKeyboardManager {
     GetCommandState(parameters: { command: PossibleCommands }): Key;
 }
@@ -188,6 +189,7 @@ export class ServiceKeyboardManager implements IServiceKeyboardManager {
         this.commandsStates.set('OpenShopMenu', Keyboard['KeyH']);
         this.commandsStates.set('CloseShopMenu', Keyboard['KeyH']);
         this.commandsStates.set('CloseOptionMenu', Keyboard['Escape']);
+        this.commandsStates.set('ToggleInGameTimer', Keyboard['KeyT']);
 
         ServiceLocator.AddService('KeyboardManager', this);
     }

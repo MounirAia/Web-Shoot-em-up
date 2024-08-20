@@ -7,7 +7,8 @@ type AvailableServices =
     | 'CollideManager'
     | 'EventManager'
     | 'UtilManager'
-    | 'KeyboardManager';
+    | 'KeyboardManager'
+    | 'GameStatManager';
 
 export class ServiceLocator {
     private static services: { [key: string]: unknown } = {};

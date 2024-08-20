@@ -583,8 +583,8 @@ export function LoadPlayer() {
     const imgPlayer =
         ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Player/Player.png');
 
-    const x = 250;
-    const y = 250;
+    const x = 60 * CANVA_SCALEX;
+    const y = 60 * CANVA_SCALEY;
 
     player = new Player(imgPlayer, x, y);
 }
