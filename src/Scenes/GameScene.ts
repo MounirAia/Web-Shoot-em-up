@@ -1,18 +1,13 @@
-import { UnloadEventManager } from '../EventManager';
 import { IServiceImageLoader } from '../ImageLoader';
 import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
-import {
-    DrawGeneratedSpritesManager,
-    UnloadGeneratedSpritesManager,
-    UpdateGeneratedSpritesManager,
-} from '../Sprites/GeneratedSpriteManager';
-import { DrawPlayer, IServicePlayer, UnloadPlayer, UpdatePlayer } from '../Sprites/Player';
+import { DrawGeneratedSpritesManager, UpdateGeneratedSpritesManager } from '../Sprites/GeneratedSpriteManager';
+import { DrawPlayer, IServicePlayer, UpdatePlayer } from '../Sprites/Player';
 import { Sprite } from '../Sprites/Sprite';
 import { IServiceUtilManager } from '../UtilManager';
-import { DrawWaveManager, IServiceWaveManager, UnloadWaveManager, UpdateWaveManager } from '../WaveManager/WaveManager';
+import { DrawWaveManager, IServiceWaveManager, UpdateWaveManager } from '../WaveManager/WaveManager';
 import { BaseField } from './BaseUserInterface/BaseField';
 import { FieldSkillFactory } from './BaseUserInterface/FieldSkill';
 import { FieldWithText } from './BaseUserInterface/FieldWithText';
@@ -351,12 +346,7 @@ export class GameScene implements IScene {
         DrawWaveManager(ctx);
     }
 
-    Unload(): void {
-        UnloadEventManager();
-        UnloadGeneratedSpritesManager();
-        UnloadWaveManager();
-        UnloadPlayer();
-    }
+    Unload(): void {}
 
     private loadUI() {
         this.cityBackgroundManager = new CityBackgroundManager();

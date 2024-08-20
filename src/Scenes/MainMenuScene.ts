@@ -1,12 +1,22 @@
+import { LoadEventManager } from '../EventManager.js';
 import { IScene, IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
+import { LoadGeneratedSpritesManager } from '../Sprites/GeneratedSpriteManager.js';
+import { LoadPlayer } from '../Sprites/Player.js';
+import { LoadWaveManager } from '../WaveManager/WaveManager.js';
 import { FieldWithText } from './BaseUserInterface/FieldWithText.js';
 import { UIManager } from './BaseUserInterface/UIManager.js';
 
 export class MainMenuScene implements IScene {
     private mainMenuUiManager: UIManager;
     Load() {
+        // Load the services that should be reseted when the game is restarted
+        LoadEventManager();
+        LoadGeneratedSpritesManager();
+        LoadWaveManager();
+        LoadPlayer();
+
         this.loadUI();
     }
 
