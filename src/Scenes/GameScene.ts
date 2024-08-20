@@ -1,3 +1,4 @@
+import { IGameStatManager, UpdateGameStatManager } from '../GameStatManager';
 import { IServiceImageLoader } from '../ImageLoader';
 import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
@@ -316,15 +317,48 @@ class UserStateUI {
     }
 }
 
+class InGameTimer {
+    private timerField: FieldWithText;
+    constructor() {
+        const gameStatManager = ServiceLocator.GetService<IGameStatManager>('GameStatManager');
+        const timePlayerSurvived = gameStatManager.GetTimePlayerHasSurvived();
+        this.timerField = new FieldWithText({
+            x: 3 * CANVA_SCALEX,
+            y: 20 * CANVA_SCALEY,
+            width: 75 * CANVA_SCALEX,
+            height: 10 * CANVA_SCALEY,
+            text: timePlayerSurvived,
+            leftAlign: true,
+            fontSize: UIManager.Typography.title.fontSize,
+            fontFamily: UIManager.Typography.title.fontFamily,
+        });
+        this.timerField.HasBorderOnAllSide = false;
+    }
+
+    public Update(dt: number): void {
+        const gameStatManager = ServiceLocator.GetService<IGameStatManager>('GameStatManager');
+        const timePlayerSurvived = gameStatManager.GetTimePlayerHasSurvived();
+        this.timerField.SetText(timePlayerSurvived);
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D): void {
+        this.timerField.Draw(ctx);
+    }
+}
+
 export class GameScene implements IScene {
     private cityBackgroundManager: CityBackgroundManager;
     private userStateUI: UserStateUI;
+    private timerIsToggled: boolean;
+    private inGameTimer: InGameTimer;
 
     Load() {
+        this.timerIsToggled = false;
         this.loadUI();
     }
 
     Update(dt: number) {
+        UpdateGameStatManager(dt);
         UpdateWaveManager(dt);
         UpdatePlayer(dt);
         UpdateGeneratedSpritesManager(dt);
@@ -337,6 +371,10 @@ export class GameScene implements IScene {
         if (keyboardManager.GetCommandState({ command: 'OpenShopMenu' }).IsPressed) {
             ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlaySecondaryScene('ShoppingMenu');
         }
+
+        if (keyboardManager.GetCommandState({ command: 'ToggleInGameTimer' }).IsPressed) {
+            this.timerIsToggled = !this.timerIsToggled;
+        }
     }
 
     Draw(ctx: CanvasRenderingContext2D) {
@@ -344,6 +382,9 @@ export class GameScene implements IScene {
         DrawGeneratedSpritesManager(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
+        if (this.timerIsToggled) {
+            this.inGameTimer.Draw(ctx);
+        }
     }
 
     Unload(): void {}
@@ -351,11 +392,13 @@ export class GameScene implements IScene {
     private loadUI() {
         this.cityBackgroundManager = new CityBackgroundManager();
         this.userStateUI = new UserStateUI();
+        this.inGameTimer = new InGameTimer();
     }
 
     private updateUI(dt: number) {
         this.cityBackgroundManager.Update(dt);
         this.userStateUI.Update(dt);
+        this.inGameTimer.Update(dt);
     }
 
     private drawUI(ctx: CanvasRenderingContext2D) {

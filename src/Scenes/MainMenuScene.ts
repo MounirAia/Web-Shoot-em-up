@@ -1,4 +1,5 @@
 import { LoadEventManager } from '../EventManager.js';
+import { LoadGameStatManager } from '../GameStatManager.js';
 import { IScene, IServiceSceneManager } from '../SceneManager.js';
 import { CANVA_SCALEX, CANVA_SCALEY } from '../ScreenConstant.js';
 import { ServiceLocator } from '../ServiceLocator.js';
@@ -15,6 +16,7 @@ export class MainMenuScene implements IScene {
         LoadEventManager();
         LoadGeneratedSpritesManager();
         LoadWaveManager();
+        LoadGameStatManager();
         LoadPlayer();
 
         this.loadUI();
