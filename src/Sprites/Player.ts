@@ -196,7 +196,8 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         let isOutsideTopScreen = false;
         let isOutsideRightScreen = false;
         let isOutsideBottomScreen = false;
-        for (const hitbox of this.CurrentHitbox) {
+        // Check if player do not go outside the viewport. Consider only the frame hitbox of the player. ignore the cannon hitbox.
+        for (const hitbox of this.playerFrameHitbox) {
             isOutsideLeftScreen =
                 isOutsideLeftScreen ||
                 hitbox.CheckIfBoxOverlap(this.getScreenLimit('left'), 0, canvas.width, canvas.height);
@@ -449,7 +450,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         const numberOfBoosts = this.NumberOfBoosts;
 
         this.BaseHealth = PlayerStats[numberOfBoosts]['Base Health'];
-        this.CurrentHealth = this.BaseHealth;
+        this.CurrentHealth = this.BaseHealth; // reset the health to the base health
         this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
             'UtilManager',
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({
