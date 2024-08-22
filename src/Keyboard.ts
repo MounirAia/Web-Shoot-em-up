@@ -143,7 +143,6 @@ for (const key in KeyCode) {
 window.addEventListener('keydown', (e) => {
     e.preventDefault();
     const { code } = e;
-    console.log(code);
     if (Keyboard[code]) {
         Keyboard[code].IsDown = true;
         Keyboard[code].IsPressed = true;
