@@ -120,7 +120,6 @@ export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
 
             const applyParalyze = Math.random() <= FuelChargeShotLaserLevel2DamageEffect.probabilityOfParalyze;
 
-            // Play the idle animation of the monster to paralyze the enemy
             if (applyParalyze) {
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').ParalyzeEnemy({ target });
             }
@@ -128,10 +127,6 @@ export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
             const effectMethod = (dt: number): { isFinished: boolean } => {
                 // apply the effect of the level1 damage effect
                 level1Effect.effect?.(dt);
-
-                if (applyParalyze) {
-                    ServiceLocator.GetService<IServiceWaveManager>('WaveManager').ParalyzeEnemy({ target });
-                }
 
                 remainingEffectTime -= dt;
 
@@ -144,7 +139,6 @@ export class FuelChargeShotLaserLevel2DamageEffect implements IDamageEffect {
                 level1Effect.clearStateMethod?.();
 
                 if (applyParalyze) {
-                    // play the shooting animation of the enemy
                     ServiceLocator.GetService<IServiceWaveManager>('WaveManager').StopParalyzeEnemy({ target });
                 }
             };

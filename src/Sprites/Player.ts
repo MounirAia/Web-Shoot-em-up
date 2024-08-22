@@ -34,7 +34,6 @@ export interface IServicePlayer {
     MakeTransactionOnWallet(value: number): void;
     IsInvulnerable(): boolean;
     SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }): void; // Set the skill for the player, but do not update the player skills yet with the real object
-    UpdateSkill(): void; // Update the all player skills with the real object, take into account the updates made with SetSkill
     GetSkillLevel: (parameters: { skillType: SkillsTypeName }) => PossibleSkillLevel;
     UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void; // Update a specific skill level
     UpgradeBoost(): void;
@@ -196,7 +195,8 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         let isOutsideTopScreen = false;
         let isOutsideRightScreen = false;
         let isOutsideBottomScreen = false;
-        for (const hitbox of this.CurrentHitbox) {
+        // Check if player do not go outside the viewport. Consider only the frame hitbox of the player. ignore the cannon hitbox.
+        for (const hitbox of this.playerFrameHitbox) {
             isOutsideLeftScreen =
                 isOutsideLeftScreen ||
                 hitbox.CheckIfBoxOverlap(this.getScreenLimit('left'), 0, canvas.width, canvas.height);
@@ -295,19 +295,65 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     SetSkill(parameters: { skillType: SkillsTypeName; skillName: PossibleSkillName }) {
         const { skillType, skillName } = parameters;
+        const skillFactory = new SkillFactory();
 
-        if (skillType === 'effect') {
-            this.effectSkillChosen = skillName;
-        } else if (skillType === 'special') {
+        if (skillType === 'special') {
             this.specialSkillChosen = skillName;
+
+            const specialSkill = skillFactory.GetSkill({
+                skillName: this.specialSkillChosen,
+                playerOldSkill: this.currentSkill.get('special'),
+            });
+            this.setSpecialSkill({ skill: specialSkill });
+        } else if (skillType === 'effect') {
+            this.effectSkillChosen = skillName;
+
+            const effectSkill = skillFactory.GetSkill({
+                skillName: this.effectSkillChosen,
+                playerOldSkill: this.currentSkill.get('effect'),
+            });
+            this.setEffectSkill({ skill: effectSkill });
         } else if (skillType === 'support') {
             this.supportSkillChosen = skillName;
+
+            const supportSkill = skillFactory.GetSkill({
+                skillName: this.supportSkillChosen,
+                playerOldSkill: this.currentSkill.get('support'),
+            });
+            this.setSupportSkill({ skill: supportSkill });
         }
+    }
+
+    UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void {
+        const { skillType } = parameters;
+        if (skillType === 'special') {
+            this.specialSkillLevel++;
+            this.SetSkill({ skillType: 'special', skillName: this.SpecialSkillName! });
+        } else if (skillType === 'effect') {
+            this.effectSkillLevel++;
+            this.SetSkill({ skillType: 'effect', skillName: this.EffectSkillName! });
+        } else if (skillType === 'support') {
+            this.supportSkillLevel++;
+            this.SetSkill({ skillType: 'support', skillName: this.SupportSkillName! });
+        }
+    }
+
+    GetSkillLevel(parameters: { skillType: SkillsTypeName }): PossibleSkillLevel {
+        const { skillType } = parameters;
+        if (skillType === 'special') {
+            return this.SpecialSkillLevel;
+        } else if (skillType === 'effect') {
+            return this.EffectSkillLevel;
+        } else if (skillType === 'support') {
+            return this.SupportSkillLevel;
+        }
+        return 0;
     }
 
     private setSpecialSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('special', skill);
+        /* Update Special Skill */
         const cannonConfigurationFactory = new CannonConfigurationFactory({
             playerSpecialSkillName: this.SpecialSkillName,
             playerSpecialSkillLevel: this.SpecialSkillLevel,
@@ -323,6 +369,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private setEffectSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('effect', skill);
+        /* Update Effect Skill */
         const effectConfigurationFactory = new EffectConfigurationFactory({
             playerEffectSkillLevel: this.EffectSkillLevel,
             playerX: this.X,
@@ -334,6 +381,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private setSupportSkill(parameters: { skill: ISkill }): void {
         const { skill } = parameters;
         this.currentSkill.set('support', skill);
+        /* Update Support Skill */
         this.currentSkill.get('support')?.Effect();
         const supportConfigurationFactory = new SupportConfigurationFactory({
             playerSupportSkillLevel: this.SupportSkillLevel,
@@ -341,53 +389,6 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             playerY: this.Y,
         });
         this.supportConfiguration = supportConfigurationFactory.GetConfig();
-    }
-
-    UpdateSkill(): void {
-        const skillFactory = new SkillFactory();
-        const specialSkill = skillFactory.GetSkill({
-            skillName: this.specialSkillChosen,
-            playerOldSkill: this.currentSkill.get('special'),
-        });
-
-        this.setSpecialSkill({ skill: specialSkill });
-
-        const effectSkill = skillFactory.GetSkill({
-            skillName: this.effectSkillChosen,
-            playerOldSkill: this.currentSkill.get('effect'),
-        });
-        this.setEffectSkill({ skill: effectSkill });
-
-        const supportSkill = skillFactory.GetSkill({
-            skillName: this.supportSkillChosen,
-            playerOldSkill: this.currentSkill.get('support'),
-        });
-        this.setSupportSkill({ skill: supportSkill });
-    }
-
-    GetSkillLevel(parameters: { skillType: SkillsTypeName }): PossibleSkillLevel {
-        const { skillType } = parameters;
-        if (skillType === 'special') {
-            return this.SpecialSkillLevel;
-        } else if (skillType === 'effect') {
-            return this.EffectSkillLevel;
-        } else if (skillType === 'support') {
-            return this.SupportSkillLevel;
-        }
-        return 0;
-    }
-
-    UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void {
-        const { skillType } = parameters;
-        if (skillType === 'special') {
-            this.specialSkillLevel++;
-        } else if (skillType === 'effect') {
-            this.effectSkillLevel++;
-        } else if (skillType === 'support') {
-            this.supportSkillLevel++;
-        }
-
-        this.UpdateSkill();
     }
 
     UpgradeBoost(): void {
@@ -449,7 +450,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         const numberOfBoosts = this.NumberOfBoosts;
 
         this.BaseHealth = PlayerStats[numberOfBoosts]['Base Health'];
-        this.CurrentHealth = this.BaseHealth;
+        this.CurrentHealth = this.BaseHealth; // reset the health to the base health
         this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
             'UtilManager',
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({

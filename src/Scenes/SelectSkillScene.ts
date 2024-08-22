@@ -14,19 +14,23 @@ export class SelectSkillScene implements IScene {
         {
             chosenSkill: IUIComponent | undefined;
             skillTree: IUIComponent[] | undefined;
+            skillName: PossibleSkillName | undefined;
         }
     > = {
         special: {
             chosenSkill: undefined,
             skillTree: undefined,
+            skillName: undefined,
         },
         effect: {
             chosenSkill: undefined,
             skillTree: undefined,
+            skillName: undefined,
         },
         support: {
             chosenSkill: undefined,
             skillTree: undefined,
+            skillName: undefined,
         },
     };
 
@@ -59,11 +63,7 @@ export class SelectSkillScene implements IScene {
         this.selectedSkill[parameters.skillType].skillTree = parameters.skillTree;
         this.selectSkillSceneUIManager.ShowComponents(parameters.skillTree);
 
-        // Select the skill for the player, but do not update the player skills yet with the real object
-        ServiceLocator.GetService<IServicePlayer>('Player').SetSkill({
-            skillType: parameters.skillType,
-            skillName: parameters.skillName,
-        });
+        this.selectedSkill[parameters.skillType].skillName = parameters.skillName;
     }
 
     private loadUI() {
@@ -122,8 +122,18 @@ export class SelectSkillScene implements IScene {
             fontFamily: UIManager.Typography.button.fontFamily,
             HasHovered: true,
             onClick: () => {
-                // Update the player skill with the real object, so trigger any side effect of choosing a skill
-                ServiceLocator.GetService<IServicePlayer>('Player').UpdateSkill();
+                ServiceLocator.GetService<IServicePlayer>('Player').SetSkill({
+                    skillType: 'special',
+                    skillName: this.selectedSkill.special.skillName!,
+                });
+                ServiceLocator.GetService<IServicePlayer>('Player').SetSkill({
+                    skillType: 'effect',
+                    skillName: this.selectedSkill.effect.skillName!,
+                });
+                ServiceLocator.GetService<IServicePlayer>('Player').SetSkill({
+                    skillType: 'support',
+                    skillName: this.selectedSkill.support.skillName!,
+                });
                 SceneManager.PlayMainScene('Game');
             },
         });

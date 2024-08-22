@@ -29,7 +29,10 @@ export class SpriteAnimationsController {
     private doesAnimationLoop;
 
     // For Paralyzed animation
-    private timeLeftFrameTimerBeforeParalyzed;
+    private animationInfoWhenParalyzed: {
+        animationName: AvailableAnimation;
+        timeLeftFrameTimerBeforeParalyzed: number;
+    };
     private isParalyzed;
 
     constructor() {
@@ -39,7 +42,10 @@ export class SpriteAnimationsController {
         this.currentFrameTimer = 1;
         this.doesAnimationLoop = false;
 
-        this.timeLeftFrameTimerBeforeParalyzed = 0;
+        this.animationInfoWhenParalyzed = {
+            animationName: '',
+            timeLeftFrameTimerBeforeParalyzed: 0,
+        };
         this.isParalyzed = false;
     }
 
@@ -97,7 +103,8 @@ export class SpriteAnimationsController {
 
     public PlayParalyzedAnimation() {
         if (!this.isParalyzed) {
-            this.timeLeftFrameTimerBeforeParalyzed = this.currentFrameTimer;
+            this.animationInfoWhenParalyzed.animationName = this.currentAnimationName;
+            this.animationInfoWhenParalyzed.timeLeftFrameTimerBeforeParalyzed = this.currentFrameTimer;
 
             this.currentFrameTimer = Infinity;
 
@@ -107,8 +114,9 @@ export class SpriteAnimationsController {
 
     public StopParalyzedAnimation() {
         if (this.isParalyzed) {
-            this.currentFrameTimer = this.timeLeftFrameTimerBeforeParalyzed;
-
+            if (this.animationInfoWhenParalyzed.animationName === this.currentAnimationName) {
+                this.currentFrameTimer = this.animationInfoWhenParalyzed.timeLeftFrameTimerBeforeParalyzed;
+            }
             this.isParalyzed = false;
         }
     }
