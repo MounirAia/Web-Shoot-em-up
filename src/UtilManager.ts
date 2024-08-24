@@ -27,7 +27,7 @@ class UtilManager implements IServiceUtilManager {
         return undefined;
     }
 
-    // Used to compute speed of any projectile and make it adapatable to the screen dimension
+    // Used to compute speed of any projectile and make it adapatable to the screen dimension, in pixel/frame -> also 1 frame = 1 dt
     GetSpeedItTakesToCoverHalfTheScreenWidth(parameters: { framesItTakes: number }) {
         const { framesItTakes } = parameters;
         if (framesItTakes > 0) {

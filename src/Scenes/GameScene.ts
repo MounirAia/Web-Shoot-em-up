@@ -2,7 +2,7 @@ import { IGameStatManager, UpdateGameStatManager } from '../GameStatManager';
 import { IServiceImageLoader } from '../ImageLoader';
 import { IServiceKeyboardManager } from '../Keyboard';
 import { IScene, IServiceSceneManager } from '../SceneManager';
-import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../ScreenConstant';
+import { CANVA_SCALEX, CANVA_SCALEY, canvas, FRAME_RATE } from '../ScreenConstant';
 import { ServiceLocator } from '../ServiceLocator';
 import { DrawGeneratedSpritesManager, UpdateGeneratedSpritesManager } from '../Sprites/GeneratedSpriteManager';
 import { DrawPlayer, IServicePlayer, UpdatePlayer } from '../Sprites/Player';
@@ -346,8 +346,140 @@ class InGameTimer {
     }
 }
 
+class Particle {
+    private x: number;
+    private y: number;
+    private width: number;
+    private height: number;
+    private speed: number;
+
+    constructor(parameters: { x: number; y: number; width: number; height: number; speed: number }) {
+        const { x, y, width, height, speed } = parameters;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.speed = speed;
+    }
+
+    public Update(dt: number): void {
+        this.x -= this.speed;
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D): void {
+        ctx.rect(this.x, this.y, this.width, this.height);
+    }
+
+    public GetX(): number {
+        return this.x;
+    }
+
+    public GetY(): number {
+        return this.y;
+    }
+
+    public GetIfParticleIsOutsideViewScreen(): boolean {
+        // TODO: Need to cover the case if the particle is outside from the right side of the screen because it was ejected from the screen by the shockwave
+
+        if (this.x + this.width < 0 || this.y < 0 || this.y + this.height > canvas.height) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
+class ParticleManager {
+    private particles: Particle[];
+    private particlesIndexToRemove: number[];
+    private particleWidth: number;
+    private particleHeight: number;
+    private particleSpeed: number;
+    private particleColor: string;
+
+    private timeRemainingBeforeNewParticles: number;
+    private baseTimeBeforeNewParticles: number;
+
+    constructor() {
+        this.particles = [];
+        this.particlesIndexToRemove = [];
+        this.particleWidth = 1 * CANVA_SCALEX;
+        this.particleHeight = 1 * CANVA_SCALEY;
+        this.particleSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: 500,
+        });
+        this.particleColor = '#959595';
+
+        const dt = 1 / FRAME_RATE;
+        this.baseTimeBeforeNewParticles = (this.particleWidth * dt) / this.particleSpeed;
+        this.timeRemainingBeforeNewParticles = this.baseTimeBeforeNewParticles;
+
+        console.log(this.baseTimeBeforeNewParticles, this.particleSpeed, this.particleWidth);
+
+        const lines = Math.floor((320 * CANVA_SCALEX) / this.particleWidth);
+
+        for (let i = 0; i < lines; i++) {
+            this.generateParticlesOnALine({ x: i * this.particleWidth });
+        }
+    }
+
+    public Update(dt: number): void {
+        /* Update the particles and Clean the non visible particles*/
+        this.particles.forEach((particle) => {
+            particle.Update(dt);
+            if (particle.GetIfParticleIsOutsideViewScreen()) {
+                this.particlesIndexToRemove.push(this.particles.indexOf(particle));
+            }
+        });
+
+        this.particlesIndexToRemove.forEach((index) => {
+            this.particles.splice(index, 1);
+        });
+
+        this.particlesIndexToRemove = [];
+
+        /* Generate new particles */
+        this.timeRemainingBeforeNewParticles -= dt;
+        if (this.timeRemainingBeforeNewParticles <= 0) {
+            this.generateParticlesOnALine({ x: canvas.width });
+            this.timeRemainingBeforeNewParticles = this.baseTimeBeforeNewParticles;
+        }
+
+        console.log(this.particles.length);
+    }
+
+    public Draw(ctx: CanvasRenderingContext2D): void {
+        ctx.beginPath();
+        this.particles.forEach((particle) => {
+            particle.Draw(ctx);
+        });
+        ctx.fillStyle = this.particleColor;
+        ctx.fill();
+    }
+
+    private generateParticlesOnALine(parameters: { x: number }) {
+        const { x } = parameters;
+        const maxParticlesPerLine = 1;
+        for (let i = 0; i < maxParticlesPerLine; i++) {
+            const particleYOffset = Math.random() * 136 * CANVA_SCALEY;
+            this.particles.push(
+                new Particle({
+                    x,
+                    y: 17 * CANVA_SCALEY + particleYOffset,
+                    width: this.particleWidth,
+                    height: this.particleHeight,
+                    speed: this.particleSpeed,
+                }),
+            );
+        }
+    }
+}
+
 export class GameScene implements IScene {
     private cityBackgroundManager: CityBackgroundManager;
+    private particleEffectOnMap: ParticleManager;
     private userStateUI: UserStateUI;
     private timerIsToggled: boolean;
     private inGameTimer: InGameTimer;
@@ -379,9 +511,9 @@ export class GameScene implements IScene {
 
     Draw(ctx: CanvasRenderingContext2D) {
         this.drawUI(ctx);
-        DrawGeneratedSpritesManager(ctx);
         DrawPlayer(ctx);
         DrawWaveManager(ctx);
+        DrawGeneratedSpritesManager(ctx);
         if (this.timerIsToggled) {
             this.inGameTimer.Draw(ctx);
         }
@@ -391,6 +523,7 @@ export class GameScene implements IScene {
 
     private loadUI() {
         this.cityBackgroundManager = new CityBackgroundManager();
+        this.particleEffectOnMap = new ParticleManager();
         this.userStateUI = new UserStateUI();
         this.inGameTimer = new InGameTimer();
     }
@@ -399,10 +532,12 @@ export class GameScene implements IScene {
         this.cityBackgroundManager.Update(dt);
         this.userStateUI.Update(dt);
         this.inGameTimer.Update(dt);
+        this.particleEffectOnMap.Update(dt);
     }
 
     private drawUI(ctx: CanvasRenderingContext2D) {
         this.cityBackgroundManager.Draw(ctx);
+        this.particleEffectOnMap.Draw(ctx);
         this.userStateUI.Draw(ctx);
     }
 }

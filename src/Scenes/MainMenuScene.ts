@@ -47,7 +47,7 @@ export class MainMenuScene implements IScene {
             y: yTitle,
             width: widthTitle,
             height: heightTitle,
-            text: "WEB SHOOT'EM UP",
+            text: "Web Shoot'em UP",
             fontSize: UIManager.Typography.title.fontSize,
             fontFamily: UIManager.Typography.title.fontFamily,
         });
