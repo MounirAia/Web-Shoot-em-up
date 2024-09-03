@@ -74,6 +74,8 @@ Most of the drawbacks of the Service Locator relate to automated testing. Howeve
 | **CollideManager**         | Manages collisions between sprites that can collide                                                       | WaveManager, GeneratedSpriteManager   |
 | **EventManager**           | Sprites can register for specific events and get notified when triggered                                  | None                                  |
 | **UtilManager**            | Provides a set of utility functions accessible throughout the code                                        | None                                  |
+| **KeyboardManager**        | Manage Keyboard Key Listening                                                                             | None                                  |
+| **GameStatManager**        | Manage Stat that are useful to keep track of during the game                                              | None                                  |
 
 ### Sprite
 

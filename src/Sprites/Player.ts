@@ -38,6 +38,7 @@ export interface IServicePlayer {
     UpgradeSkillLevel(parameters: { skillType: SkillsTypeName }): void; // Update a specific skill level
     UpgradeBoost(): void;
     GetIsMaxNumberBoostAttained(): boolean;
+    GetIsMaxLevelReachedForSpecificSkillType(parameters: { skillType: SkillsTypeName }): boolean;
     MaxHealth: number;
     CurrentHealth: number;
     MoneyInWallet: number;
@@ -402,6 +403,18 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             this.NumberOfBoosts >=
             GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant['Max Number of Boosts']
         );
+    }
+
+    GetIsMaxLevelReachedForSpecificSkillType(parameters: { skillType: SkillsTypeName }): boolean {
+        const { skillType } = parameters;
+        if (skillType === 'special') {
+            return this.SpecialSkillLevel > 2;
+        } else if (skillType === 'effect') {
+            return this.EffectSkillLevel > 2;
+        } else if (skillType === 'support') {
+            return this.SupportSkillLevel > 2;
+        }
+        return false;
     }
 
     get CurrentHitbox(): RectangleHitbox[] {

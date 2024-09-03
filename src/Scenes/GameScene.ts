@@ -6,7 +6,9 @@ import { CANVA_SCALEX, CANVA_SCALEY, canvas, FRAME_RATE } from '../ScreenConstan
 import { ServiceLocator } from '../ServiceLocator';
 import { DrawGeneratedSpritesManager, UpdateGeneratedSpritesManager } from '../Sprites/GeneratedSpriteManager';
 import { DrawPlayer, IServicePlayer, UpdatePlayer } from '../Sprites/Player';
+import { PossibleSkillLevel, SkillsTypeName } from '../Sprites/PlayerSkills/Skills';
 import { Sprite } from '../Sprites/Sprite';
+import { GetSpriteStaticInformation } from '../SpriteStaticInformation/SpriteStaticInformationManager';
 import { IServiceUtilManager } from '../UtilManager';
 import { DrawWaveManager, IServiceWaveManager, UpdateWaveManager } from '../WaveManager/WaveManager';
 import { BaseField } from './BaseUserInterface/BaseField';
@@ -416,8 +418,6 @@ class ParticleManager {
         this.baseTimeBeforeNewParticles = (this.particleWidth * dt) / this.particleSpeed;
         this.timeRemainingBeforeNewParticles = this.baseTimeBeforeNewParticles;
 
-        console.log(this.baseTimeBeforeNewParticles, this.particleSpeed, this.particleWidth);
-
         const lines = Math.floor((320 * CANVA_SCALEX) / this.particleWidth);
 
         for (let i = 0; i < lines; i++) {
@@ -446,8 +446,6 @@ class ParticleManager {
             this.generateParticlesOnALine({ x: canvas.width });
             this.timeRemainingBeforeNewParticles = this.baseTimeBeforeNewParticles;
         }
-
-        console.log(this.particles.length);
     }
 
     public Draw(ctx: CanvasRenderingContext2D): void {
@@ -477,12 +475,97 @@ class ParticleManager {
     }
 }
 
+class ShortcutSkillManager {
+    private skillPricePerLevel: Map<PossibleSkillLevel, number>;
+    private boostPrice: number;
+
+    constructor() {
+        /* TEMPORARY */
+        const rocketSprite = GetSpriteStaticInformation({ sprite: 'Rocket' });
+        const priceSkillLevel1 = rocketSprite.constant[0]['Skill Price'];
+        const priceSkillLevel2 = rocketSprite.constant[1]['Skill Price'];
+        const priceSkillLevel3 = rocketSprite.constant[2]['Skill Price'];
+        this.skillPricePerLevel = new Map([
+            [1, priceSkillLevel1],
+            [2, priceSkillLevel2],
+            [3, priceSkillLevel3],
+        ]);
+
+        this.boostPrice = GetSpriteStaticInformation({ sprite: 'PlayerBoost' }).constant['Boost Price'];
+    }
+
+    Update(dt: number) {
+        const keyboardManager = ServiceLocator.GetService<IServiceKeyboardManager>('KeyboardManager');
+        // U for special skill
+        if (keyboardManager.GetCommandState({ command: 'UpgradeSpecialSkillInGameShortcut' }).IsPressed) {
+            this.quickUpgrade({ fieldType: 'special' });
+        }
+        // I for effect skill
+        if (keyboardManager.GetCommandState({ command: 'UpgradeEffectSkillInGameShortcut' }).IsPressed) {
+            this.quickUpgrade({ fieldType: 'effect' });
+        }
+        // O for support skill
+        if (keyboardManager.GetCommandState({ command: 'UpgradeSupportSkillInGameShortcut' }).IsPressed) {
+            this.quickUpgrade({ fieldType: 'support' });
+        }
+        // P for boost
+        if (keyboardManager.GetCommandState({ command: 'UpgradeBoostInGameShortcut' }).IsPressed) {
+            this.quickUpgrade({ fieldType: 'Boost' });
+        }
+    }
+
+    private quickUpgrade(parameters: { fieldType: SkillsTypeName | 'Boost' }) {
+        const { fieldType } = parameters;
+
+        if (fieldType === 'Boost') {
+            this.upgradeBoost();
+        } else {
+            this.upgradeSkill({ skillType: fieldType });
+        }
+    }
+
+    private upgradeBoost() {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        let playerBalance = player.MoneyInWallet;
+
+        // 1) verify if the player has already reached the max number of boost
+        if (player.GetIsMaxNumberBoostAttained()) return;
+
+        // 2) verify if the player has enough money to buy the skill
+        if (playerBalance - this.boostPrice < 0) return;
+
+        player.MakeTransactionOnWallet(-this.boostPrice);
+
+        player.UpgradeBoost();
+    }
+
+    private upgradeSkill(parameters: { skillType: SkillsTypeName }) {
+        const { skillType } = parameters;
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        let playerBalance = player.MoneyInWallet;
+        const skillLevel = player.GetSkillLevel({ skillType: skillType });
+        const isMaxLevelReach = player.GetIsMaxLevelReachedForSpecificSkillType({ skillType: skillType });
+
+        // 1) Verify if the player did not reach the maximum level for this skill
+        if (isMaxLevelReach) return;
+
+        const selectedSkillPrice = this.skillPricePerLevel.get((skillLevel + 1) as PossibleSkillLevel)!;
+        // 2) verify if the player has enough money to buy the skill
+        if (playerBalance - selectedSkillPrice < 0) return;
+
+        player.MakeTransactionOnWallet(-selectedSkillPrice);
+
+        player.UpgradeSkillLevel({ skillType: skillType });
+    }
+}
+
 export class GameScene implements IScene {
     private cityBackgroundManager: CityBackgroundManager;
     private particleEffectOnMap: ParticleManager;
     private userStateUI: UserStateUI;
     private timerIsToggled: boolean;
     private inGameTimer: InGameTimer;
+    private shortcutSkillManager: ShortcutSkillManager;
 
     Load() {
         this.timerIsToggled = false;
@@ -526,6 +609,7 @@ export class GameScene implements IScene {
         this.particleEffectOnMap = new ParticleManager();
         this.userStateUI = new UserStateUI();
         this.inGameTimer = new InGameTimer();
+        this.shortcutSkillManager = new ShortcutSkillManager();
     }
 
     private updateUI(dt: number) {
@@ -533,6 +617,7 @@ export class GameScene implements IScene {
         this.userStateUI.Update(dt);
         this.inGameTimer.Update(dt);
         this.particleEffectOnMap.Update(dt);
+        this.shortcutSkillManager.Update(dt);
     }
 
     private drawUI(ctx: CanvasRenderingContext2D) {

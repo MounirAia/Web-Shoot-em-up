@@ -169,7 +169,11 @@ type PossibleCommands =
     | 'OpenShopMenu'
     | 'CloseShopMenu'
     | 'CloseOptionMenu'
-    | 'ToggleInGameTimer';
+    | 'ToggleInGameTimer'
+    | 'UpgradeSpecialSkillInGameShortcut'
+    | 'UpgradeEffectSkillInGameShortcut'
+    | 'UpgradeSupportSkillInGameShortcut'
+    | 'UpgradeBoostInGameShortcut';
 export interface IServiceKeyboardManager {
     GetCommandState(parameters: { command: PossibleCommands }): Key;
 }
@@ -189,6 +193,10 @@ export class ServiceKeyboardManager implements IServiceKeyboardManager {
         this.commandsStates.set('CloseShopMenu', Keyboard['KeyH']);
         this.commandsStates.set('CloseOptionMenu', Keyboard['Escape']);
         this.commandsStates.set('ToggleInGameTimer', Keyboard['KeyT']);
+        this.commandsStates.set('UpgradeSpecialSkillInGameShortcut', Keyboard['KeyU']);
+        this.commandsStates.set('UpgradeEffectSkillInGameShortcut', Keyboard['KeyI']);
+        this.commandsStates.set('UpgradeSupportSkillInGameShortcut', Keyboard['KeyO']);
+        this.commandsStates.set('UpgradeBoostInGameShortcut', Keyboard['KeyP']);
 
         ServiceLocator.AddService('KeyboardManager', this);
     }

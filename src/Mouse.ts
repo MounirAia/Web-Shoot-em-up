@@ -35,10 +35,12 @@ export class Mouse {
 }
 
 canvas.addEventListener('mousemove', (e) => {
-    const { clientX, clientY } = e;
+    const { pageX, pageY } = e;
 
-    Mouse.X = clientX - canvas.offsetLeft;
-    Mouse.Y = clientY - canvas.offsetTop;
+    const x = pageX - canvas.offsetLeft;
+    const y = pageY - canvas.offsetTop;
+    Mouse.X = x;
+    Mouse.Y = y;
 
     Mouse.IsPressed = false;
 });
@@ -49,4 +51,22 @@ canvas.addEventListener('mouseup', (e) => {
 
 canvas.addEventListener('mousedown', (e) => {
     if (e.button === 0) Mouse.IsPressed = true;
+});
+
+/* Prevent Mouse Scrolling When the Game is Focused */
+// Function to prevent scrolling
+function preventScroll(event) {
+    event.preventDefault(); // Prevent the default scroll behavior
+}
+
+// Enable scroll prevention on canvas click
+canvas.addEventListener('click', () => {
+    document.addEventListener('wheel', preventScroll, { passive: false });
+});
+
+// Re-enable scrolling only when clicking outside the canvas
+document.addEventListener('click', (event) => {
+    if (!canvas.contains(event.target as Node)) {
+        document.removeEventListener('wheel', preventScroll);
+    }
 });
