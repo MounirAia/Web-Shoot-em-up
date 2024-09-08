@@ -14,8 +14,8 @@ import { SpriteDamageResistancesController } from '../../SpriteDamageResistances
 import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
-const scale = 3;
-export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
+const scale = 2;
+export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
     private moneyValue: number;
 
     private laneNumber: LaneNumber;
@@ -184,7 +184,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
     }
 
     get Tier(): 'Tier1' | 'Tier2' | 'Tier3' {
-        return 'Tier3';
+        return 'Tier2';
     }
 
     get Lane(): LaneNumber {

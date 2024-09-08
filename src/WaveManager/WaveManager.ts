@@ -5,7 +5,7 @@ import {
     DamageEffectOptions,
 } from '../Sprites/PlayerSkills/DamageEffect/IDamageEffect.js';
 import { AvailableAnimation } from '../Sprites/SpriteAnimationsController.js';
-import { WaveEnemies } from './WaveEnemies.js';
+import { WaveEnemies } from './WaveEnemies/WaveEnemies.js';
 
 export interface IServiceWaveManager {
     RemoveEnemy(enemy: IEnemy): void;
@@ -83,68 +83,7 @@ class WaveManager implements IServiceWaveManager {
     }
 
     private createWaves(): WaveEnemies[] {
-        const roundsChart: {
-            minNumberWaves: number;
-            maxNumberWaves: number;
-            minNumberEnemies: number;
-            maxNumberEnemies: number;
-        }[] = [
-            {
-                minNumberWaves: 1,
-                maxNumberWaves: 3,
-                minNumberEnemies: 12,
-                maxNumberEnemies: 20,
-            },
-            {
-                minNumberWaves: 3,
-                maxNumberWaves: 6,
-                minNumberEnemies: 15,
-                maxNumberEnemies: 25,
-            },
-            {
-                minNumberWaves: 5,
-                maxNumberWaves: 8,
-                minNumberEnemies: 20,
-                maxNumberEnemies: 28,
-            },
-            {
-                minNumberWaves: 6,
-                maxNumberWaves: 7,
-                minNumberEnemies: 25,
-                maxNumberEnemies: 32,
-            },
-            {
-                minNumberWaves: 7,
-                maxNumberWaves: 8,
-                minNumberEnemies: 31,
-                maxNumberEnemies: 35,
-            },
-            {
-                minNumberWaves: 9,
-                maxNumberWaves: 10,
-                minNumberEnemies: 40,
-                maxNumberEnemies: 40,
-            },
-        ];
-
-        let numberWaves = 0;
-        const roundTiers = 10; // corespond on when to change the number of waves to spawn (each x rounds)
-        let index = Math.floor(this.round / roundTiers);
-        if (index > roundsChart.length - 1) {
-            index = roundsChart.length - 1;
-        }
-        const { minNumberWaves, maxNumberWaves } = roundsChart[index];
-        numberWaves = Math.round(Math.random() * (maxNumberWaves - minNumberWaves)) + minNumberWaves;
-        const waves: WaveEnemies[] = [];
-
-        for (let i = 0; i < numberWaves; i++) {
-            const { minNumberEnemies, maxNumberEnemies } = roundsChart[index];
-            const numberEnemiesToSpawn =
-                Math.round((maxNumberEnemies - minNumberEnemies) * Math.random()) + minNumberEnemies;
-            waves.push(new WaveEnemies(numberEnemiesToSpawn));
-        }
-
-        return waves;
+        return [new WaveEnemies(this.Round)];
     }
 
     GetListEnemies(): Map<IEnemy, IEnemy> {
