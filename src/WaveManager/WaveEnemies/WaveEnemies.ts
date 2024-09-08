@@ -18,14 +18,25 @@ export class WaveEnemies {
     /* New Wave System */
     private readonly numberOfEnemiesToSpawn: Map<EnemyTier, number>;
     private laneManager: Map<LaneNumber, Lane>;
+    private horizontalDelayStep: number;
 
     private waveEnemiesStateTracker: WaveEnemiesDamageStateTracker;
 
     constructor(round: number) {
         // Lane Manager
-        this.laneManager = new Map<LaneNumber, Lane>(
-            ([1, 2, 3, 4] as LaneNumber[]).map((lane) => [lane, new Lane({ laneNumber: lane })]),
-        );
+        const unshuffledLanes: LaneNumber[] = [1, 2, 3, 4];
+        const cycles = Math.floor(Math.random() * unshuffledLanes.length) + 2;
+        const lanes: LaneNumber[] = circularArrayShuffle(unshuffledLanes, cycles);
+        this.laneManager = new Map<LaneNumber, Lane>(lanes.map((lane) => [lane, new Lane({ laneNumber: lane })]));
+        this.horizontalDelayStep = 80 * CANVA_SCALEX;
+
+        // set the horizontal delay for the lanes
+        let index = 0;
+        this.laneManager.forEach((laneManager) => {
+            const horizontalDelay = this.horizontalDelayStep * index;
+            laneManager.SetHorizontalDelay(horizontalDelay);
+            index++;
+        });
 
         // Initialize the number of enemies to spawn per tier
         this.numberOfEnemiesToSpawn = this.getEnemyTierToSpawn(round);
@@ -37,6 +48,11 @@ export class WaveEnemies {
         this.listEnemies.set('Tier3', new Map<IEnemy, IEnemy>());
 
         this.fillLanes({ tresholdBeforeRefill: 0 });
+
+        // Reset horizontal delay for all lanes
+        this.laneManager.forEach((laneManager) => {
+            laneManager?.ResetHorizontalDelay();
+        });
 
         this.waveEnemiesStateTracker = new WaveEnemiesDamageStateTracker();
     }
@@ -261,4 +277,15 @@ function shuffleArray<T>(array: T[]): T[] {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
+}
+
+function circularArrayShuffle<T>(array: T[], cycles: number): T[] {
+    let newArray = [...array];
+    for (let i = 0; i < cycles; i++) {
+        const firstPart = newArray.slice(0, 1);
+        const secondPart = newArray.slice(1);
+        newArray = [...secondPart, ...firstPart];
+    }
+
+    return newArray;
 }

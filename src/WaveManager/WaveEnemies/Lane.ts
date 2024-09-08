@@ -15,6 +15,7 @@ export class Lane {
     private spawns: SpawnPosition[];
     private enemySpawnList: Map<IEnemy, SpawnPosition>;
     private enemyTierInfo: Map<EnemyTier, { unitCost: number }>;
+    private horizontalDelay: number;
 
     constructor(parameters: { laneNumber: LaneNumber }) {
         const { laneNumber } = parameters;
@@ -67,6 +68,8 @@ export class Lane {
         this.enemyTierInfo.set('Tier1', { unitCost: 1 });
         this.enemyTierInfo.set('Tier2', { unitCost: 2 });
         this.enemyTierInfo.set('Tier3', { unitCost: 3 });
+
+        this.horizontalDelay = 0;
     }
 
     public FillLane(parameters: { enemyListYouCanGenerate: EnemyTier[]; tresholdForRefill: number }): IEnemy[] {
@@ -148,7 +151,21 @@ export class Lane {
 
     private getSpawnPosition(): SpawnPosition | undefined {
         // return the first spawn position available
-        return this.spawns.shift();
+        const spawnPosition = this.spawns.shift();
+
+        if (spawnPosition) {
+            spawnPosition.startingX += this.horizontalDelay;
+        }
+
+        return spawnPosition;
+    }
+
+    public SetHorizontalDelay(delay: number) {
+        this.horizontalDelay = delay;
+    }
+
+    public ResetHorizontalDelay() {
+        this.horizontalDelay = 0;
     }
 
     public FreeSpawnPosition(parameters: { enemy: IEnemy }) {
