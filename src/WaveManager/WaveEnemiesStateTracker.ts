@@ -90,4 +90,8 @@ export class WaveEnemiesDamageStateTracker {
         const { enemy } = parameters;
         this.listEnemiesState.delete(enemy);
     }
+
+    public TestList() {
+        console.log('Enemies State Tracker size: ', this.listEnemiesState.size);
+    }
 }
