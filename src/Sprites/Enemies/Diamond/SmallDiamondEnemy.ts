@@ -14,8 +14,7 @@ import { SpriteDamageResistancesController } from '../../SpriteDamageResistances
 import { CollideScenario, CreateHitboxes, RectangleHitbox } from '../../SpriteHitbox.js';
 import { IEnemy } from '../IEnemy.js';
 
-const scale = 3;
-export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
+export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed, ISpriteWithAttackSpeed {
     private moneyValue: number;
 
     private laneNumber: LaneNumber;
@@ -35,19 +34,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
         const frameHeight = 32;
         const scaleX = CANVA_SCALEX;
         const scaleY = CANVA_SCALEY;
-        super(
-            imgDiamond,
-            frameWidth,
-            frameHeight,
-            x,
-            y,
-            -8 * CANVA_SCALEX * scale,
-            -9 * CANVA_SCALEY * scale,
-            scaleX * scale,
-            scaleY * scale,
-        );
-        this.X = this.X - (14 * scale * CANVA_SCALEX) / 2;
-        this.Y = this.Y - (12 * scale * CANVA_SCALEY) / 2;
+        super(imgDiamond, frameWidth, frameHeight, x, y, -8 * CANVA_SCALEX, -9 * CANVA_SCALEY, scaleX, scaleY);
+        this.X = this.X - (14 * CANVA_SCALEX) / 2;
+        this.Y = this.Y - (12 * CANVA_SCALEY) / 2;
 
         this.laneNumber = laneNumber;
         this.moneyValue = 20;
@@ -184,7 +173,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
     }
 
     get Tier(): 'Tier1' | 'Tier2' | 'Tier3' {
-        return 'Tier3';
+        return 'Tier1';
     }
 
     get Lane(): LaneNumber {
