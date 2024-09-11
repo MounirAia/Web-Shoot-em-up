@@ -1,7 +1,7 @@
 import { CANVA_SCALEY, canvas, CANVA_SCALEX } from '../../ScreenConstant';
 import { BigDiamondEnemy } from '../../Sprites/Enemies/Diamond/BigDiamondEnemy';
 import { MediumDiamondEnemy } from '../../Sprites/Enemies/Diamond/MediumDiamondEnemy';
-import { SmallDiamondEnemy } from '../../Sprites/Enemies/Diamond/SmallDiamondEnemy';
+import { SmallDiamondEnemy } from '../../Sprites/Enemies/Diamond/SmallDiamond/SmallDiamondEnemy';
 import { IEnemy, EnemyTier } from '../../Sprites/Enemies/IEnemy';
 
 type SpawnPosition = { startingX: number; shootingX: number; shootingY: number };

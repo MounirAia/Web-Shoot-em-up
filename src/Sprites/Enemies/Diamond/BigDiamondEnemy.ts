@@ -29,7 +29,7 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed,
 
     constructor(x = 0, y = 0, horizontalShootingPosition: number, laneNumber: LaneNumber) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
-            'images/Enemies/Diamond/BigDiamond/BigDiamond.png',
+            'images/Enemies/Diamond/SmallDiamondFrame.png',
         );
         const frameWidth = 32;
         const frameHeight = 32;

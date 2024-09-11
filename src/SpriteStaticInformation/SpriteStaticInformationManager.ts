@@ -24,6 +24,7 @@ import {
 } from './Skills/Support/MirrorShield/MirrorShieldConstant';
 import { MirrorShieldDamage as MirrorShieldDamageStats } from './Skills/Support/MirrorShield/MirrorShieldDamage';
 import { PlayerBoostConstant } from './Skills/PlayerBoostConstant';
+import SpriteSmallDiamondInfo from './Enemies/Diamond/SmallDiamond/infoSmallDiamond';
 
 // Define the structure of the infos object
 const infos = {
@@ -77,6 +78,11 @@ const infos = {
     EffectIcons: {
         stats: undefined,
         spriteInfo: SpriteInfoEffectIcons,
+        constant: undefined,
+    },
+    SmallDiamondEnemy: {
+        stats: undefined,
+        spriteInfo: SpriteSmallDiamondInfo,
         constant: undefined,
     },
 };
