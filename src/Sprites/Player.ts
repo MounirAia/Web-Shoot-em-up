@@ -72,7 +72,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private invulnerabilityTimePeriod: number;
 
     // Manage shooting rate of the player
-    private baseTimeBeforeNextShootInFrames: number;
+    private baseTimeBeforeNextShootInSeconds: number;
     private currentTimeBeforeNextRegularShoot: number;
     private currentTimeBeforeNextSpecialShoot: number;
 
@@ -121,7 +121,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.effectSkillLevel = 0;
         this.supportSkillLevel = 0;
         this.invulnerabilityTimePeriod = PlayerStats[this.NumberOfBoosts]['Invulnerability Time Period (Seconds)'];
-        this.baseTimeBeforeNextShootInFrames = 1; // in seconds
+        this.baseTimeBeforeNextShootInSeconds = 1; // in seconds
         this.currentTimeBeforeNextRegularShoot = 0;
         this.currentTimeBeforeNextSpecialShoot = 0;
 
@@ -244,7 +244,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         } else {
             if (this.currentTimeBeforeNextRegularShoot >= 0) {
-                const bulletAS = new RegularPlayerBullet(this.X, this.Y).AttackSpeed() * dt;
+                const bulletAS = new RegularPlayerBullet(this.X, this.Y).AttackSpeed() * dt; // The attack speed is computed as shoot per second
                 this.currentTimeBeforeNextRegularShoot -= bulletAS;
             }
         }
@@ -538,7 +538,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     public get CanShootRegular(): boolean {
         if (this.currentTimeBeforeNextRegularShoot <= 0) {
-            this.currentTimeBeforeNextRegularShoot = this.baseTimeBeforeNextShootInFrames;
+            this.currentTimeBeforeNextRegularShoot = this.baseTimeBeforeNextShootInSeconds;
             return true;
         }
 
@@ -547,7 +547,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     public get CanShootSpecial(): boolean {
         if (this.currentTimeBeforeNextSpecialShoot <= 0) {
-            this.currentTimeBeforeNextSpecialShoot = this.baseTimeBeforeNextShootInFrames;
+            this.currentTimeBeforeNextSpecialShoot = this.baseTimeBeforeNextShootInSeconds;
             return true;
         }
 

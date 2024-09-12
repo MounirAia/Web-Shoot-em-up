@@ -2,6 +2,8 @@ import { IServiceImageLoader } from '../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
 import { GetSpriteStaticInformation } from '../../SpriteStaticInformation/SpriteStaticInformationManager.js';
+import { IServiceUtilManager } from '../../UtilManager.js';
+import { IServiceWaveManager } from '../../WaveManager/WaveManager.js';
 import { IServiceCollideManager } from '../CollideManager.js';
 import { IGeneratedSprite, IServiceGeneratedSpritesManager } from '../GeneratedSpriteManager.js';
 import { IServicePlayer } from '../Player.js';
@@ -11,7 +13,7 @@ import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, Recta
 
 const InfoEnemyBullet = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).spriteInfo.Bullet;
 
-export class EnemyBullet
+export class SmallEnemyBullet
     extends Sprite
     implements ISpriteWithTarget, ISpriteWithDamage, ISpriteWithSpeed, ISpriteWithHitboxes, IGeneratedSprite
 {
@@ -26,7 +28,10 @@ export class EnemyBullet
     XSpeed: number;
     YSpeed: number;
 
-    constructor(x: number, y: number) {
+    private angleOffsetInRadian: number;
+
+    constructor(parameters: { x: number; y: number; angleOffsetInRadian?: number }) {
+        const { x, y, angleOffsetInRadian = 0 } = parameters;
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage('images/Enemies/EnemyBullet.png'),
             InfoEnemyBullet.Meta.TileDimensions.Width,
@@ -40,10 +45,21 @@ export class EnemyBullet
             InfoEnemyBullet.Meta.RealDimension.Width,
             InfoEnemyBullet.Meta.RealDimension.Height,
         );
+
+        const roundTier = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetRoundTier();
+        const BulletStats = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).stats[roundTier - 1];
+
         this.Generator = 'enemy';
         this.Category = 'projectile';
-        this.BaseSpeed = 3;
-        this.Damage = 3;
+        this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
+            'UtilManager',
+        ).GetSpeedItTakesToCoverHalfTheScreenWidth({
+            framesItTakes: BulletStats['Bullet Speed (Number Frames to Cover HalfScreen Distance)'],
+        });
+        const playerMaxHealth = ServiceLocator.GetService<IServicePlayer>('Player').MaxHealth;
+        this.Damage = playerMaxHealth / BulletStats['Number of Shots Needed To Destroy Player'];
+
+        this.angleOffsetInRadian = angleOffsetInRadian;
         this.XSpeed = Math.cos(this.TargetAngle) * this.BaseSpeed;
         this.YSpeed = Math.sin(this.TargetAngle) * this.BaseSpeed;
 
@@ -114,6 +130,6 @@ export class EnemyBullet
         const { x: playerX, y: playerY } = ServiceLocator.GetService<IServicePlayer>('Player').Coordinate();
         const distX = this.X - playerX;
         const distY = this.Y - playerY;
-        return Math.atan2(distY, distX);
+        return Math.atan2(distY, distX) + this.angleOffsetInRadian;
     }
 }

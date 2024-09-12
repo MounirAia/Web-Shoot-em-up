@@ -162,7 +162,7 @@ const Info = {
                 Frames: [0],
             },
             Shooting: {
-                FrameLengthInTime: 6 / 60,
+                FrameLengthInTime: Infinity,
                 Frames: [0, 1, 2, 3, 4],
             },
             Destroyed: {

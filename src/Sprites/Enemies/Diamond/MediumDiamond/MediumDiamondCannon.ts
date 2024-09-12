@@ -13,9 +13,10 @@ import {
     RectangleHitbox,
 } from '../../../SpriteHitbox';
 
-const InfoCannon = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).spriteInfo.Cannon;
+const InfoCannon = GetSpriteStaticInformation({ sprite: 'MediumDiamondEnemy' }).spriteInfo.Cannon;
 
-export default class SmallDiamondCannon extends Sprite implements ISpriteWithHitboxes {
+const scale = 2;
+export default class MediumDiamondCannon extends Sprite implements ISpriteWithHitboxes {
     CurrentHitbox: RectangleHitbox[];
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     private attackSpeed: number; // computed as shoot per second
@@ -31,14 +32,14 @@ export default class SmallDiamondCannon extends Sprite implements ISpriteWithHit
             y,
             InfoCannon.Meta.SpriteShiftPosition.X,
             InfoCannon.Meta.SpriteShiftPosition.Y,
-            CANVA_SCALEX,
-            CANVA_SCALEY,
+            CANVA_SCALEX * scale,
+            CANVA_SCALEY * scale,
             InfoCannon.Meta.RealDimension.Width,
             InfoCannon.Meta.RealDimension.Height,
         );
 
         const roundTier = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetRoundTier();
-        const DiamondStats = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).stats[roundTier - 1];
+        const DiamondStats = GetSpriteStaticInformation({ sprite: 'MediumDiamondEnemy' }).stats[roundTier - 1];
 
         this.X += InfoCannon.OffsetOnFrame.X;
         this.Y += InfoCannon.OffsetOnFrame.Y;
@@ -126,7 +127,7 @@ export default class SmallDiamondCannon extends Sprite implements ISpriteWithHit
                     cannonY: this.Y,
                 });
                 const bullets = enemyBulletGenerator.GenerateBullet({
-                    enemyTier: 'Tier1',
+                    enemyTier: 'Tier2',
                 });
 
                 bullets.forEach((bullet) => {
@@ -147,11 +148,11 @@ export default class SmallDiamondCannon extends Sprite implements ISpriteWithHit
         });
     }
 
-    public UpdateCannon(parameters: { dt: number; smallDiamondX: number; smallDiamondY: number }): void {
-        const { dt, smallDiamondX, smallDiamondY } = parameters;
+    public UpdateCannon(parameters: { dt: number; mediumDiamondX: number; mediumDiamondY: number }): void {
+        const { dt, mediumDiamondX, mediumDiamondY } = parameters;
         this.Update(dt);
-        this.X = smallDiamondX + InfoCannon.OffsetOnFrame.X;
-        this.Y = smallDiamondY + InfoCannon.OffsetOnFrame.Y;
+        this.X = mediumDiamondX + InfoCannon.OffsetOnFrame.X;
+        this.Y = mediumDiamondY + InfoCannon.OffsetOnFrame.Y;
         this.UpdateHitboxes(dt);
     }
 

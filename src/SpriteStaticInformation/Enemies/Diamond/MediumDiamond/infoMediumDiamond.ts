@@ -54,7 +54,7 @@ const Info = {
         },
         Damaged: {
             FrameLengthInTime: Infinity,
-            Frames: [1, 2, 3],
+            Frames: [0, 1, 2, 3],
         },
     },
     Cannon: {
@@ -157,12 +157,16 @@ const Info = {
             ],
         },
         Animations: {
+            Idle: {
+                FrameLengthInTime: Infinity,
+                Frames: [0],
+            },
             Shooting: {
-                FrameLengthInTime: 6 / 60,
+                FrameLengthInTime: Infinity,
                 Frames: [0, 1, 2, 3, 4],
             },
             Destroyed: {
-                FrameLengthInTime: 1 / 60,
+                FrameLengthInTime: 3 / 60,
                 Frames: [5, 6, 7, 8],
             },
         },
@@ -204,9 +208,9 @@ const Info = {
                 Frames: [1, 2, 3, 4],
             },
         },
-        OffsetOnFrame: {
-            X: -7 * CANVA_SCALEX * spriteSizeScale,
-            Y: 6 * CANVA_SCALEY * spriteSizeScale,
+        OffsetOnCannon: {
+            X: -2 * CANVA_SCALEX * spriteSizeScale,
+            Y: 2 * CANVA_SCALEY * spriteSizeScale,
         },
     },
 };

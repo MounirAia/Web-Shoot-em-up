@@ -13,12 +13,13 @@ import { ISpriteWithSpeed } from '../../../SpriteAttributes.js';
 import { SpriteDamageResistancesController } from '../../../SpriteDamageResistancesController.js';
 import { CollideScenario, CreateHitboxesWithInfoFile, RectangleHitbox } from '../../../SpriteHitbox.js';
 import { IEnemy } from '../../IEnemy.js';
-import SmallDiamondCannon from './SmallDiamondCannon.js';
+import BigDiamondCannon from './BigDiamondCannon.js';
 
-const InfoSmallDiamond = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).spriteInfo;
-const ConstantSmallDiamond = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).constant;
+const InfoBigDiamond = GetSpriteStaticInformation({ sprite: 'BigDiamondEnemy' }).spriteInfo;
+const ConstantBigDiamond = GetSpriteStaticInformation({ sprite: 'BigDiamondEnemy' }).constant;
 
-export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed {
+const scale = 3;
+export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed {
     private moneyValue: number;
 
     private laneNumber: LaneNumber;
@@ -29,7 +30,7 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
 
     DamageResistancesController: SpriteDamageResistancesController;
 
-    private cannon: SmallDiamondCannon;
+    private cannon: BigDiamondCannon;
     private baseHealth: number;
     private currentHealth: number;
 
@@ -37,35 +38,35 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/SmallDiamondFrame.png',
         );
-        const frameWidth = InfoSmallDiamond.Meta.TileDimensions.Width;
-        const frameHeight = InfoSmallDiamond.Meta.TileDimensions.Height;
-        const scaleX = CANVA_SCALEX;
-        const scaleY = CANVA_SCALEY;
+        const frameWidth = InfoBigDiamond.Meta.TileDimensions.Width;
+        const frameHeight = InfoBigDiamond.Meta.TileDimensions.Height;
+        const scaleX = CANVA_SCALEX * scale;
+        const scaleY = CANVA_SCALEY * scale;
         super(
             imgDiamond,
             frameWidth,
             frameHeight,
             x,
             y,
-            InfoSmallDiamond.Meta.SpriteShiftPosition.X,
-            InfoSmallDiamond.Meta.SpriteShiftPosition.Y,
+            InfoBigDiamond.Meta.SpriteShiftPosition.X,
+            InfoBigDiamond.Meta.SpriteShiftPosition.Y,
             scaleX,
             scaleY,
-            InfoSmallDiamond.Meta.RealDimension.Width,
-            InfoSmallDiamond.Meta.RealDimension.Height,
+            InfoBigDiamond.Meta.RealDimension.Width,
+            InfoBigDiamond.Meta.RealDimension.Height,
         );
 
         const roundTier = ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetRoundTier();
-        const DiamondStats = GetSpriteStaticInformation({ sprite: 'SmallDiamondEnemy' }).stats[roundTier - 1];
+        const DiamondStats = GetSpriteStaticInformation({ sprite: 'BigDiamondEnemy' }).stats[roundTier - 1];
 
-        this.cannon = new SmallDiamondCannon(this.X, this.Y);
+        this.cannon = new BigDiamondCannon(this.X, this.Y);
 
         // center in its spawn, because enemies are spawned in predefined positions
         this.X = this.X - this.Width / 2;
         this.Y = this.Y - this.Height / 2;
 
         this.laneNumber = laneNumber;
-        this.moneyValue = ConstantSmallDiamond['Enemy Reward'];
+        this.moneyValue = ConstantBigDiamond['Enemy Reward'];
         this.baseHealth = DiamondStats['Enemies Lifepoints'];
         this.currentHealth = this.baseHealth;
 
@@ -73,13 +74,13 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
         this.BaseSpeed = ServiceLocator.GetService<IServiceUtilManager>(
             'UtilManager',
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({
-            framesItTakes: DiamondStats['Tier 1 Frame Speed (Number Frames to HalfScreen Distance)'],
+            framesItTakes: DiamondStats['Tier 3 Frame Speed (Number Frames to HalfScreen Distance)'],
         });
 
         this.DamageResistancesController = new SpriteDamageResistancesController();
 
         /* Hitbox Setup */
-        const frameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoSmallDiamond.Hitbox);
+        const frameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoBigDiamond.Hitbox);
         this.frameHitbox = [...frameHitbox];
 
         this.Collide = new Map();
@@ -113,7 +114,7 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
         });
 
         /* Animation Setup */
-        const { Damaged, Destroyed } = InfoSmallDiamond.Animations;
+        const { Damaged, Destroyed } = InfoBigDiamond.Animations;
 
         this.AnimationsController.AddAnimation({
             animation: 'destroyed',
@@ -167,7 +168,7 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
             }
         }
 
-        this.cannon.UpdateCannon({ dt, smallDiamondX: this.X, smallDiamondY: this.Y });
+        this.cannon.UpdateCannon({ dt, bigDiamondX: this.X, bigDiamondY: this.Y });
 
         this.UpdateHitboxes(dt);
 
@@ -185,6 +186,10 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
     Draw(ctx: CanvasRenderingContext2D): void {
         super.Draw(ctx);
         this.cannon.Draw(ctx);
+
+        this.CurrentHitbox.forEach((hitbox) => {
+            hitbox.TestHitboxDrawing(ctx);
+        });
     }
 
     private removeEnemyFromGameFlow(): void {
@@ -201,7 +206,7 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
     }
 
     get Tier(): 'Tier1' | 'Tier2' | 'Tier3' {
-        return 'Tier1';
+        return 'Tier3';
     }
 
     get Lane(): LaneNumber {
