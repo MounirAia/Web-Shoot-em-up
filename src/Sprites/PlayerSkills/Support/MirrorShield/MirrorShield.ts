@@ -82,6 +82,7 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
             framesLengthInTime: Spawning.FrameLengthInTime,
             afterPlayingAnimation: () => {
                 this.CurrentHitbox = defaultHitbox;
+                this.resetMirrorStats();
                 this.AnimationsController.PlayAnimation({ animation: 'damaged' });
             },
         });
@@ -97,20 +98,21 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
+            this.StatesController.PlayState({ stateName: 'onHit' });
+
             const projectile = param as ISpriteWithDamage;
             if (projectile?.Damage) {
-                const { floor } = Math;
-                // how many health points there are to a health section of the mirror
-                const healthPerSection = floor(this.BaseHealth / Damaged.Frames.length);
-                const maxNumberHealthSection = floor(this.BaseHealth / healthPerSection);
-                const oldHealthSection = floor(this.CurrentHealth / healthPerSection);
-                this.CurrentHealth -= projectile.Damage;
-                const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
-                if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
+                const { Damage } = projectile;
+                const maxNumberHealthSection = Damaged.Frames.length;
+                const healthPerSection = this.BaseHealth / maxNumberHealthSection;
+                const oldHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                this.CurrentHealth -= Damage;
+                const currentHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                const numberOfFramesToPlay = oldHealthSection - currentHealthSection;
+                for (let i = 0; i < numberOfFramesToPlay; i++) {
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState({ stateName: 'onHit' });
         });
     }
 
@@ -136,6 +138,10 @@ class MirrorShieldLevel1 extends Sprite implements ISpriteWithHitboxes, IGenerat
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerNonProjectileCollideWithEnemyProjectiles(this);
         }
+    }
+
+    private resetMirrorStats() {
+        this.CurrentHealth = this.BaseHealth;
     }
 }
 
@@ -201,6 +207,7 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
             framesLengthInTime: Spawning.FrameLengthInTime,
             afterPlayingAnimation: () => {
                 this.CurrentHitbox = defaultHitbox;
+                this.resetMirrorStats();
                 this.AnimationsController.PlayAnimation({ animation: 'damaged' });
             },
         });
@@ -216,20 +223,22 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
+            this.StatesController.PlayState({ stateName: 'onHit' });
+
             const projectile = param as ISpriteWithDamage;
             if (projectile?.Damage) {
-                const { floor } = Math;
-                // how many health points there are to a health section of the mirror
-                const healthPerSection = floor(this.BaseHealth / Damaged.Frames.length);
-                const maxNumberHealthSection = floor(this.BaseHealth / healthPerSection);
-                const oldHealthSection = floor(this.CurrentHealth / healthPerSection);
-                this.CurrentHealth -= projectile.Damage;
-                const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
-                if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
+                const { Damage } = projectile;
+                const maxNumberHealthSection = Damaged.Frames.length;
+                const healthPerSection = this.BaseHealth / maxNumberHealthSection;
+                const oldHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                this.CurrentHealth -= Damage;
+                const currentHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                const numberOfFramesToPlay = oldHealthSection - currentHealthSection;
+                for (let i = 0; i < numberOfFramesToPlay; i++) {
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState({ stateName: 'onHit' });
+
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new MirrorShieldThunderBeam({
                     startingPoint: { x: this.FrameXCenter, y: this.FrameYCenter },
@@ -260,6 +269,10 @@ class MirrorShieldLevel2 extends Sprite implements ISpriteWithHitboxes, IGenerat
             const collideManager = ServiceLocator.GetService<IServiceCollideManager>('CollideManager');
             collideManager.HandleWhenPlayerNonProjectileCollideWithEnemyProjectiles(this);
         }
+    }
+
+    private resetMirrorStats() {
+        this.CurrentHealth = this.BaseHealth;
     }
 }
 
@@ -329,6 +342,7 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
             framesLengthInTime: Spawning.FrameLengthInTime,
             afterPlayingAnimation: () => {
                 this.CurrentHitbox = defaultHitbox;
+                this.resetMirrorStats();
                 this.AnimationsController.PlayAnimation({ animation: 'damaged' });
             },
         });
@@ -344,20 +358,22 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
 
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (param?: unknown) => {
+            this.StatesController.PlayState({ stateName: 'onHit' });
+
             const projectile = param as ISpriteWithDamage;
             if (projectile?.Damage) {
-                const { floor } = Math;
-                // how many health points there are to a health section of the mirror
-                const healthPerSection = floor(this.BaseHealth / Damaged.Frames.length);
-                const maxNumberHealthSection = floor(this.BaseHealth / healthPerSection);
-                const oldHealthSection = floor(this.CurrentHealth / healthPerSection);
-                this.CurrentHealth -= projectile.Damage;
-                const currentHealthSection = floor(this.CurrentHealth / healthPerSection);
-                if (currentHealthSection < oldHealthSection && oldHealthSection != maxNumberHealthSection) {
+                const { Damage } = projectile;
+                const maxNumberHealthSection = Damaged.Frames.length;
+                const healthPerSection = this.BaseHealth / maxNumberHealthSection;
+                const oldHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                this.CurrentHealth -= Damage;
+                const currentHealthSection = Math.ceil(this.CurrentHealth / healthPerSection);
+                const numberOfFramesToPlay = oldHealthSection - currentHealthSection;
+                for (let i = 0; i < numberOfFramesToPlay; i++) {
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
             }
-            this.StatesController.PlayState({ stateName: 'onHit' });
+
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
                 new MirrorShieldThunderBeam({
                     startingPoint: { x: this.FrameXCenter, y: this.FrameYCenter },
@@ -394,6 +410,10 @@ class MirrorShieldLevel3 extends Sprite implements ISpriteWithHitboxes, IGenerat
         super.Draw(ctx);
 
         this.portalsContainer.Draw(ctx);
+    }
+
+    private resetMirrorStats() {
+        this.CurrentHealth = this.BaseHealth;
     }
 }
 

@@ -90,12 +90,10 @@ export class SpriteAnimationsController {
         if (this.currentAnimationObject) {
             const { framesLengthInTime, afterPlayingAnimation } = this.currentAnimationObject;
             if (framesLengthInTime == Infinity) {
-                if (!this.IsAnimationFinished) {
+                if (this.IsAnimationFinished) {
+                    if (afterPlayingAnimation) afterPlayingAnimation();
+                } else {
                     this.currentFrame++;
-
-                    if (this.IsAnimationFinished) {
-                        if (afterPlayingAnimation) afterPlayingAnimation();
-                    }
                 }
             }
         }

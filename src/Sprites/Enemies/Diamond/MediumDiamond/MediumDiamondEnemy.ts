@@ -92,14 +92,12 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
         this.Collide = new Map();
         this.Collide.set('WithProjectile', (projectileDamage: unknown) => {
             const damage = projectileDamage as number;
-
             this.StatesController.PlayState({ stateName: 'onHit' });
             this.cannon.PlayCollisionMethod({ collisionScenario: 'WithProjectile' });
 
             if (damage && typeof damage === 'number') {
-                const { floor } = Math;
                 const maxNumberHealthSection = Damaged.Frames.length;
-                const healthPerSection = floor(this.baseHealth / maxNumberHealthSection);
+                const healthPerSection = this.baseHealth / maxNumberHealthSection;
                 const oldHealthSection = Math.ceil(this.currentHealth / healthPerSection);
                 this.currentHealth -= damage;
                 const currentHealthSection = Math.ceil(this.currentHealth / healthPerSection);
@@ -107,10 +105,6 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
                 for (let i = 0; i < numberOfFramesToPlay; i++) {
                     this.AnimationsController.PlayManuallyNextFrame();
                 }
-            }
-
-            if (this.currentHealth <= 0) {
-                this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
             }
         });
 
@@ -210,11 +204,7 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
 
     DisableShooting(): void {
         this.canShoot = false;
-        if (
-            !this.reachedShootingPosition ||
-            this.AnimationsController.CurrentAnimationName === 'destroyed' ||
-            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
-        )
+        if (!this.reachedShootingPosition || this.cannon.AnimationsController.CurrentAnimationName !== 'shooting')
             return;
         this.cannon.AnimationsController.PlayAnimation({ animation: 'idle' });
     }

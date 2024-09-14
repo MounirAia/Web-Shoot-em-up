@@ -300,6 +300,13 @@ export class WaveEnemies {
         });
     }
 
+    private testWaveShootingAndCooldown() {
+        console.log('---------------------------------------------------------');
+        console.log('Current Shooting Time:', this.currentShootingTimeInSecond);
+        console.log('Current Shooting Cooldown:', this.currentShootingCooldown);
+        console.log('Wave Is In Cooldown:', this.waveIsInCooldown);
+    }
+
     private testList() {
         console.log('---------------------------------------------------------');
         this.listEnemies.forEach((enemyTierList, index) => {
