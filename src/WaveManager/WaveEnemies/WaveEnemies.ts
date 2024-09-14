@@ -22,6 +22,14 @@ export class WaveEnemies {
 
     private waveEnemiesStateTracker: WaveEnemiesDamageStateTracker;
 
+    /* Wave Shooting Management */
+    private baseShootingTimePeriodInSecond: number;
+    private currentShootingTimeInSecond: number;
+    private maxNumberOfLaneThatCanShoot: number;
+    private baseShootingCooldown: number;
+    private currentShootingCooldown: number;
+    private waveIsInCooldown: boolean;
+
     constructor(round: number) {
         // Lane Manager
         const unshuffledLanes: LaneNumber[] = [1, 2, 3, 4];
@@ -55,57 +63,16 @@ export class WaveEnemies {
         });
 
         this.waveEnemiesStateTracker = new WaveEnemiesDamageStateTracker();
-    }
 
-    private getEnemyTierToSpawn(round: number): Map<EnemyTier, number> {
-        const roundTierLengthInRound = 4;
-        const roundTier = Math.ceil(round / roundTierLengthInRound);
+        /* Wave Shooting Management */
+        this.baseShootingTimePeriodInSecond = 10;
+        this.currentShootingTimeInSecond = this.baseShootingTimePeriodInSecond;
+        this.maxNumberOfLaneThatCanShoot = Math.floor(this.laneManager.size / 2);
+        this.baseShootingCooldown = (1 / 10) * this.baseShootingTimePeriodInSecond;
+        this.currentShootingCooldown = 0;
+        this.waveIsInCooldown = false;
 
-        const roundStatIndex = roundTier - 1;
-        let roundStat = RoundStats[roundStatIndex];
-        if (!roundStat) {
-            roundStat = RoundStats[RoundStats.length - 1];
-        }
-
-        const roundTierProgression = 1 - (roundStat['Last Round'] - round) / roundTierLengthInRound; // you will get something like: 0, 0.25, 0.5, 0.75, 1
-
-        const numberOfEnemiesToSpawn =
-            roundStat['Min Enemies per Wave'] +
-            (roundStat['Max Enemies per Wave'] - roundStat['Min Enemies per Wave']) * roundTierProgression;
-
-        const numberOfTier1Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 1 Enemies Proportion']);
-        const numberOfTier2Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 2 Enemies Proportion']);
-        const numberOfTier3Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 3 Enemies Proportion']);
-
-        return new Map<EnemyTier, number>([
-            ['Tier1', numberOfTier1Enemies],
-            ['Tier2', numberOfTier2Enemies],
-            ['Tier3', numberOfTier3Enemies],
-        ]);
-    }
-
-    private fillLanes(parameters: { tresholdBeforeRefill: number }) {
-        const { tresholdBeforeRefill } = parameters;
-        this.laneManager.forEach((laneManager, lane) => {
-            const remainingEnemies = this.getRandomListRemainingEnemies();
-            const enemies = laneManager.FillLane({
-                enemyListYouCanGenerate: remainingEnemies,
-                tresholdForRefill: tresholdBeforeRefill,
-            });
-
-            this.AddEnemy(...enemies);
-        });
-    }
-
-    private getRandomListRemainingEnemies(): EnemyTier[] {
-        const enemyTierList: EnemyTier[] = [];
-        for (const [enemyTier, size] of this.numberOfEnemiesToSpawn.entries()) {
-            for (let i = 0; i < size; i++) {
-                enemyTierList.push(enemyTier);
-            }
-        }
-
-        return shuffleArray(enemyTierList);
+        this.enableAndDisableShootingOnLanes();
     }
 
     private AddEnemy(...enemies: IEnemy[]) {
@@ -127,6 +94,22 @@ export class WaveEnemies {
     }
 
     public Update(dt: number) {
+        if (this.currentShootingTimeInSecond > 0) this.currentShootingTimeInSecond -= dt;
+
+        if (this.currentShootingCooldown > 0) this.currentShootingCooldown -= dt;
+
+        if (!this.waveIsInCooldown && this.currentShootingTimeInSecond <= 0) {
+            this.currentShootingCooldown = this.baseShootingCooldown;
+            this.waveIsInCooldown = true;
+            this.disableShootingOnAllLanes();
+        }
+
+        if (this.waveIsInCooldown && this.currentShootingCooldown <= 0) {
+            this.currentShootingTimeInSecond = this.baseShootingTimePeriodInSecond;
+            this.waveIsInCooldown = false;
+            this.enableAndDisableShootingOnLanes();
+        }
+
         this.listEnemies.forEach((enemyTierList) => {
             enemyTierList.forEach((enemy) => {
                 enemy.Update(dt);
@@ -237,7 +220,87 @@ export class WaveEnemies {
         target.AnimationsController.StopParalyzedAnimation();
     }
 
-    private TestList() {
+    private getEnemyTierToSpawn(round: number): Map<EnemyTier, number> {
+        const roundTierLengthInRound = 4;
+        const roundTier = Math.ceil(round / roundTierLengthInRound);
+
+        const roundStatIndex = roundTier - 1;
+        let roundStat = RoundStats[roundStatIndex];
+        if (!roundStat) {
+            roundStat = RoundStats[RoundStats.length - 1];
+        }
+
+        const roundTierProgression = 1 - (roundStat['Last Round'] - round) / roundTierLengthInRound; // you will get something like: 0, 0.25, 0.5, 0.75, 1
+
+        const numberOfEnemiesToSpawn =
+            roundStat['Min Enemies per Wave'] +
+            (roundStat['Max Enemies per Wave'] - roundStat['Min Enemies per Wave']) * roundTierProgression;
+
+        const numberOfTier1Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 1 Enemies Proportion']);
+        const numberOfTier2Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 2 Enemies Proportion']);
+        const numberOfTier3Enemies = Math.round(numberOfEnemiesToSpawn * roundStat['Tier 3 Enemies Proportion']);
+
+        return new Map<EnemyTier, number>([
+            ['Tier1', numberOfTier1Enemies],
+            ['Tier2', numberOfTier2Enemies],
+            ['Tier3', numberOfTier3Enemies],
+        ]);
+    }
+
+    private fillLanes(parameters: { tresholdBeforeRefill: number }) {
+        const { tresholdBeforeRefill } = parameters;
+        this.laneManager.forEach((laneManager, lane) => {
+            const remainingEnemies = this.getRandomListRemainingEnemies();
+            const enemies = laneManager.FillLane({
+                enemyListYouCanGenerate: remainingEnemies,
+                tresholdForRefill: tresholdBeforeRefill,
+            });
+
+            this.AddEnemy(...enemies);
+        });
+    }
+
+    private getRandomListRemainingEnemies(): EnemyTier[] {
+        const enemyTierList: EnemyTier[] = [];
+        for (const [enemyTier, size] of this.numberOfEnemiesToSpawn.entries()) {
+            for (let i = 0; i < size; i++) {
+                enemyTierList.push(enemyTier);
+            }
+        }
+
+        return shuffleArray(enemyTierList);
+    }
+
+    private enableAndDisableShootingOnLanes() {
+        let laneIndexThatAreNotEmpty: LaneNumber[] = [];
+
+        this.laneManager.forEach((laneManager, lane) => {
+            if (!laneManager.IsLaneEmpty()) {
+                laneIndexThatAreNotEmpty.push(lane);
+            }
+        });
+
+        laneIndexThatAreNotEmpty = shuffleArray(laneIndexThatAreNotEmpty);
+
+        let numberOfLaneThatCanShoot = this.maxNumberOfLaneThatCanShoot;
+
+        for (const lane of laneIndexThatAreNotEmpty) {
+            if (numberOfLaneThatCanShoot <= 0) {
+                this.laneManager.get(lane)?.DisableShootingOnLane();
+            } else {
+                this.laneManager.get(lane)?.EnableShootingOnLane();
+                numberOfLaneThatCanShoot--;
+            }
+        }
+    }
+
+    private disableShootingOnAllLanes() {
+        this.laneManager.forEach((laneManager) => {
+            laneManager.DisableShootingOnLane();
+        });
+    }
+
+    private testList() {
         console.log('---------------------------------------------------------');
         this.listEnemies.forEach((enemyTierList, index) => {
             console.log(`Visible Tier ${index}:`, enemyTierList.size);

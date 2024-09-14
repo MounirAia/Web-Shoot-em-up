@@ -33,6 +33,9 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
     private baseHealth: number;
     private currentHealth: number;
 
+    private canShoot: boolean;
+    private reachedShootingPosition: boolean;
+
     constructor(x = 0, y = 0, horizontalShootingPosition: number, laneNumber: LaneNumber) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/SmallDiamondFrame.png',
@@ -77,6 +80,9 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
         });
 
         this.DamageResistancesController = new SpriteDamageResistancesController();
+
+        this.canShoot = false;
+        this.reachedShootingPosition = false;
 
         /* Hitbox Setup */
         const frameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoSmallDiamond.Hitbox);
@@ -159,11 +165,9 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
         if (this.X >= this.HorizontalShootingPosition) {
             this.X -= this.BaseSpeed;
         } else {
-            if (
-                this.AnimationsController.CurrentAnimationName !== 'destroyed' &&
-                this.cannon.AnimationsController.CurrentAnimationName !== 'shooting'
-            ) {
-                this.cannon.AnimationsController.PlayAnimation({ animation: 'shooting', loop: true });
+            this.reachedShootingPosition = true;
+            if (this.canShoot) {
+                this.EnableShooting();
             }
         }
 
@@ -176,7 +180,6 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
             return;
         }
 
-        // Shooting flow of the enemy
         if (this.AnimationsController.CurrentAnimationName !== 'destroyed') {
             ServiceLocator.GetService<IServiceCollideManager>('CollideManager').HandleWhenEnemyCollideWithPlayer(this);
         }
@@ -185,6 +188,33 @@ export class SmallDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpee
     Draw(ctx: CanvasRenderingContext2D): void {
         super.Draw(ctx);
         this.cannon.Draw(ctx);
+    }
+
+    EnableShooting(): void {
+        this.canShoot = true;
+        if (
+            !this.reachedShootingPosition ||
+            this.AnimationsController.CurrentAnimationName === 'destroyed' ||
+            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
+        ) {
+            return;
+        }
+        this.cannon.AnimationsController.PlayAnimation({ animation: 'shooting', loop: true });
+    }
+
+    DisableShooting(): void {
+        this.canShoot = false;
+        if (
+            !this.reachedShootingPosition ||
+            this.AnimationsController.CurrentAnimationName === 'destroyed' ||
+            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
+        )
+            return;
+        this.cannon.AnimationsController.PlayAnimation({ animation: 'idle' });
+    }
+
+    ReachedShootingPosition(): boolean {
+        return this.reachedShootingPosition;
     }
 
     private removeEnemyFromGameFlow(): void {

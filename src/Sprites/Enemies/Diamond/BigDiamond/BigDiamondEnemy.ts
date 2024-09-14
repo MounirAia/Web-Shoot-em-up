@@ -34,6 +34,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed 
     private baseHealth: number;
     private currentHealth: number;
 
+    private canShoot: boolean;
+    private reachedShootingPosition: boolean;
+
     constructor(x = 0, y = 0, horizontalShootingPosition: number, laneNumber: LaneNumber) {
         const imgDiamond = ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
             'images/Enemies/Diamond/SmallDiamondFrame.png',
@@ -78,6 +81,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed 
         });
 
         this.DamageResistancesController = new SpriteDamageResistancesController();
+
+        this.canShoot = true;
+        this.reachedShootingPosition = false;
 
         /* Hitbox Setup */
         const frameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoBigDiamond.Hitbox);
@@ -160,11 +166,9 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed 
         if (this.X >= this.HorizontalShootingPosition) {
             this.X -= this.BaseSpeed;
         } else {
-            if (
-                this.AnimationsController.CurrentAnimationName !== 'destroyed' &&
-                this.cannon.AnimationsController.CurrentAnimationName !== 'shooting'
-            ) {
-                this.cannon.AnimationsController.PlayAnimation({ animation: 'shooting', loop: true });
+            this.reachedShootingPosition = true;
+            if (this.canShoot) {
+                this.EnableShooting();
             }
         }
 
@@ -190,6 +194,33 @@ export class BigDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpeed 
         this.CurrentHitbox.forEach((hitbox) => {
             hitbox.TestHitboxDrawing(ctx);
         });
+    }
+
+    EnableShooting(): void {
+        this.canShoot = true;
+        if (
+            !this.reachedShootingPosition ||
+            this.AnimationsController.CurrentAnimationName === 'destroyed' ||
+            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
+        ) {
+            return;
+        }
+        this.cannon.AnimationsController.PlayAnimation({ animation: 'shooting', loop: true });
+    }
+
+    DisableShooting(): void {
+        this.canShoot = false;
+        if (
+            !this.reachedShootingPosition ||
+            this.AnimationsController.CurrentAnimationName === 'destroyed' ||
+            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
+        )
+            return;
+        this.cannon.AnimationsController.PlayAnimation({ animation: 'idle' });
+    }
+
+    ReachedShootingPosition(): boolean {
+        return this.reachedShootingPosition;
     }
 
     private removeEnemyFromGameFlow(): void {
