@@ -90,12 +90,10 @@ export class SpriteAnimationsController {
         if (this.currentAnimationObject) {
             const { framesLengthInTime, afterPlayingAnimation } = this.currentAnimationObject;
             if (framesLengthInTime == Infinity) {
-                if (!this.IsAnimationFinished) {
+                if (this.IsAnimationFinished) {
+                    if (afterPlayingAnimation) afterPlayingAnimation();
+                } else {
                     this.currentFrame++;
-
-                    if (this.IsAnimationFinished) {
-                        if (afterPlayingAnimation) afterPlayingAnimation();
-                    }
                 }
             }
         }
@@ -121,6 +119,10 @@ export class SpriteAnimationsController {
         }
     }
 
+    public GetIsParalyzed(): boolean {
+        return this.isParalyzed;
+    }
+
     public Update(dt: number) {
         if (this.CurrentAnimationName) {
             if (this.currentAnimationObject) {
@@ -129,7 +131,11 @@ export class SpriteAnimationsController {
                 if (framesLengthInTime != Infinity) {
                     if (this.doesAnimationLoop && this.IsAnimationFinished) {
                         this.currentFrame = 0;
-                        if (afterPlayingAnimation) afterPlayingAnimation(); // play the first method at first frame
+
+                        const methodToPlayOnSpecificFrame = methodToPlayOnSpecificFrames?.get(this.frameNumber);
+                        if (methodToPlayOnSpecificFrame) {
+                            methodToPlayOnSpecificFrame();
+                        }
                     } else {
                         if (!this.IsAnimationFinished) {
                             this.currentFrameTimer -= dt;
@@ -142,7 +148,7 @@ export class SpriteAnimationsController {
                                     methodToPlayOnSpecificFrame();
                                 }
 
-                                if (this.IsAnimationFinished && !this.doesAnimationLoop) {
+                                if (this.IsAnimationFinished) {
                                     if (afterPlayingAnimation) {
                                         afterPlayingAnimation();
                                     }

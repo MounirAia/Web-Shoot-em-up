@@ -1,7 +1,7 @@
 import { CANVA_SCALEY, canvas, CANVA_SCALEX } from '../../ScreenConstant';
-import { BigDiamondEnemy } from '../../Sprites/Enemies/Diamond/BigDiamondEnemy';
-import { MediumDiamondEnemy } from '../../Sprites/Enemies/Diamond/MediumDiamondEnemy';
-import { SmallDiamondEnemy } from '../../Sprites/Enemies/Diamond/SmallDiamondEnemy';
+import { BigDiamondEnemy } from '../../Sprites/Enemies/Diamond/BigDiamond/BigDiamondEnemy';
+import { MediumDiamondEnemy } from '../../Sprites/Enemies/Diamond/MediumDiamond/MediumDiamondEnemy';
+import { SmallDiamondEnemy } from '../../Sprites/Enemies/Diamond/SmallDiamond/SmallDiamondEnemy';
 import { IEnemy, EnemyTier } from '../../Sprites/Enemies/IEnemy';
 
 type SpawnPosition = { startingX: number; shootingX: number; shootingY: number };
@@ -45,21 +45,6 @@ export class Lane {
             {
                 startingX: canvas.width,
                 shootingX: 253 * CANVA_SCALEX,
-                shootingY: 32 * CANVA_SCALEY + yLaneShift,
-            },
-            {
-                startingX: canvas.width,
-                shootingX: 263 * CANVA_SCALEX,
-                shootingY: 25 * CANVA_SCALEY + yLaneShift,
-            },
-            {
-                startingX: canvas.width,
-                shootingX: 263 * CANVA_SCALEX,
-                shootingY: 36 * CANVA_SCALEY + yLaneShift,
-            },
-            {
-                startingX: canvas.width,
-                shootingX: 273 * CANVA_SCALEX,
                 shootingY: 32 * CANVA_SCALEY + yLaneShift,
             },
         ];
@@ -168,6 +153,10 @@ export class Lane {
         this.horizontalDelay = 0;
     }
 
+    public IsLaneEmpty(): boolean {
+        return this.enemySpawnList.size === 0;
+    }
+
     public FreeSpawnPosition(parameters: { enemy: IEnemy }) {
         const { enemy } = parameters;
         // 1) Add the spawn position back to the list
@@ -176,6 +165,22 @@ export class Lane {
         this.currentUnitCostPerLane += this.enemyTierInfo.get(enemy.Tier)!.unitCost;
         // 3) Remove the enemy from the spawn list
         this.enemySpawnList.delete(enemy);
+    }
+
+    public DisableShootingOnLane() {
+        this.getListOfEnemiesOnLane().forEach((enemy) => {
+            enemy.DisableShooting();
+        });
+    }
+
+    public EnableShootingOnLane() {
+        this.getListOfEnemiesOnLane().forEach((enemy) => {
+            enemy.EnableShooting();
+        });
+    }
+
+    private getListOfEnemiesOnLane(): IEnemy[] {
+        return Array.from(this.enemySpawnList.keys());
     }
 
     public TestList() {

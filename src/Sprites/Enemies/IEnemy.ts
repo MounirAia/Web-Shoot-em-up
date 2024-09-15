@@ -10,4 +10,9 @@ export interface IEnemy extends Sprite, ISpriteWithDamageResistance, ISpriteWith
     MoneyValue: number;
     Tier: EnemyTier;
     Lane: LaneNumber;
+    EnableShooting: () => void;
+    DisableShooting: () => void;
+    ReachedShootingPosition: () => boolean;
+    ApplyParalyzeEnemy: () => void;
+    RemoveParalyzeEnemy: () => void;
 }
