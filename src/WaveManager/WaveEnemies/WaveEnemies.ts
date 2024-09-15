@@ -211,13 +211,13 @@ export class WaveEnemies {
     public ParalyzeEnemy(parameters: { target: IEnemy }) {
         const { target } = parameters;
 
-        target.AnimationsController.PlayParalyzedAnimation();
+        target.ApplyParalyzeEnemy();
     }
 
     public RemoveParalyzeEnemy(parameters: { target: IEnemy }) {
         const { target } = parameters;
 
-        target.AnimationsController.StopParalyzedAnimation();
+        target.RemoveParalyzeEnemy();
     }
 
     private getEnemyTierToSpawn(round: number): Map<EnemyTier, number> {

@@ -184,10 +184,6 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
     Draw(ctx: CanvasRenderingContext2D): void {
         super.Draw(ctx);
         this.cannon.Draw(ctx);
-
-        this.CurrentHitbox.forEach((hitbox) => {
-            hitbox.TestHitboxDrawing(ctx);
-        });
     }
 
     EnableShooting(): void {
@@ -195,7 +191,8 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
         if (
             !this.reachedShootingPosition ||
             this.AnimationsController.CurrentAnimationName === 'destroyed' ||
-            this.cannon.AnimationsController.CurrentAnimationName === 'shooting'
+            this.cannon.AnimationsController.CurrentAnimationName === 'shooting' ||
+            this.cannon.AnimationsController.GetIsParalyzed()
         ) {
             return;
         }
@@ -204,9 +201,26 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
 
     DisableShooting(): void {
         this.canShoot = false;
-        if (!this.reachedShootingPosition || this.cannon.AnimationsController.CurrentAnimationName !== 'shooting')
+        if (
+            !this.reachedShootingPosition ||
+            this.cannon.AnimationsController.CurrentAnimationName !== 'shooting' ||
+            this.cannon.AnimationsController.GetIsParalyzed()
+        )
             return;
         this.cannon.AnimationsController.PlayAnimation({ animation: 'idle' });
+    }
+
+    ApplyParalyzeEnemy() {
+        this.cannon.AnimationsController.PlayParalyzedAnimation();
+    }
+
+    RemoveParalyzeEnemy() {
+        this.cannon.AnimationsController.StopParalyzedAnimation();
+        if (this.canShoot) {
+            this.EnableShooting();
+        } else {
+            this.DisableShooting();
+        }
     }
 
     ReachedShootingPosition(): boolean {

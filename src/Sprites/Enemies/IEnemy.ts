@@ -13,4 +13,6 @@ export interface IEnemy extends Sprite, ISpriteWithDamageResistance, ISpriteWith
     EnableShooting: () => void;
     DisableShooting: () => void;
     ReachedShootingPosition: () => boolean;
+    ApplyParalyzeEnemy: () => void;
+    RemoveParalyzeEnemy: () => void;
 }

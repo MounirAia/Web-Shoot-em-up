@@ -70,6 +70,9 @@ export default class SmallDiamondCannon extends Sprite implements ISpriteWithHit
             animation: 'idle',
             frames: Idle.Frames,
             framesLengthInTime: Idle.FrameLengthInTime,
+            beforePlayingAnimation: () => {
+                this.CurrentHitbox = [...Frame0Hitbox];
+            },
         });
 
         this.AnimationsController.AddAnimation({
@@ -92,31 +95,31 @@ export default class SmallDiamondCannon extends Sprite implements ISpriteWithHit
                 [
                     0,
                     () => {
-                        this.CurrentHitbox = Frame0Hitbox;
+                        this.CurrentHitbox = [...Frame0Hitbox];
                     },
                 ],
                 [
                     1,
                     () => {
-                        this.CurrentHitbox = Frame1Hitbox;
+                        this.CurrentHitbox = [...Frame1Hitbox];
                     },
                 ],
                 [
                     2,
                     () => {
-                        this.CurrentHitbox = Frame2Hitbox;
+                        this.CurrentHitbox = [...Frame2Hitbox];
                     },
                 ],
                 [
                     3,
                     () => {
-                        this.CurrentHitbox = Frame3Hitbox;
+                        this.CurrentHitbox = [...Frame3Hitbox];
                     },
                 ],
                 [
                     4,
                     () => {
-                        this.CurrentHitbox = Frame4Hitbox;
+                        this.CurrentHitbox = [...Frame4Hitbox];
                     },
                 ],
             ]),
