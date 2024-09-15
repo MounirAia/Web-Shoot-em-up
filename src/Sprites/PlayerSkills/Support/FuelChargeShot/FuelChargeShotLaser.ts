@@ -63,8 +63,7 @@ export class FuelChargeShotLaserLevel1
 
         const damageInfo = FuelChargeShotDamage[ServiceLocator.GetService<IServicePlayer>('Player').NumberOfBoosts];
 
-        this.Damage = damageInfo['Laser Level 1 Base Damage Debuf (%)'];
-
+        this.Damage = damageInfo['Laser Level 1 Damage'];
         this.DamageEffectsController = new PlayerProjectileDamageEffectController({ baseDamage: this.Damage });
 
         this.DamageEffectsController.AddDamageEffects({
