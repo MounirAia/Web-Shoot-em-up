@@ -24,11 +24,11 @@ export interface IServiceWaveManager {
         effect: DamageEffectFunctionReturnType;
         effectType: DamageEffectOptions;
     }): void;
-
     PlayEnemyAnimation(parameters: { target: IEnemy; animationName: AvailableAnimation }): void;
     GetEnemyAnimation(parameters: { target: IEnemy }): AvailableAnimation | undefined;
     ParalyzeEnemy(parameters: { target: IEnemy }): void;
     StopParalyzeEnemy(parameters: { target: IEnemy }): void;
+    GetRoundTier(): number;
 
     Round: number;
 }
@@ -36,15 +36,18 @@ export interface IServiceWaveManager {
 class WaveManager implements IServiceWaveManager {
     private listWaves: WaveEnemies[];
     private currentWave: WaveEnemies | undefined;
-    private round = 1;
+    private round: number;
+    private roundTierLength: number;
     private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
+        this.round = 1;
+        this.roundTierLength = 4;
+        ServiceLocator.AddService('WaveManager', this);
+
         this.listWaves = this.createWaves();
 
         this.currentWave = this.listWaves.shift();
         this.lastEnemyDestroyed = undefined;
-
-        ServiceLocator.AddService('WaveManager', this);
     }
 
     public Update(dt: number) {
@@ -113,6 +116,14 @@ class WaveManager implements IServiceWaveManager {
         if (this.currentWave) return this.currentWave?.HasNoEnemyLeft;
 
         return true;
+    }
+
+    GetRoundTier(): number {
+        const roundTier = Math.ceil(this.Round / this.roundTierLength);
+        const maxRoundTier = 25;
+        if (roundTier > maxRoundTier) return maxRoundTier;
+
+        return roundTier;
     }
 
     public AddEnemyDamageState(parameters: {

@@ -24,6 +24,13 @@ import {
 } from './Skills/Support/MirrorShield/MirrorShieldConstant';
 import { MirrorShieldDamage as MirrorShieldDamageStats } from './Skills/Support/MirrorShield/MirrorShieldDamage';
 import { PlayerBoostConstant } from './Skills/PlayerBoostConstant';
+import SpriteSmallDiamondInfo from './Enemies/Diamond/SmallDiamond/infoSmallDiamond';
+import SmallDiamondStats from './Enemies/Diamond/SmallDiamond/SmallDiamondStats.ts';
+import { DiamondEnemyConstant } from './Enemies/Diamond/DiamondConstant';
+import MediumDiamondStats from './Enemies/Diamond/MediumDiamond/MediumDiamondStats.ts';
+import SpriteMediumDiamondInfo from './Enemies/Diamond/MediumDiamond/infoMediumDiamond.ts';
+import BigDiamondStats from './Enemies/Diamond/BigDiamond/BigDiamondStats.ts';
+import SpriteBigDiamondInfo from './Enemies/Diamond/BigDiamond/infoBigDiamond.ts';
 
 // Define the structure of the infos object
 const infos = {
@@ -78,6 +85,21 @@ const infos = {
         stats: undefined,
         spriteInfo: SpriteInfoEffectIcons,
         constant: undefined,
+    },
+    SmallDiamondEnemy: {
+        stats: SmallDiamondStats,
+        spriteInfo: SpriteSmallDiamondInfo,
+        constant: DiamondEnemyConstant.SmallDiamond,
+    },
+    MediumDiamondEnemy: {
+        stats: MediumDiamondStats,
+        spriteInfo: SpriteMediumDiamondInfo,
+        constant: DiamondEnemyConstant.MediumDiamond,
+    },
+    BigDiamondEnemy: {
+        stats: BigDiamondStats,
+        spriteInfo: SpriteBigDiamondInfo,
+        constant: DiamondEnemyConstant.BigDiamond,
     },
 };
 
