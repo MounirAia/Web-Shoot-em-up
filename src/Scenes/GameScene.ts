@@ -215,6 +215,7 @@ class UserStateUI {
 
         this.drawFrame({ ctx, lineWidth });
         this.drawHealthBar({ ctx, lineWidth });
+        this.drawEnergyBar({ ctx, lineWidth });
         this.drawSkillFrame({ ctx, lineWidth });
         this.drawBoost({ ctx, lineWidth });
 
@@ -275,6 +276,31 @@ class UserStateUI {
         ctx.strokeRect(
             (3.8 - lineWidthCentering) * CANVA_SCALEX,
             (158 - lineWidthCentering) * CANVA_SCALEY,
+            48 * CANVA_SCALEX,
+            8 * CANVA_SCALEY,
+        );
+    }
+
+    private drawEnergyBar(parameters: { ctx: CanvasRenderingContext2D; lineWidth: number }): void {
+        const { ctx, lineWidth } = parameters;
+        ctx.lineWidth = lineWidth;
+        const lineWidthCentering = lineWidth / 8;
+
+        const playerService = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        const playerEnergyRatio = playerService.GetCurrentEnergyPoints() / playerService.GetMaxEnergyEnergyPoints();
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(
+            (4 - lineWidthCentering) * CANVA_SCALEX,
+            (170 - lineWidthCentering) * CANVA_SCALEY,
+            48 * CANVA_SCALEX * playerEnergyRatio,
+            8 * CANVA_SCALEY,
+        );
+
+        ctx.strokeRect(
+            (3.8 - lineWidthCentering) * CANVA_SCALEX,
+            (170 - lineWidthCentering) * CANVA_SCALEY,
             48 * CANVA_SCALEX,
             8 * CANVA_SCALEY,
         );

@@ -24,6 +24,8 @@ import { ISpriteWithDamage, ISpriteWithHealth, ISpriteWithSpeed } from './Sprite
 import { CollideScenario, CreateHitboxesWithInfoFile, ISpriteWithHitboxes, RectangleHitbox } from './SpriteHitbox.js';
 import { IServiceUtilManager } from '../UtilManager';
 import { GetSpriteStaticInformation } from '../SpriteStaticInformation/SpriteStaticInformationManager.js';
+import { IServiceWaveManager } from '../WaveManager/WaveManager.js';
+import { PlayerShockwaveController } from './PlayerShockwaveController.js';
 
 const InfoPlayer = GetSpriteStaticInformation({ sprite: 'Player' }).spriteInfo;
 const PlayerStats = GetSpriteStaticInformation({ sprite: 'Player' }).stats;
@@ -39,6 +41,9 @@ export interface IServicePlayer {
     UpgradeBoost(): void;
     GetIsMaxNumberBoostAttained(): boolean;
     GetIsMaxLevelReachedForSpecificSkillType(parameters: { skillType: SkillsTypeName }): boolean;
+    GetCurrentEnergyPoints: () => number;
+    GetMaxEnergyEnergyPoints: () => number;
+    GetEnergyZone: () => 'safe' | 'medium' | 'danger';
     MaxHealth: number;
     CurrentHealth: number;
     MoneyInWallet: number;
@@ -62,6 +67,10 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     private numberOfBoosts: number;
     BaseHealth: number;
     private currentHealth: number;
+
+    private shockwaveControler: PlayerShockwaveController;
+    private maxEnergyPoints: number;
+    private currentEnergyPoints: number;
 
     private moneyInWallet: number;
     private specialSkillLevel: PossibleSkillLevel;
@@ -116,6 +125,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
         this.BaseHealth = PlayerStats[this.NumberOfBoosts]['Base Health'];
         this.currentHealth = this.BaseHealth;
+        this.shockwaveControler = new PlayerShockwaveController();
+        this.maxEnergyPoints = 100;
+        this.currentEnergyPoints = 0;
         this.moneyInWallet = 10000;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
@@ -131,12 +143,22 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.currentSkill = new Map();
 
         // Trigger the 'effect' skill when an enemy is destroyed
-        const actionOnEnemyDestroyed = () => {
+        const triggerEffectSkillOnEnemyDestroyed = () => {
             this.currentSkill.get('effect')?.Effect();
         };
         ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
             'enemy destroyed',
-            actionOnEnemyDestroyed,
+            triggerEffectSkillOnEnemyDestroyed,
+        );
+
+        const fillEnergyPointsOnEnemyDestroyed = () => {
+            const lastEnemyDestroyedEnergyPoints =
+                ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetLastEnemyEnergyValue();
+            this.addEnergyPoints(lastEnemyDestroyedEnergyPoints);
+        };
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'enemy destroyed',
+            fillEnergyPointsOnEnemyDestroyed,
         );
 
         this.playerFrameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoPlayer.Hitbox);
@@ -157,7 +179,11 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
                 this.removePlayerFromGameFlow();
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
                     'enemy destroyed',
-                    actionOnEnemyDestroyed,
+                    triggerEffectSkillOnEnemyDestroyed,
+                );
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'enemy destroyed',
+                    fillEnergyPointsOnEnemyDestroyed,
                 );
             },
         });
@@ -236,6 +262,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.cannonConfiguration?.Update(dt);
         this.effectConfiguration?.Update(dt);
         this.supportConfiguration?.Update(dt);
+        this.shockwaveControler.Update(dt);
 
         this.UpdateHitboxes(dt);
 
@@ -264,6 +291,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     }
 
     Draw(ctx: CanvasRenderingContext2D) {
+        this.shockwaveControler.Draw(ctx);
         super.Draw(ctx);
         this.cannonConfiguration?.Draw(ctx);
         this.effectConfiguration?.Draw(ctx);
@@ -415,6 +443,43 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             return this.SupportSkillLevel > 2;
         }
         return false;
+    }
+
+    GetCurrentEnergyPoints() {
+        const energy = this.currentEnergyPoints;
+        if (energy < 0) {
+            return 0;
+        } else if (energy > this.maxEnergyPoints) {
+            return this.maxEnergyPoints;
+        }
+
+        return energy;
+    }
+
+    GetMaxEnergyEnergyPoints() {
+        return this.maxEnergyPoints;
+    }
+
+    GetEnergyZone() {
+        const x = this.X;
+
+        if (x < 107 * CANVA_SCALEX) {
+            return 'safe';
+        } else if (x < 171 * CANVA_SCALEX) {
+            return 'medium';
+        } else {
+            return 'danger';
+        }
+    }
+
+    private addEnergyPoints(value: number) {
+        this.currentEnergyPoints += value;
+        if (this.currentEnergyPoints < 0) {
+            this.currentEnergyPoints = 0;
+        } else if (this.currentEnergyPoints >= this.maxEnergyPoints) {
+            this.currentEnergyPoints = 0;
+            this.shockwaveControler.AddShockwave({ playerX: this.X, playerY: this.Y });
+        }
     }
 
     get CurrentHitbox(): RectangleHitbox[] {

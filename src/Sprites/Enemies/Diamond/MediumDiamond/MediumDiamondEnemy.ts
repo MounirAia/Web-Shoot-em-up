@@ -100,10 +100,15 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
                 const healthPerSection = this.baseHealth / maxNumberHealthSection;
                 const oldHealthSection = Math.ceil(this.currentHealth / healthPerSection);
                 this.currentHealth -= damage;
-                const currentHealthSection = Math.ceil(this.currentHealth / healthPerSection);
-                const numberOfFramesToPlay = oldHealthSection - currentHealthSection;
-                for (let i = 0; i < numberOfFramesToPlay; i++) {
-                    this.AnimationsController.PlayManuallyNextFrame();
+
+                if (this.currentHealth <= 0) {
+                    this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+                } else {
+                    const currentHealthSection = Math.ceil(this.currentHealth / healthPerSection);
+                    const numberOfFramesToPlay = oldHealthSection - currentHealthSection;
+                    for (let i = 0; i < numberOfFramesToPlay; i++) {
+                        this.AnimationsController.PlayManuallyNextFrame();
+                    }
                 }
             }
         });
@@ -112,6 +117,19 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
             ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
         });
+
+        /* Event Listening */
+        const onPlayerShockwave = () => {
+            const damage =
+                (this.baseHealth * ConstantMediumDiamond['Player Shockwave Damage (%) of Base Health']) / 100;
+
+            this.Collide.get('WithProjectile')?.(damage);
+        };
+
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'player shockwave',
+            onPlayerShockwave,
+        );
 
         /* Animation Setup */
         const { Damaged, Destroyed } = InfoMediumDiamond.Animations;
@@ -123,6 +141,11 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
             beforePlayingAnimation: () => {
                 this.removeEnemyFromGameFlow();
                 this.cannon.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'player shockwave',
+                    onPlayerShockwave,
+                );
 
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
                     ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
@@ -225,6 +248,29 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
 
     ReachedShootingPosition(): boolean {
         return this.reachedShootingPosition;
+    }
+
+    GetEnergyValue(): number {
+        const playerService = ServiceLocator.GetService<IServicePlayer>('Player');
+        const playerEnergyZone = playerService.GetEnergyZone();
+
+        const safeZoneEnergyPoints =
+            playerService.GetMaxEnergyEnergyPoints() /
+            ConstantMediumDiamond['Safe Zone Number Of Units To Destroy to Activate Shockwave'];
+        const mediumZoneEnergyPoints =
+            playerService.GetMaxEnergyEnergyPoints() /
+            ConstantMediumDiamond['Medium Zone Number Of Units To Destroy to Activate Shockwave'];
+        const dangerZoneEnergyPoints =
+            playerService.GetMaxEnergyEnergyPoints() /
+            ConstantMediumDiamond['Danger Zone Number Of Units To Destroy to Activate Shockwave'];
+
+        if (playerEnergyZone === 'safe') {
+            return safeZoneEnergyPoints;
+        } else if (playerEnergyZone === 'medium') {
+            return mediumZoneEnergyPoints;
+        } else {
+            return dangerZoneEnergyPoints;
+        }
     }
 
     private removeEnemyFromGameFlow(): void {

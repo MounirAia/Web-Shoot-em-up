@@ -12,6 +12,7 @@ export interface IServiceWaveManager {
     GetListEnemies(): Map<IEnemy, IEnemy>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
+    GetLastEnemyEnergyValue(): number;
     GetARandomEnemy(): IEnemy | undefined;
     GetIfListHasNoEnemyLeft(): boolean;
     AddEnemyDamageState(parameters: {
@@ -40,7 +41,7 @@ class WaveManager implements IServiceWaveManager {
     private roundTierLength: number;
     private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
-        this.round = 1;
+        this.round = 80;
         this.roundTierLength = 4;
         ServiceLocator.AddService('WaveManager', this);
 
@@ -106,6 +107,14 @@ class WaveManager implements IServiceWaveManager {
             return { x: this.lastEnemyDestroyed?.FrameXCenter, y: this.lastEnemyDestroyed?.FrameYCenter };
 
         return { x: 0, y: 0 };
+    }
+
+    GetLastEnemyEnergyValue(): number {
+        const lastEnemy = this.lastEnemyDestroyed;
+
+        if (!lastEnemy) return 0;
+
+        return lastEnemy.GetEnergyValue();
     }
 
     GetARandomEnemy(): IEnemy | undefined {
