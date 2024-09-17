@@ -188,6 +188,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             framesLengthInTime: Destroyed.FrameLengthInTime,
             beforePlayingAnimation: () => {
                 this.removePlayerFromGameFlow();
+            },
+
+            afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
                     'enemy destroyed',
                     triggerEffectSkillOnEnemyDestroyed,
@@ -200,6 +203,8 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
                     'round ended',
                     healbackPlayerOnNewRound,
                 );
+
+                ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayMainScene('GameOver');
             },
         });
 
@@ -233,6 +238,9 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
 
     public Update(dt: number): void {
         super.Update(dt);
+
+        if (this.AnimationsController.CurrentAnimationName === 'destroyed') return;
+
         // Check if player do not go outside the viewport
         let isOutsideLeftScreen = false;
         let isOutsideTopScreen = false;
@@ -613,7 +621,6 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         if (this.currentHealth <= 0) {
             this.currentHealth = 0;
             this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
-            ServiceLocator.GetService<IServiceSceneManager>('SceneManager').PlayMainScene('GameOver');
         }
     }
 

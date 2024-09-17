@@ -71,7 +71,7 @@ const Info = {
             Frames: [0],
         },
         Destroyed: {
-            FrameLengthInTime: 3 / 60,
+            FrameLengthInTime: 20 / 60,
             Frames: [2, 3, 4, 5, 6, 7, 8, 9],
         },
     },
