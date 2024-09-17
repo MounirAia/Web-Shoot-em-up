@@ -41,7 +41,7 @@ class WaveManager implements IServiceWaveManager {
     private roundTierLength: number;
     private lastEnemyDestroyed: IEnemy | undefined;
     constructor() {
-        this.round = 80;
+        this.round = 1;
         this.roundTierLength = 4;
         ServiceLocator.AddService('WaveManager', this);
 

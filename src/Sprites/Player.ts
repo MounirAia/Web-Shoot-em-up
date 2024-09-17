@@ -128,7 +128,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.shockwaveControler = new PlayerShockwaveController();
         this.maxEnergyPoints = 100;
         this.currentEnergyPoints = 0;
-        this.moneyInWallet = 10000;
+        this.moneyInWallet = 0;
         this.specialSkillLevel = 0;
         this.effectSkillLevel = 0;
         this.supportSkillLevel = 0;
@@ -461,7 +461,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
     }
 
     GetEnergyZone() {
-        const x = this.X;
+        const x = this.X + this.Width;
 
         if (x < 107 * CANVA_SCALEX) {
             return 'safe';
