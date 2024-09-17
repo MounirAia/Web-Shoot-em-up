@@ -215,6 +215,7 @@ class UserStateUI {
 
         this.drawFrame({ ctx, lineWidth });
         this.drawHealthBar({ ctx, lineWidth });
+        this.drawEnergyBar({ ctx, lineWidth });
         this.drawSkillFrame({ ctx, lineWidth });
         this.drawBoost({ ctx, lineWidth });
 
@@ -275,6 +276,31 @@ class UserStateUI {
         ctx.strokeRect(
             (3.8 - lineWidthCentering) * CANVA_SCALEX,
             (158 - lineWidthCentering) * CANVA_SCALEY,
+            48 * CANVA_SCALEX,
+            8 * CANVA_SCALEY,
+        );
+    }
+
+    private drawEnergyBar(parameters: { ctx: CanvasRenderingContext2D; lineWidth: number }): void {
+        const { ctx, lineWidth } = parameters;
+        ctx.lineWidth = lineWidth;
+        const lineWidthCentering = lineWidth / 8;
+
+        const playerService = ServiceLocator.GetService<IServicePlayer>('Player');
+
+        const playerEnergyRatio = playerService.GetCurrentEnergyPoints() / playerService.GetMaxEnergyEnergyPoints();
+
+        ctx.fillStyle = 'white';
+        ctx.fillRect(
+            (4 - lineWidthCentering) * CANVA_SCALEX,
+            (170 - lineWidthCentering) * CANVA_SCALEY,
+            48 * CANVA_SCALEX * playerEnergyRatio,
+            8 * CANVA_SCALEY,
+        );
+
+        ctx.strokeRect(
+            (3.8 - lineWidthCentering) * CANVA_SCALEX,
+            (170 - lineWidthCentering) * CANVA_SCALEY,
             48 * CANVA_SCALEX,
             8 * CANVA_SCALEY,
         );
@@ -559,6 +585,55 @@ class ShortcutSkillManager {
     }
 }
 
+class PlayerEnergyZoneDrawing {
+    public Draw(ctx: CanvasRenderingContext2D) {
+        const player = ServiceLocator.GetService<IServicePlayer>('Player');
+        const playerEnergyZone = player.GetEnergyZone();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+
+        const line1 = {
+            x1: 107 * CANVA_SCALEX,
+            y1: 16 * CANVA_SCALEY,
+            x2: 107 * CANVA_SCALEX,
+            y2: 154 * CANVA_SCALEY,
+        };
+
+        const line2 = {
+            x1: 171 * CANVA_SCALEX,
+            y1: 16 * CANVA_SCALEY,
+            x2: 171 * CANVA_SCALEX,
+            y2: 154 * CANVA_SCALEY,
+        };
+
+        ctx.moveTo(line1.x1, line1.y1);
+        ctx.lineTo(line1.x2, line1.y2);
+
+        ctx.moveTo(line2.x1, line2.y1);
+        ctx.lineTo(line2.x2, line2.y2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+
+        if (playerEnergyZone === 'medium') {
+            ctx.moveTo(line1.x1, line1.y1);
+            ctx.lineTo(line1.x2, line1.y2);
+        } else if (playerEnergyZone === 'danger') {
+            ctx.moveTo(line1.x1, line1.y1);
+            ctx.lineTo(line1.x2, line1.y2);
+            ctx.moveTo(line2.x1, line2.y1);
+            ctx.lineTo(line2.x2, line2.y2);
+        }
+
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
 export class GameScene implements IScene {
     private cityBackgroundManager: CityBackgroundManager;
     private particleEffectOnMap: ParticleManager;
@@ -566,6 +641,7 @@ export class GameScene implements IScene {
     private timerIsToggled: boolean;
     private inGameTimer: InGameTimer;
     private shortcutSkillManager: ShortcutSkillManager;
+    private playerEnergyZoneDrawing: PlayerEnergyZoneDrawing;
 
     Load() {
         this.timerIsToggled = false;
@@ -610,6 +686,7 @@ export class GameScene implements IScene {
         this.userStateUI = new UserStateUI();
         this.inGameTimer = new InGameTimer();
         this.shortcutSkillManager = new ShortcutSkillManager();
+        this.playerEnergyZoneDrawing = new PlayerEnergyZoneDrawing();
     }
 
     private updateUI(dt: number) {
@@ -624,5 +701,6 @@ export class GameScene implements IScene {
         this.cityBackgroundManager.Draw(ctx);
         this.particleEffectOnMap.Draw(ctx);
         this.userStateUI.Draw(ctx);
+        this.playerEnergyZoneDrawing.Draw(ctx);
     }
 }

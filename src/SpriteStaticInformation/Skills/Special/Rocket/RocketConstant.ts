@@ -11,7 +11,7 @@ export const RocketConstant = [
     {
         'Skill Name': 'Rocket',
         Level: 2,
-        'Skill Price': 6300,
+        'Skill Price': 4700,
         'Number of Cannon': 2,
         'Projectile Speed': 75,
         'Primary Skill': 'Explosive',
@@ -20,7 +20,7 @@ export const RocketConstant = [
     {
         'Skill Name': 'Rocket',
         Level: 3,
-        'Skill Price': 20000,
+        'Skill Price': 10200,
         'Number of Cannon': 2,
         'Projectile Speed': 75,
         'Primary Skill': 'Explosive',

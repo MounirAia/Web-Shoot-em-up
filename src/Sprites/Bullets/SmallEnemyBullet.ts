@@ -1,3 +1,4 @@
+import { IServiceEventManager } from '../../EventManager.js';
 import { IServiceImageLoader } from '../../ImageLoader.js';
 import { CANVA_SCALEX, CANVA_SCALEY, canvas } from '../../ScreenConstant.js';
 import { ServiceLocator } from '../../ServiceLocator.js';
@@ -63,6 +64,16 @@ export class SmallEnemyBullet
         this.XSpeed = Math.cos(this.TargetAngle) * this.BaseSpeed;
         this.YSpeed = Math.sin(this.TargetAngle) * this.BaseSpeed;
 
+        /* Event */
+        const onPlayerShockwave = () => {
+            this.AnimationsController.PlayAnimation({ animation: 'destroyed' });
+        };
+
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'player shockwave',
+            onPlayerShockwave,
+        );
+
         /* Animation */
         const { Idle, Destroyed } = InfoEnemyBullet.Animations;
         this.AnimationsController.AddAnimation({
@@ -80,6 +91,10 @@ export class SmallEnemyBullet
             afterPlayingAnimation: () => {
                 ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').RemoveSprite(
                     this,
+                );
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'player shockwave',
+                    onPlayerShockwave,
                 );
             },
         });

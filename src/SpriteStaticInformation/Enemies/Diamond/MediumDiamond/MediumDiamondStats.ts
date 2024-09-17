@@ -4,7 +4,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 161,
+        'Enemies Lifepoints': 80,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 130,
     },
     {
@@ -12,7 +12,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 418,
+        'Enemies Lifepoints': 209,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 127.6,
     },
     {
@@ -20,7 +20,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 771,
+        'Enemies Lifepoints': 385,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 126.4,
     },
     {
@@ -28,7 +28,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 1220,
+        'Enemies Lifepoints': 610,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 125.2,
     },
     {
@@ -36,7 +36,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 1766,
+        'Enemies Lifepoints': 883,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 124,
     },
     {
@@ -44,7 +44,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 6,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 2409,
+        'Enemies Lifepoints': 1204,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 122.8,
     },
     {
@@ -52,7 +52,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 3148,
+        'Enemies Lifepoints': 1574,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 121.6,
     },
     {
@@ -60,7 +60,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 3983,
+        'Enemies Lifepoints': 1991,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 120.4,
     },
     {
@@ -68,7 +68,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 4914,
+        'Enemies Lifepoints': 2457,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 119.2,
     },
     {
@@ -76,7 +76,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 5942,
+        'Enemies Lifepoints': 2971,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 118,
     },
     {
@@ -84,7 +84,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 7066,
+        'Enemies Lifepoints': 3533,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 116.8,
     },
     {
@@ -92,7 +92,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 8286,
+        'Enemies Lifepoints': 4143,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 115.6,
     },
     {
@@ -100,7 +100,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 9603,
+        'Enemies Lifepoints': 4802,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 114.4,
     },
     {
@@ -108,7 +108,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 11016,
+        'Enemies Lifepoints': 5508,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 113.2,
     },
     {
@@ -116,7 +116,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 12526,
+        'Enemies Lifepoints': 6263,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 112,
     },
     {
@@ -124,7 +124,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 14132,
+        'Enemies Lifepoints': 7066,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 110.8,
     },
     {
@@ -132,7 +132,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 15834,
+        'Enemies Lifepoints': 7917,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 109.6,
     },
     {
@@ -140,7 +140,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 5,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 17632,
+        'Enemies Lifepoints': 8816,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 108.4,
     },
     {
@@ -148,7 +148,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 19527,
+        'Enemies Lifepoints': 9764,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 107.2,
     },
     {
@@ -156,7 +156,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 21519,
+        'Enemies Lifepoints': 10759,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 106,
     },
     {
@@ -164,7 +164,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 23606,
+        'Enemies Lifepoints': 11803,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 104.8,
     },
     {
@@ -172,7 +172,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 25790,
+        'Enemies Lifepoints': 12895,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 103.6,
     },
     {
@@ -180,7 +180,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 28071,
+        'Enemies Lifepoints': 14035,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 102.4,
     },
     {
@@ -188,7 +188,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 30447,
+        'Enemies Lifepoints': 15224,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 101.2,
     },
     {
@@ -196,7 +196,7 @@ export const MediumDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 240,
         'Attack Speed': 0.4,
-        'Enemies Lifepoints': 32920,
+        'Enemies Lifepoints': 16460,
         'Tier 2 Frame Speed (Number Frames to HalfScreen Distance)': 100,
     },
 ] as const;

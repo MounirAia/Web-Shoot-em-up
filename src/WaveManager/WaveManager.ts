@@ -1,3 +1,4 @@
+import { IServiceEventManager } from '../EventManager.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import {
@@ -12,6 +13,7 @@ export interface IServiceWaveManager {
     GetListEnemies(): Map<IEnemy, IEnemy>;
     SetLastEnemyDestroyed(enemy: IEnemy): void;
     GetLastEnemyCenterCoordinate(): { x: number; y: number };
+    GetLastEnemyEnergyValue(): number;
     GetARandomEnemy(): IEnemy | undefined;
     GetIfListHasNoEnemyLeft(): boolean;
     AddEnemyDamageState(parameters: {
@@ -82,6 +84,9 @@ class WaveManager implements IServiceWaveManager {
     }
 
     private set Round(value: number) {
+        if (value > this.round) {
+            ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('round ended');
+        }
         this.round = value;
     }
 
@@ -106,6 +111,14 @@ class WaveManager implements IServiceWaveManager {
             return { x: this.lastEnemyDestroyed?.FrameXCenter, y: this.lastEnemyDestroyed?.FrameYCenter };
 
         return { x: 0, y: 0 };
+    }
+
+    GetLastEnemyEnergyValue(): number {
+        const lastEnemy = this.lastEnemyDestroyed;
+
+        if (!lastEnemy) return 0;
+
+        return lastEnemy.GetEnergyValue();
     }
 
     GetARandomEnemy(): IEnemy | undefined {

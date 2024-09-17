@@ -15,4 +15,5 @@ export interface IEnemy extends Sprite, ISpriteWithDamageResistance, ISpriteWith
     ReachedShootingPosition: () => boolean;
     ApplyParalyzeEnemy: () => void;
     RemoveParalyzeEnemy: () => void;
+    GetEnergyValue: () => number;
 }

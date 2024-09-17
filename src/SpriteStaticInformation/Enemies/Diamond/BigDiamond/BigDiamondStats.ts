@@ -4,7 +4,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 241,
+        'Enemies Lifepoints': 161,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 150,
     },
     {
@@ -12,7 +12,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 626,
+        'Enemies Lifepoints': 418,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 147.6,
     },
     {
@@ -20,7 +20,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 1156,
+        'Enemies Lifepoints': 771,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 146.4,
     },
     {
@@ -28,7 +28,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 1831,
+        'Enemies Lifepoints': 1220,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 145.2,
     },
     {
@@ -36,7 +36,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 2650,
+        'Enemies Lifepoints': 1766,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 144,
     },
     {
@@ -44,7 +44,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 4,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 3613,
+        'Enemies Lifepoints': 2409,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 142.8,
     },
     {
@@ -52,7 +52,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 4721,
+        'Enemies Lifepoints': 3148,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 141.6,
     },
     {
@@ -60,7 +60,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 5974,
+        'Enemies Lifepoints': 3983,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 140.4,
     },
     {
@@ -68,7 +68,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 7371,
+        'Enemies Lifepoints': 4914,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 139.2,
     },
     {
@@ -76,7 +76,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 8913,
+        'Enemies Lifepoints': 5942,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 138,
     },
     {
@@ -84,7 +84,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 10599,
+        'Enemies Lifepoints': 7066,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 136.8,
     },
     {
@@ -92,7 +92,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 12429,
+        'Enemies Lifepoints': 8286,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 135.6,
     },
     {
@@ -100,7 +100,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 14405,
+        'Enemies Lifepoints': 9603,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 134.4,
     },
     {
@@ -108,7 +108,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 16524,
+        'Enemies Lifepoints': 11016,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 133.2,
     },
     {
@@ -116,7 +116,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 18789,
+        'Enemies Lifepoints': 12526,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 132,
     },
     {
@@ -124,7 +124,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 21197,
+        'Enemies Lifepoints': 14132,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 130.8,
     },
     {
@@ -132,7 +132,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 23751,
+        'Enemies Lifepoints': 15834,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 129.6,
     },
     {
@@ -140,7 +140,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 3,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 26449,
+        'Enemies Lifepoints': 17632,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 128.4,
     },
     {
@@ -148,7 +148,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 29291,
+        'Enemies Lifepoints': 19527,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 127.2,
     },
     {
@@ -156,7 +156,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 32278,
+        'Enemies Lifepoints': 21519,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 126,
     },
     {
@@ -164,7 +164,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 35409,
+        'Enemies Lifepoints': 23606,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 124.8,
     },
     {
@@ -172,7 +172,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 38685,
+        'Enemies Lifepoints': 25790,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 123.6,
     },
     {
@@ -180,7 +180,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 42106,
+        'Enemies Lifepoints': 28071,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 122.4,
     },
     {
@@ -188,7 +188,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 45671,
+        'Enemies Lifepoints': 30447,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 121.2,
     },
     {
@@ -196,7 +196,7 @@ export const BigDiamondEnemyStats = [
         'Number of Shots Needed To Destroy Player': 2,
         'Bullet Speed (Number Frames to Cover HalfScreen Distance)': 260,
         'Attack Speed': 0.3,
-        'Enemies Lifepoints': 49381,
+        'Enemies Lifepoints': 32920,
         'Tier 3 Frame Speed (Number Frames to HalfScreen Distance)': 120,
     },
 ] as const;

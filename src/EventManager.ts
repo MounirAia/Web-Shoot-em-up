@@ -1,6 +1,6 @@
 import { ServiceLocator } from './ServiceLocator.js';
 
-type possibleEvent = 'enemy destroyed';
+type possibleEvent = 'enemy destroyed' | 'player shockwave' | 'round ended';
 type action = () => void;
 
 export interface IServiceEventManager {

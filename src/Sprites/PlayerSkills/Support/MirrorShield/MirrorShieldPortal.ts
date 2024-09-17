@@ -29,8 +29,8 @@ class MirrorShieldPortal extends Sprite {
     private offsetXOnPlayer: number;
     private offsetYOnPlayer: number;
     private static potentialMirrorPositions: { X: number; Y: number }[] = [];
-    private numberOfExplosiveEntitiesToSpawnPerSecond;
-    private remainingNumberOfExplosiveEntitiesToSpawnPerSecond;
+    private numberOfExplosiveEntitiesToSpawnPerSecond: number;
+    private remainingNumberOfExplosiveEntitiesToSpawnPerSecond: number;
 
     constructor(parameters: { spriteShiftPositionOnMirror: { X: number; Y: number } }) {
         super(
@@ -148,23 +148,21 @@ class MirrorShieldPortal extends Sprite {
     private initializePotentialPositions() {
         // initialize positions only for the first portal
         if (MirrorShieldPortal.potentialMirrorPositions.length === 0) {
-            const padding = 120; // to avoid portal to touch the edge of the screen
-            const horizontalSpawningZone = Math.floor(canvas.width / 3);
-            const verticalSpawningZone = canvas.height - padding;
-            const horizontalStep = horizontalSpawningZone / 3;
-            const verticalStep = verticalSpawningZone / 5;
+            const startX = 10 * CANVA_SCALEX;
+            const startY = 17 * CANVA_SCALEY;
+            const columnStep = 20 * CANVA_SCALEX;
+            const rowStep = 20 * CANVA_SCALEY;
+            const gridWidth = 180 * CANVA_SCALEX;
+            const gridHeight = 138 * CANVA_SCALEY;
+            const numberOfColumns = Math.floor(gridWidth / columnStep);
+            const numberOfRows = Math.floor(gridHeight / rowStep);
 
-            for (
-                let horizontalPosition = padding;
-                horizontalPosition < horizontalSpawningZone;
-                horizontalPosition += horizontalStep
-            ) {
-                for (
-                    let verticalPosition = padding;
-                    verticalPosition < verticalSpawningZone;
-                    verticalPosition += verticalStep
-                ) {
-                    MirrorShieldPortal.potentialMirrorPositions.push({ X: horizontalPosition, Y: verticalPosition });
+            for (let i = 0; i < numberOfColumns; i++) {
+                for (let j = 0; j < numberOfRows; j++) {
+                    MirrorShieldPortal.potentialMirrorPositions.push({
+                        X: startX + i * columnStep,
+                        Y: startY + j * rowStep,
+                    });
                 }
             }
         }
