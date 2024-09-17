@@ -142,17 +142,16 @@ export class MediumDiamondEnemy extends Sprite implements IEnemy, ISpriteWithSpe
                 this.removeEnemyFromGameFlow();
                 this.cannon.AnimationsController.PlayAnimation({ animation: 'destroyed' });
 
-                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
-                    'player shockwave',
-                    onPlayerShockwave,
-                );
-
                 ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('enemy destroyed', () => {
                     ServiceLocator.GetService<IServiceWaveManager>('WaveManager').SetLastEnemyDestroyed(this);
                 });
                 ServiceLocator.GetService<IServicePlayer>('Player').MakeTransactionOnWallet(this.MoneyValue);
             },
             afterPlayingAnimation: () => {
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'player shockwave',
+                    onPlayerShockwave,
+                );
                 ServiceLocator.GetService<IServiceWaveManager>('WaveManager').RemoveEnemy(this);
             },
         });

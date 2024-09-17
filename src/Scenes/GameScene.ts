@@ -618,15 +618,12 @@ class PlayerEnergyZoneDrawing {
         ctx.beginPath();
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
 
-        if (playerEnergyZone === 'safe') {
+        if (playerEnergyZone === 'medium') {
             ctx.moveTo(line1.x1, line1.y1);
             ctx.lineTo(line1.x2, line1.y2);
-        } else if (playerEnergyZone === 'medium') {
+        } else if (playerEnergyZone === 'danger') {
             ctx.moveTo(line1.x1, line1.y1);
             ctx.lineTo(line1.x2, line1.y2);
-            ctx.moveTo(line2.x1, line2.y1);
-            ctx.lineTo(line2.x2, line2.y2);
-        } else {
             ctx.moveTo(line2.x1, line2.y1);
             ctx.lineTo(line2.x2, line2.y2);
         }
