@@ -12,7 +12,7 @@ export const BladeConstant = [
     {
         'Skill Name': 'Blade',
         Level: 2,
-        'Skill Price': 6300,
+        'Skill Price': 4700,
         'Projectile Speed': 75,
         'Hit Rate Per Second': 5,
         'Damage Increase': 0,
@@ -22,7 +22,7 @@ export const BladeConstant = [
     {
         'Skill Name': 'Blade',
         Level: 3,
-        'Skill Price': 20000,
+        'Skill Price': 10200,
         'Projectile Speed': 75,
         'Hit Rate Per Second': 5,
         'Damage Increase': 1.25,

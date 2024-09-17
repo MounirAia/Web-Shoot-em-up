@@ -11,7 +11,7 @@ export const FuelChargeShotFrameConstant = [
     {
         'Skill Name': 'Fuel Charge Shot',
         Level: 2,
-        'Skill Price': 6300,
+        'Skill Price': 4700,
         'Number of Frame To Spawn': 1,
         'Shooting Rate (s)': 0,
         'Primary Skill': '',
@@ -20,7 +20,7 @@ export const FuelChargeShotFrameConstant = [
     {
         'Skill Name': 'Fuel Charge Shot',
         Level: 3,
-        'Skill Price': 20000,
+        'Skill Price': 10200,
         'Number of Frame To Spawn': 1,
         'Shooting Rate (s)': 0,
         'Primary Skill': '',

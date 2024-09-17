@@ -11,7 +11,7 @@ export const MirrorShieldConstant = [
     {
         'Skill Name': 'Mirror Shield',
         Level: 2,
-        'Skill Price': 6300,
+        'Skill Price': 4700,
         'Respawn Time (s)': 3,
         'Mirror Health Player Health Ratio': 1.5,
         'Primary Skill': 'Energy',
@@ -20,7 +20,7 @@ export const MirrorShieldConstant = [
     {
         'Skill Name': 'Mirror Shield',
         Level: 3,
-        'Skill Price': 20000,
+        'Skill Price': 10200,
         'Respawn Time (s)': 2.5,
         'Mirror Health Player Health Ratio': 2,
         'Quantity Explosive Entity / Second': 3,

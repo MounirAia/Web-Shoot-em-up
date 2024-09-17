@@ -161,9 +161,20 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             fillEnergyPointsOnEnemyDestroyed,
         );
 
+        const healbackPlayerOnNewRound = () => {
+            this.CurrentHealth = this.MaxHealth;
+        };
+        ServiceLocator.GetService<IServiceEventManager>('EventManager').Subscribe(
+            'round ended',
+            healbackPlayerOnNewRound,
+        );
+
+        /* HITBOX */
+
         this.playerFrameHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, InfoPlayer.Hitbox);
         this.hitboxes = [...this.playerFrameHitbox];
 
+        /* ANIMATION */
         const { Idle, Destroyed } = InfoPlayer.Animations;
         this.AnimationsController.AddAnimation({
             animation: 'idle',
@@ -185,9 +196,14 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
                     'enemy destroyed',
                     fillEnergyPointsOnEnemyDestroyed,
                 );
+                ServiceLocator.GetService<IServiceEventManager>('EventManager').Unsubscribe(
+                    'round ended',
+                    healbackPlayerOnNewRound,
+                );
             },
         });
 
+        /* COLLISION METHODS */
         this.Collide = new Map();
 
         this.Collide.set('WithProjectile', (bullet: unknown) => {

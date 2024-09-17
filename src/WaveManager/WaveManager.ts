@@ -1,3 +1,4 @@
+import { IServiceEventManager } from '../EventManager.js';
 import { ServiceLocator } from '../ServiceLocator.js';
 import { IEnemy } from '../Sprites/Enemies/IEnemy.js';
 import {
@@ -83,6 +84,9 @@ class WaveManager implements IServiceWaveManager {
     }
 
     private set Round(value: number) {
+        if (value > this.round) {
+            ServiceLocator.GetService<IServiceEventManager>('EventManager').Notify('round ended');
+        }
         this.round = value;
     }
 
