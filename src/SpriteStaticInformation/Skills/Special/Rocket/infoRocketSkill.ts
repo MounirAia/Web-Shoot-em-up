@@ -16,7 +16,7 @@ const Info = {
                 Y: -5 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnPlayer: {
-                Up: { X: 19 * CANVA_SCALEX, Y: -5 * CANVA_SCALEY },
+                Up: { X: (25 + 8) * CANVA_SCALEX, Y: 3.5 * CANVA_SCALEY },
             },
         },
         Hitbox: {
@@ -56,8 +56,8 @@ const Info = {
                 Y: -6 * CANVA_SCALEX,
             },
             SpriteShiftPositionOnPlayer: {
-                Up: { X: 19 * CANVA_SCALEX, Y: -5 * CANVA_SCALEY },
-                Down: { X: 19 * CANVA_SCALEX, Y: 12 * CANVA_SCALEY },
+                Up: { X: (22 + 13) * CANVA_SCALEX, Y: -1.5 * CANVA_SCALEY },
+                Down: { X: (25 + 10) * CANVA_SCALEX, Y: 2.5 * CANVA_SCALEY },
             },
         },
         Hitbox: {
@@ -99,8 +99,8 @@ const Info = {
                 Y: -6 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnPlayer: {
-                Up: { X: 19 * CANVA_SCALEX, Y: -5 * CANVA_SCALEY },
-                Down: { X: 19 * CANVA_SCALEX, Y: 12 * CANVA_SCALEY },
+                Up: { X: (22 + 12) * CANVA_SCALEX, Y: -1 * CANVA_SCALEY },
+                Down: { X: (25 + 9) * CANVA_SCALEX, Y: 3 * CANVA_SCALEY },
             },
         },
         Hitbox: {
