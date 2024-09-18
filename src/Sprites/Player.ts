@@ -289,8 +289,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
         this.shockwaveControler.Update(dt);
 
         this.UpdateHitboxes(dt);
-
-        if (keyboardManager.GetCommandState({ command: 'PlayerShoot' }).IsDown && this.CanShootRegular) {
+        if (this.CanShootRegular) {
             const bullet = new RegularPlayerBullet(this.X, this.Y);
             ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(bullet);
         } else {
@@ -300,7 +299,7 @@ class Player extends Sprite implements IServicePlayer, ISpriteWithSpeed, ISprite
             }
         }
 
-        if (keyboardManager.GetCommandState({ command: 'PlayerShoot' }).IsDown && this.CanShootSpecial) {
+        if (this.CanShootSpecial) {
             this.currentSkill.get('special')?.Effect();
         } else if (this.currentSkill.get('special')) {
             const specialSkillAS = this.currentSkill.get('special')?.AttackSpeed?.();

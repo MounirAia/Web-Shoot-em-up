@@ -36,11 +36,12 @@ class BladeLevel1
     DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
-    private readonly direction: 'upper-diagonal' | 'down-diagonal';
+    private speedX: number;
+    private speedY: number;
     private readonly baseTimeBeforeBladeCanHit: number;
     private timeLeftBeforeBladeCanHit: number;
 
-    constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
+    constructor(x: number, y: number, directionAngleInRadian: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel1.png',
@@ -74,9 +75,10 @@ class BladeLevel1
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({
             framesItTakes: BladeConstant[0]['Projectile Speed'],
         });
-        this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
+        this.BaseSpeed = this.BaseSpeed;
+        this.speedX = this.BaseSpeed * Math.cos(directionAngleInRadian);
+        this.speedY = this.BaseSpeed * Math.sin(directionAngleInRadian);
 
-        this.direction = direction;
         this.baseTimeBeforeBladeCanHit = 1;
         this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
@@ -106,12 +108,8 @@ class BladeLevel1
 
     public Update(dt: number): void {
         super.Update(dt);
-        this.X += this.BaseSpeed;
-        if (this.direction === 'upper-diagonal') {
-            this.Y -= this.BaseSpeed;
-        } else if (this.direction === 'down-diagonal') {
-            this.Y += this.BaseSpeed;
-        }
+        this.X += this.speedX;
+        this.Y += this.speedY;
 
         this.UpdateHitboxes(dt);
 
@@ -149,11 +147,13 @@ class BladeLevel2
     DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     BaseSpeed: number;
+    private speedX: number;
+    private speedY: number;
     private readonly direction: 'upper-diagonal' | 'down-diagonal';
     private readonly baseTimeBeforeBladeCanHit: number;
     private timeLeftBeforeBladeCanHit: number;
 
-    constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
+    constructor(x: number, y: number, directionAngleInRadian: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel2&3.png',
@@ -187,9 +187,10 @@ class BladeLevel2
         ).GetSpeedItTakesToCoverHalfTheScreenWidth({
             framesItTakes: BladeConstant[1]['Projectile Speed'],
         });
-        this.BaseSpeed = this.BaseSpeed / Math.sqrt(2);
+        this.BaseSpeed = this.BaseSpeed;
+        this.speedX = this.BaseSpeed * Math.cos(directionAngleInRadian);
+        this.speedY = this.BaseSpeed * Math.sin(directionAngleInRadian);
 
-        this.direction = direction;
         this.baseTimeBeforeBladeCanHit = 1;
         this.timeLeftBeforeBladeCanHit = 0;
         this.CurrentHitbox = CreateHitboxesWithInfoFile(this.X, this.Y, [
@@ -219,12 +220,9 @@ class BladeLevel2
 
     public Update(dt: number): void {
         super.Update(dt);
-        this.X += this.BaseSpeed;
-        if (this.direction === 'upper-diagonal') {
-            this.Y -= this.BaseSpeed;
-        } else if (this.direction === 'down-diagonal') {
-            this.Y += this.BaseSpeed;
-        }
+        this.X += this.speedX;
+        this.Y += this.speedY;
+
         this.UpdateHitboxes(dt);
 
         if (this.X > canvas.width || this.X < 0 || this.Y > canvas.height || this.Y < 0) {
@@ -261,13 +259,14 @@ class BladeLevel3
     DamageEffectsController: PlayerProjectileDamageEffectController;
     Collide: Map<CollideScenario, (param?: unknown) => void>;
     baseSpeed: number;
-    private readonly direction: 'upper-diagonal' | 'down-diagonal';
+    private speedX: number;
+    private speedY: number;
     private isSpeedReverted: boolean;
     private readonly spawnXPosition: number;
     private readonly baseTimeBeforeBladeCanHit: number;
     private timeLeftBeforeBladeCanHit: number;
 
-    constructor(x: number, y: number, direction: 'upper-diagonal' | 'down-diagonal') {
+    constructor(x: number, y: number, directionAngleInRadian: number) {
         super(
             ServiceLocator.GetService<IServiceImageLoader>('ImageLoader').GetImage(
                 'images/Skills/Blade/BladeLevel2&3.png',
@@ -302,8 +301,9 @@ class BladeLevel3
             framesItTakes: BladeConstant[2]['Projectile Speed'],
         });
         this.baseSpeed = this.baseSpeed / Math.sqrt(2);
+        this.speedX = this.baseSpeed * Math.cos(directionAngleInRadian);
+        this.speedY = this.baseSpeed * Math.sin(directionAngleInRadian);
 
-        this.direction = direction;
         this.isSpeedReverted = false;
         this.spawnXPosition = this.X;
         this.baseTimeBeforeBladeCanHit = 1;
@@ -360,12 +360,9 @@ class BladeLevel3
 
     public Update(dt: number): void {
         super.Update(dt);
-        this.X += this.BaseSpeed;
-        if (this.direction === 'upper-diagonal') {
-            this.Y -= this.BaseSpeed;
-        } else if (this.direction === 'down-diagonal') {
-            this.Y += this.BaseSpeed;
-        }
+        this.X += this.SpeedX;
+        this.Y += this.SpeedY;
+
         this.UpdateHitboxes(dt);
 
         // Apply the boomerang effect if blade hits the edge of the screen
@@ -386,6 +383,20 @@ class BladeLevel3
 
     get BaseSpeed(): number {
         return this.isSpeedReverted ? -this.baseSpeed : this.baseSpeed;
+    }
+
+    get SpeedX(): number {
+        if (this.isSpeedReverted) {
+            return -this.speedX;
+        }
+        return this.speedX;
+    }
+
+    get SpeedY(): number {
+        if (this.isSpeedReverted) {
+            return -this.speedY;
+        }
+        return this.speedY;
     }
 
     get CanBladeHit(): boolean {
@@ -409,31 +420,39 @@ export class BladeExplosionSkill implements ISkill {
     }
 
     public Effect() {
+        const anglesToSpawnBlade = [30, -30];
         const { x: enemyX, y: enemyY } =
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetLastEnemyCenterCoordinate();
         const effectSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillLevel;
 
         if (effectSkillLevel === 1) {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel1(enemyX, enemyY, 'upper-diagonal'),
-            );
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel1(enemyX, enemyY, 'down-diagonal'),
-            );
+            const blades = anglesToSpawnBlade.map((angle) => {
+                return new BladeLevel1(enemyX, enemyY, this.degreesToRadians(angle));
+            });
+
+            blades.forEach((blade) => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(blade);
+            });
         } else if (effectSkillLevel === 2) {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel2(enemyX, enemyY, 'upper-diagonal'),
-            );
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel2(enemyX, enemyY, 'down-diagonal'),
-            );
+            const blades = anglesToSpawnBlade.map((angle) => {
+                return new BladeLevel2(enemyX, enemyY, this.degreesToRadians(angle));
+            });
+
+            blades.forEach((blade) => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(blade);
+            });
         } else if (effectSkillLevel === 3) {
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel3(enemyX, enemyY, 'upper-diagonal'),
-            );
-            ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(
-                new BladeLevel3(enemyX, enemyY, 'down-diagonal'),
-            );
+            const blades = anglesToSpawnBlade.map((angle) => {
+                return new BladeLevel3(enemyX, enemyY, this.degreesToRadians(angle));
+            });
+
+            blades.forEach((blade) => {
+                ServiceLocator.GetService<IServiceGeneratedSpritesManager>('GeneratedSpritesManager').AddSprite(blade);
+            });
         }
+    }
+
+    private degreesToRadians(degrees: number): number {
+        return degrees * (Math.PI / 180);
     }
 }

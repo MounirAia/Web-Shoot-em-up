@@ -5,27 +5,27 @@ const Info = {
     Level1: {
         Meta: {
             TileDimensions: {
-                Width: 8,
-                Height: 8,
+                Width: 9,
+                Height: 2,
             },
             RealDimension: {
-                Width: 3 * CANVA_SCALEX,
-                Height: 5 * CANVA_SCALEY,
+                Width: 9 * CANVA_SCALEX,
+                Height: 2 * CANVA_SCALEY,
             },
             SpriteShiftPosition: {
-                X: -3 * CANVA_SCALEX,
-                Y: -1 * CANVA_SCALEY,
+                X: 0 * CANVA_SCALEX,
+                Y: 0 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnPlayer: {
-                Cannon1: { X: 19 * CANVA_SCALEX, Y: -5 * CANVA_SCALEY },
+                Cannon1: { X: 25 * CANVA_SCALEX, Y: 4 * CANVA_SCALEY },
             },
         },
         Hitbox: [
             {
-                X: 19 * CANVA_SCALEX,
-                Y: -5 * CANVA_SCALEY,
-                Width: 3 * CANVA_SCALEX,
-                Height: 5 * CANVA_SCALEY,
+                X: 25 * CANVA_SCALEX,
+                Y: 4 * CANVA_SCALEY,
+                Width: 9 * CANVA_SCALEX,
+                Height: 2 * CANVA_SCALEY,
             },
         ],
         Animations: {
@@ -33,105 +33,38 @@ const Info = {
                 FrameLengthInTime: Infinity,
                 Frames: [0],
             },
-            Destroyed: {
-                FrameLengthInTime: 6 / 60,
-                Frames: [1, 2, 3],
-            },
         },
     },
     Level2: {
         Meta: {
             TileDimensions: {
-                Width: 16,
-                Height: 16,
+                Width: 12,
+                Height: 2,
             },
             RealDimension: {
-                Width: 8 * CANVA_SCALEX,
-                Height: 6 * CANVA_SCALEY,
+                Width: 12 * CANVA_SCALEX,
+                Height: 2 * CANVA_SCALEY,
             },
             SpriteShiftPosition: {
-                X: -4 * CANVA_SCALEX,
-                Y: -5 * CANVA_SCALEY,
+                X: 0 * CANVA_SCALEX,
+                Y: 0 * CANVA_SCALEY,
             },
             SpriteShiftPositionOnPlayer: {
-                Cannon1: { X: 14 * CANVA_SCALEX, Y: -6 * CANVA_SCALEY },
-                Cannon2: { X: 14 * CANVA_SCALEX, Y: 12 * CANVA_SCALEY },
+                Cannon1: { X: 22 * CANVA_SCALEX, Y: 0 * CANVA_SCALEY },
             },
         },
-        Hitbox: {
-            Cannon1: [
-                {
-                    X: 14 * CANVA_SCALEX,
-                    Y: -6 * CANVA_SCALEY,
-                    Width: 8 * CANVA_SCALEX,
-                    Height: 6 * CANVA_SCALEY,
-                },
-            ],
-            Cannon2: [
-                {
-                    X: 14 * CANVA_SCALEX,
-                    Y: 12 * CANVA_SCALEY,
-                    Width: 8 * CANVA_SCALEX,
-                    Height: 6 * CANVA_SCALEY,
-                },
-            ],
-        },
+        Hitbox: [
+            {
+                X: 22 * CANVA_SCALEX,
+                Y: 0 * CANVA_SCALEY,
+                Width: 12 * CANVA_SCALEX,
+                Height: 2 * CANVA_SCALEY,
+            },
+        ],
         Animations: {
             Idle: {
                 FrameLengthInTime: Infinity,
                 Frames: [0],
-            },
-            Destroyed: {
-                FrameLengthInTime: 6 / 60,
-                Frames: [1, 2, 3, 4],
-            },
-        },
-    },
-    Level3: {
-        Meta: {
-            TileDimensions: {
-                Width: 16,
-                Height: 16,
-            },
-            RealDimension: {
-                Width: 7 * CANVA_SCALEX,
-                Height: 7 * CANVA_SCALEY,
-            },
-            SpriteShiftPosition: {
-                X: -5 * CANVA_SCALEX,
-                Y: -5 * CANVA_SCALEY,
-            },
-            SpriteShiftPositionOnPlayer: {
-                Cannon1: { X: 14 * CANVA_SCALEX, Y: -7 * CANVA_SCALEY },
-                Cannon2: { X: 14 * CANVA_SCALEX, Y: 12 * CANVA_SCALEX },
-            },
-        },
-        Hitbox: {
-            Cannon1: [
-                {
-                    X: 14 * CANVA_SCALEX,
-                    Y: -7 * CANVA_SCALEY,
-                    Width: 7 * CANVA_SCALEX,
-                    Height: 7 * CANVA_SCALEY,
-                },
-            ],
-            Cannon2: [
-                {
-                    X: 14 * CANVA_SCALEX,
-                    Y: 12 * CANVA_SCALEX,
-                    Width: 7 * CANVA_SCALEX,
-                    Height: 7 * CANVA_SCALEY,
-                },
-            ],
-        },
-        Animations: {
-            Idle: {
-                FrameLengthInTime: Infinity,
-                Frames: [0],
-            },
-            Destroyed: {
-                FrameLengthInTime: 0.1,
-                Frames: [1, 2, 3, 4],
             },
         },
     },

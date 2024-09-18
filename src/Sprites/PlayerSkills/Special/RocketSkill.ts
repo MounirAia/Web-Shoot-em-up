@@ -572,8 +572,8 @@ export class RocketSkill implements ISkill {
             rockets.push(new RocketBulletLevel2(playerX + upX, playerY + upY));
             rockets.push(new RocketBulletLevel2(playerX + downX, playerY + downY));
         } else if (skillLevel === 3) {
-            const { X: upX, Y: upY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Up;
-            const { X: downX, Y: downY } = InfoRocketSkillSprite.Level2.Meta.SpriteShiftPositionOnPlayer.Down;
+            const { X: upX, Y: upY } = InfoRocketSkillSprite.Level3.Meta.SpriteShiftPositionOnPlayer.Up;
+            const { X: downX, Y: downY } = InfoRocketSkillSprite.Level3.Meta.SpriteShiftPositionOnPlayer.Down;
             const rocket1 = new RocketBulletLevel3(playerX + upX, playerY + upY);
             const rocket2 = new RocketBulletLevel3(playerX + downX, playerY + downY);
             rockets.push(rocket1, rocket2);
