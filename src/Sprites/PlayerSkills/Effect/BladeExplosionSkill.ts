@@ -420,7 +420,7 @@ export class BladeExplosionSkill implements ISkill {
     }
 
     public Effect() {
-        const anglesToSpawnBlade = [80, 60, 45, 30, 0, -30, -45, -60, -80];
+        const anglesToSpawnBlade = [30, -30];
         const { x: enemyX, y: enemyY } =
             ServiceLocator.GetService<IServiceWaveManager>('WaveManager').GetLastEnemyCenterCoordinate();
         const effectSkillLevel = ServiceLocator.GetService<IServicePlayer>('Player').EffectSkillLevel;
