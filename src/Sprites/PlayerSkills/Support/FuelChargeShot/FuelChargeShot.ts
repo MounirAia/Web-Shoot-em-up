@@ -270,13 +270,20 @@ export class FuelChargeShotSkill implements ISkill {
         const cannons: IGeneratedSprite[] = [];
 
         if (skillLevel > 0 && skillLevel < 4) {
-            const cannonTypeToSpawn:
-                | typeof FuelChargeShotLevel1
-                | typeof FuelChargeShotLevel2
-                | typeof FuelChargeShotLevel3 = eval(`FuelChargeShotLevel${skillLevel}`);
+            const numberCannonToSpawn = FuelChargeShotFrameConstant[skillLevel - 1]['Number of Frame To Spawn'];
 
-            for (let i = 0; i < FuelChargeShotFrameConstant[skillLevel - 1]['Number of Frame To Spawn']; i++) {
-                cannons.push(new cannonTypeToSpawn());
+            if (skillLevel === 1) {
+                for (let i = 0; i < numberCannonToSpawn; i++) {
+                    cannons.push(new FuelChargeShotLevel1());
+                }
+            } else if (skillLevel === 2) {
+                for (let i = 0; i < numberCannonToSpawn; i++) {
+                    cannons.push(new FuelChargeShotLevel2());
+                }
+            } else if (skillLevel === 3) {
+                for (let i = 0; i < numberCannonToSpawn; i++) {
+                    cannons.push(new FuelChargeShotLevel3());
+                }
             }
 
             if (cannons.length > 0) {
